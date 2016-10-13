@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 	int iPlayRounds = atoi(argv[1]);*/
 	
 		
-	int iPlayRounds = 1000;
+	int iPlayRounds = 300000;
 	// create and initialize AI
 	Fib2584Ai ai;
 	ai.initialize(argc, argv);
@@ -63,10 +63,7 @@ int main(int argc, char* argv[])
 		statistic.updateMaxTile(gameBoard.getMaxTile());
 		if (isWrite == true && i > 0 && i % 500000 == 0)
 			ai.WriteWeightTable();
-		if(i > 0 && i % 100000 == 0 ){
-			statistic.show();
-			printf("\n");
-		}
+		
 	}
 	statistic.setFinishTime();
 

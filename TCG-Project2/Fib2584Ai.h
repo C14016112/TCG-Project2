@@ -6,8 +6,15 @@
 #include "Fib2584/GameBoard.h"
 #include "MakeMoveTable.h"
 #include "Record_Rectangle.h"
+#include "Record_Axe.h"
 #include <iostream>
 #include <fstream>
+#include <stack>
+
+struct Board{
+	int state[4][4];
+	int score;
+};
 class Fib2584Ai
 {
 public:
@@ -27,14 +34,16 @@ public:
 private:
 	float Evaluate(int board[4][4]);
 	MoveDirection FindBestDirection(int board[4][4]);
-	void Learn_Evaluation( int b1_moved[4][4], int b2_moved[4][4], int tmpaward);
+	void Learn_Evaluation(int finalboard[4][4], int finalscore);
 	bool isFull(int board[4][4]);
 	bool isEmpty(int board[4][4]);
 private:
 	float LEARNING_RATE;
-	Record_Rectangle record;
-	int lastboard_moved[4][4];
+	Record_Rectangle record_rec;
+	Record_Axe record_axe;
 	MakeMoveTable move;
+	std::stack<Board> boardstack;
+	int nextboard_moved[4][4];
 };
 
 #endif
