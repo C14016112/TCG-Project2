@@ -3,16 +3,12 @@
 
 Fib2584Ai::Fib2584Ai()
 {
-	LEARNING_RATE = 0.0025*3;
+//	LEARNING_RATE = 0.0025;
+	LEARNING_RATE = 0.001;
 }
 
 void Fib2584Ai::initialize(int argc, char* argv[])
 {
-	for (int i = 0 ; i<4 ; i++){
-		for (int j = 0 ; j<4 ; j++){
-			nextboard_moved[i][j] = 0;
-		}
-	}
 	srand(time(NULL));
 	move.MakeTable();
 }
@@ -22,19 +18,10 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4])
 {
 	for (int i = 0 ;i<4 ; i++){
 		for (int j = 0 ; j< 4 ; j++){
-			for (int k = 0 ; k<32 ; k++){
-				if(board[i][j] == GameBoard::fibonacci_[k]){
-					board[i][j] = k;
-				}
-			}
+			board[i][j] = GetFibOrder(board[i][j]);
 		}
 	}
-
-	MoveDirection currentaction = FindBestDirection(board);
-	int tmpaward;
-	move.Move((int)currentaction, board, tmpaward);
-
-	return currentaction;
+	return FindBestDirection(board);
 }
 
 void Fib2584Ai::gameOver(int finalboard[4][4], int iScore)
@@ -50,14 +37,69 @@ float Fib2584Ai::Evaluate(int board[4][4])
 }
 
 
-void Fib2584Ai::Learn_Evaluation(int finalboard[4][4], int finalscore)
+MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 {
+	
+	int nextaction = rand() % 4;
+	int next_tmp = nextaction;
+	float score[4] = {};
+	int award[4] = {};
+	int moveboard[4][4][4] = {};
+	Board board_stack;
+	
 	for (int i = 0 ; i<4 ; i++){
+		int direction = ( i + next_tmp ) % 4;
+		
 		for (int j = 0 ; j<4 ; j++){
-			nextboard_moved[i][j] = finalboard[i][j];
+			for (int k = 0 ;k<4 ;k++){
+				moveboard[i][j][k] = board[j][k];
+			}
+		}
+
+		int tmpaward = 0;
+		move.Move(direction, moveboard[i], tmpaward);
+		award[direction] = tmpaward;
+		score[direction] = Evaluate(moveboard[i]) + tmpaward;
+
+		if(score[direction] >= score[nextaction]){
+			nextaction = direction;
+
+			for (int j = 0 ; j<4 ; j++){
+				for (int k = 0 ;k<4 ;k++){
+					board_stack.state[j][k] = moveboard[i][j][k];
+				}
+			}
 		}
 	}
 	
+	for (int i = 0 ; i< 4 ; i++){
+		for (int j = 0 ; j<4 ; j++){
+			if(board_stack.state[i][j] != board[i][j]){
+				board_stack.score = award[nextaction];
+				board_stack.weight = score[nextaction] - award[nextaction];
+				boardstack.push(board_stack);
+				return static_cast<MoveDirection>(nextaction);
+			}
+		}
+	}
+	
+	for (int i = 0 ; i<4 ; i++){
+		for (int j = 0 ;j<4 ;j++){
+			board_stack.state[i][j] = moveboard[next_tmp][i][j];
+		}
+	}
+	
+	nextaction = next_tmp;
+	board_stack.score = award[nextaction];
+	board_stack.weight = score[nextaction] - award[nextaction];
+	boardstack.push(board_stack);
+	return static_cast<MoveDirection>(nextaction);
+}
+
+
+void Fib2584Ai::Learn_Evaluation(int finalboard[4][4], int finalscore)
+{
+	Board nextboard;
 	float next_value = 0;
 	float now_value = 0;
 	float delta = 0;
@@ -65,13 +107,13 @@ void Fib2584Ai::Learn_Evaluation(int finalboard[4][4], int finalscore)
 
 	while(boardstack.empty() == false){
 		
-		now_value = Evaluate(boardstack.top().state);
+		now_value = boardstack.top().weight;
 		if (isFinal == true){
 			delta = LEARNING_RATE * now_value * -1;
 			isFinal = false;
 		}
 		else{
-			next_value = Evaluate(nextboard_moved);
+			next_value = nextboard.weight;
 			delta = LEARNING_RATE * ((float)(finalscore - boardstack.top().score) + next_value - now_value);
 		}
 
@@ -93,74 +135,13 @@ void Fib2584Ai::Learn_Evaluation(int finalboard[4][4], int finalscore)
 
 		}
 		
-		for (int i = 0 ; i<4 ; i++){
-			for (int j = 0 ; j<4 ; j++){
-				nextboard_moved[i][j] = boardstack.top().state[i][j];
-			}
-		}
+		nextboard = boardstack.top();
 		boardstack.pop();
 	}
 
 	
 }
 
-MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
-{
-	int nextaction = 0;
-	float score[4] = {};
-	int award[4] = {};
-	int tmpboard[4][4][4] = {};
-	Board board_stack;
-
-	for (int i = 0 ; i<4 ; i++){
-		int moveboard[4][4] = {};
-		for (int j = 0 ; j<4 ; j++){
-			for (int k = 0 ;k<4 ;k++){
-				moveboard[j][k] = board[j][k];
-			}
-		}
-
-		int tmpaward = 0;
-		move.Move(i, moveboard, tmpaward);
-		award[i] = tmpaward;
-		score[i] = Evaluate(moveboard) + tmpaward;
-		
-		if(score[i] > score[nextaction]){
-			nextaction = i;
-		}
-		for (int j = 0 ; j<4 ; j++){
-			for (int k = 0 ;k<4 ;k++){
-				tmpboard[i][j][k] = moveboard[j][k];
-			}
-		}
-	}
-
-	for (int i = 0 ; i< 4 ; i++){
-		for (int j = 0 ; j<4 ; j++){
-			if(tmpboard[nextaction][i][j] != board[i][j]){
-				board_stack.score = award[nextaction];
-				for (int k = 0 ; k<4 ; k++){
-					for (int l = 0 ; l < 4 ;l++){
-						board_stack.state[k][l] = tmpboard[nextaction][k][l];
-					}
-				}
-				boardstack.push(board_stack);
-				return static_cast<MoveDirection>(nextaction);
-			}
-		}
-	}
-	
-	nextaction = rand() % 4;
-	board_stack.score = award[nextaction];
-	for (int k = 0 ; k<4 ; k++){
-		for (int l = 0 ; l < 4 ;l++){
-			board_stack.state[k][l] = tmpboard[nextaction][k][l];
-		}
-	}
-	boardstack.push(board_stack);
-
-	return static_cast<MoveDirection>(nextaction);
-}
 
 void Fib2584Ai::ReadWeightTable()
 {
@@ -329,6 +310,111 @@ bool Fib2584Ai::isEmpty(int board[4][4])
 		}
 	}
 	return true;
+}
+
+int Fib2584Ai::GetFibOrder(int Fibnumber)
+{
+	switch(Fibnumber){
+	case 0:
+		return 0;
+		break;
+	case 1:
+		return 1;
+		break;
+	case 2:
+		return 2;
+		break;
+	case 3:
+		return 3;
+		break;
+	case 5:
+		return 4;
+		break;
+	case 8:
+		return 5;
+		break;
+	case 13:
+		return 6;
+		break;
+	case 21:
+		return 7;
+		break;
+	case 34:
+		return 8;
+		break;
+	case 55:
+		return 9;
+		break;
+	case 89:
+		return 10;
+		break;
+	case 144:
+		return 11;
+		break;
+	case 233:
+		return 12;
+		break;
+	case 377:
+		return 13;
+		break;
+	case 610:
+		return 14;
+		break;
+	case 987:
+		return 15;
+		break;
+	case 1597:
+		return 16;
+		break;
+	case 2584:
+		return 17;
+		break;
+	case 4181:
+		return 18;
+		break;
+	case 6765:
+		return 19;
+		break;
+	case 10946:
+		return 20;
+		break;
+	case 17711:
+		return 21;
+		break;
+	case 28657:
+		return 22;
+		break;
+	case 46368:
+		return 23;
+		break;
+	case 75025:
+		return 24;
+		break;
+	case 121393:
+		return 25;
+		break;
+	case 196418:
+		return 26;
+		break;
+	case 317811:
+		return 27;
+		break;
+	case 514229:
+		return 28;
+		break;
+	case 832040:
+		return 29;
+		break;
+	case 1346269:
+		return 30;
+		break;
+	case 2178309:
+		return 31;
+		break;
+	default	:
+		return -1;
+		break;
+	}
 }
 
 /**********************************

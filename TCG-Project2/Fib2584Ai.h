@@ -10,10 +10,12 @@
 #include <iostream>
 #include <fstream>
 #include <stack>
+#include "time.h"
 
 struct Board{
 	int state[4][4];
-	int score;
+	int score; 
+	float weight;
 };
 class Fib2584Ai
 {
@@ -37,13 +39,13 @@ private:
 	void Learn_Evaluation(int finalboard[4][4], int finalscore);
 	bool isFull(int board[4][4]);
 	bool isEmpty(int board[4][4]);
+	int GetFibOrder(int Fibnumber);
 private:
 	float LEARNING_RATE;
 	Record_Rectangle record_rec;
 	Record_Axe record_axe;
 	MakeMoveTable move;
 	std::stack<Board> boardstack;
-	int nextboard_moved[4][4];
 };
 
 #endif

@@ -4,11 +4,15 @@
 #include "Fib2584/MoveDirection.h"
 #include "Fib2584/Statistic.h"
 #include "Fib2584Ai.h"
+#include "MakeMoveTable.h"
 
 using namespace std;
 
 int main(int argc, char* argv[])
 {
+
+
+
 	double start, end;
 
 	start = clock();
@@ -21,8 +25,7 @@ int main(int argc, char* argv[])
 	}
 	int iPlayRounds = atoi(argv[1]);*/
 	
-		
-	int iPlayRounds = 300000;
+	int iPlayRounds = 500000;
 	// create and initialize AI
 	Fib2584Ai ai;
 	ai.initialize(argc, argv);
@@ -45,7 +48,7 @@ int main(int argc, char* argv[])
 		while(!gameBoard.terminated()) {
 			gameBoard.getArrayBoard(arrayBoard);
 			MoveDirection moveDirection = ai.generateMove(arrayBoard);
-
+			
 			GameBoard originalBoard = gameBoard;
 			iScore += gameBoard.move(moveDirection);
 			if(originalBoard == gameBoard)
@@ -61,7 +64,7 @@ int main(int argc, char* argv[])
 		// update statistic data
 		statistic.updateScore(iScore);
 		statistic.updateMaxTile(gameBoard.getMaxTile());
-		if (isWrite == true && i > 0 && i % 500000 == 0)
+		if (isWrite == true && i > 0 && i % 500001 == 0)
 			ai.WriteWeightTable();
 		
 	}
@@ -76,7 +79,7 @@ int main(int argc, char* argv[])
 
 	end = clock();
 
-	printf(" Running time is %f \n", (end - start )/CLOCKS_PER_SEC );
+	printf("\nRunning time is %f \n", (end - start )/CLOCKS_PER_SEC );
 	system("pause");
 	return 0;
 }
