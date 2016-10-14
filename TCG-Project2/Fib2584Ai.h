@@ -8,15 +8,15 @@
 #include "Record_Rectangle.h"
 #include "Record_Axe.h"
 #include "Record_StraightLine.h"
+#include "Board.h"
 #include <iostream>
 #include <fstream>
 #include <stack>
 #include "time.h"
 
-struct Board{
+struct Board_Struct{
 	int state[4][4];
 	int score; 
-	float weight;
 };
 class Fib2584Ai
 {
@@ -30,6 +30,7 @@ public:
 	void gameOver(int board[4][4], int iScore);
 	void WriteWeightTable();
 	void ReadWeightTable();
+	BitBoard TransformArrayBoardToBitBoard(int arrayboard[4][4]);
 	/**********************************
 	You can implement any additional functions
 	or define any variables you may need.
@@ -47,7 +48,7 @@ private:
 	Record_Axe record_axe;
 	Record_StraightLine record_straightline;
 	MakeMoveTable move;
-	std::stack<Board> boardstack;
+	std::stack<Board_Struct> boardstack;
 };
 
 #endif

@@ -43,16 +43,16 @@ void MakeMoveTable::MakeTable()
 
 					int check_position = 0;
 					while(check_position < 3){
-						if(index[check_position] != 0 && index[check_position + 1] != 0 && (index[check_position] == index[check_position + 1] + 1 || index[check_position] == index[check_position + 1] - 1)){
-							if(index[check_position] == index[check_position + 1] + 1){
+						if(index[check_position] != 0 && index[check_position + 1] != 0 && (index[check_position] == index[check_position + 1] + 1 || index[check_position] == index[check_position + 1] - 1 || (index[check_position] == 1 && index[check_position+1] == 1))){
+							if(index[check_position] == index[check_position + 1] + 1 || (index[check_position] == 1 && index[check_position+1] == 1)){
 								index[check_position] = index[check_position] + 1;
 								index[check_position + 1] = 0;
-								index[4] = index[4] + (2 << index[check_position]);
+								index[4] = index[4] + GameBoard::fibonacci_[index[check_position]];
 							}
 							else{
 								index[check_position] = index[check_position] + 2;
 								index[check_position + 1] = 0;
-								index[4] = index[4] + ( 2 << index[check_position]);
+								index[4] = index[4] + GameBoard::fibonacci_[index[check_position]];
 							}
 							check_position = check_position + 2;
 						}

@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 
 	bool isRead = false;
 	bool isWrite = false;
+
 	/*if(argc == 1) {
 		cerr << "usage: play_game rounds [other arguments which your AI needs]" << endl;
 		return 1;
@@ -64,7 +65,7 @@ int main(int argc, char* argv[])
 		// update statistic data
 		statistic.updateScore(iScore);
 		statistic.updateMaxTile(gameBoard.getMaxTile());
-		if (isWrite == true && i > 0 && i % 500001 == 0)
+		if (isWrite == true && i > 0 && i % 100001 == 0)
 			ai.WriteWeightTable();
 		
 		if(i % 1000 == 0)

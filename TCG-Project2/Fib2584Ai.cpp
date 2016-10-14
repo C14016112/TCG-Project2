@@ -39,17 +39,14 @@ float Fib2584Ai::Evaluate(int board[4][4])
 
 MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 {
-	
-	int nextaction = rand() % 4;
-	int next_tmp = nextaction;
+	int nextaction = 0;
+	int next_tmp = rand() % 4;
 	float score[4] = {};
 	int award[4] = {};
 	int moveboard[4][4][4] = {};
-	Board board_stack;
-	
+	Board_Struct board_stack;
+
 	for (int i = 0 ; i<4 ; i++){
-		int direction = ( i + next_tmp ) % 4;
-		
 		for (int j = 0 ; j<4 ; j++){
 			for (int k = 0 ;k<4 ;k++){
 				moveboard[i][j][k] = board[j][k];
@@ -57,12 +54,12 @@ MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 		}
 
 		int tmpaward = 0;
-		move.Move(direction, moveboard[i], tmpaward);
-		award[direction] = tmpaward;
-		score[direction] = Evaluate(moveboard[i]) + tmpaward;
+		move.Move(i, moveboard[i], tmpaward);
+		award[i] = tmpaward;
+		score[i] = Evaluate(moveboard[i]) + tmpaward;
 
-		if(score[direction] >= score[nextaction]){
-			nextaction = direction;
+		if(score[i] >= score[nextaction]){
+			nextaction = i;
 
 			for (int j = 0 ; j<4 ; j++){
 				for (int k = 0 ;k<4 ;k++){
@@ -71,35 +68,127 @@ MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 			}
 		}
 	}
-	
+
 	for (int i = 0 ; i< 4 ; i++){
 		for (int j = 0 ; j<4 ; j++){
 			if(board_stack.state[i][j] != board[i][j]){
 				board_stack.score = award[nextaction];
-				board_stack.weight = score[nextaction] - award[nextaction];
 				boardstack.push(board_stack);
 				return static_cast<MoveDirection>(nextaction);
 			}
 		}
 	}
-	
+
 	for (int i = 0 ; i<4 ; i++){
 		for (int j = 0 ;j<4 ;j++){
 			board_stack.state[i][j] = moveboard[next_tmp][i][j];
 		}
 	}
-	
+
 	nextaction = next_tmp;
 	board_stack.score = award[nextaction];
-	board_stack.weight = score[nextaction] - award[nextaction];
 	boardstack.push(board_stack);
 	return static_cast<MoveDirection>(nextaction);
 }
 
+//
+//MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
+//{
+//	int fibboard[4][4] = {};
+//	for (int i = 0 ; i<4 ; i++){
+//		for (int j = 0 ;j<4 ; j++){
+//			fibboard[i][j] = Board::fibonacci_[board[i][j]];
+//		}
+//	}
+//	Board originalboard;
+//	Board nextboard;
+//	originalboard.setBoard(TransformArrayBoardToBitBoard(fibboard));
+//	nextboard.setBoard(TransformArrayBoardToBitBoard(fibboard));
+//
+//	int nextaction = rand() % 4;
+//	int next_tmp = nextaction;
+//	float score[4] = {};
+//	int award[4] = {};
+//	int moveboard[4][4][4] = {};
+//	Board_Struct board_stack;
+//	
+//	for (int i = 0 ; i<4 ; i++){
+//		//int direction = ( i + next_tmp ) % 4;
+//		int direction = i;
+//		/*for (int j = 0 ; j<4 ; j++){
+//			for (int k = 0 ;k<4 ;k++){
+//				moveboard[i][j][k] = board[j][k];
+//			}
+//		}*/
+//
+//		Board tmpboard = originalboard;
+//		int tmpaward = tmpboard.move(static_cast<MoveDirection>(direction));
+//		award[direction] = tmpaward;
+//		tmpboard.getArrayBoard(moveboard[i]);
+//		for (int j = 0 ; j<4 ; j++){
+//			for (int k = 0 ; k<4 ;k++){
+//				moveboard[i][j][k] = GetFibOrder(moveboard[i][j][k]);
+//			}
+//		}
+//		score[direction] = Evaluate(moveboard[i]) + tmpaward;
+///*
+//		int tmpaward = 0;
+//		move.Move(direction, moveboard[i], tmpaward);
+//		award[direction] = tmpaward;
+//		score[direction] = Evaluate(moveboard[i]) + tmpaward;*/
+//
+//		if(score[direction] >= score[nextaction]){
+//			nextaction = direction;
+//
+//			for (int j = 0 ; j<4 ; j++){
+//				for (int k = 0 ;k<4 ;k++){
+//					board_stack.state[j][k] = moveboard[i][j][k];
+//				}
+//			}
+//			nextboard = tmpboard;
+//		}
+//	}
+//
+//	if((nextboard == originalboard ) == true){
+//		nextaction = rand() % 4;
+//		for (int i = 0 ; i<4 ; i++){
+//			for (int j = 0 ;j<4 ;j++){
+//				board_stack.state[i][j] = moveboard[nextaction][i][j];
+//			}
+//		}
+//	}
+//	board_stack.score = award[nextaction];
+//	boardstack.push(board_stack);
+//	return static_cast<MoveDirection>(nextaction);
+//	
+//	
+//	/*
+//	for (int i = 0 ; i< 4 ; i++){
+//		for (int j = 0 ; j<4 ; j++){
+//			if(board_stack.state[i][j] != board[i][j]){
+//				board_stack.score = award[nextaction];
+//				boardstack.push(board_stack);
+//				return static_cast<MoveDirection>(nextaction);
+//			}
+//		}
+//	}
+//	
+//	for (int i = 0 ; i<4 ; i++){
+//		for (int j = 0 ;j<4 ;j++){
+//			board_stack.state[i][j] = moveboard[next_tmp][i][j];
+//		}
+//	}
+//	
+//	nextaction = next_tmp;
+//	board_stack.score = award[nextaction];
+//	boardstack.push(board_stack);
+//	return static_cast<MoveDirection>(nextaction);*/
+//}
+
 
 void Fib2584Ai::Learn_Evaluation(int finalboard[4][4], int finalscore)
 {
-	Board nextboard;
+	Board_Struct nextboard;
 	float next_value = 0;
 	float now_value = 0;
 	float delta = 0;
@@ -107,14 +196,14 @@ void Fib2584Ai::Learn_Evaluation(int finalboard[4][4], int finalscore)
 
 	while(boardstack.empty() == false){
 
-		now_value = boardstack.top().weight;
+		now_value = Evaluate(boardstack.top().state);
 		if (isFinal == true){
 			delta = LEARNING_RATE * now_value * -1;
 			isFinal = false;
 		}
 		else{
-			next_value = nextboard.weight;
-			delta = LEARNING_RATE * ((float)(finalscore - boardstack.top().score) + next_value - now_value);
+			next_value = Evaluate(nextboard.state);
+			delta = LEARNING_RATE * ((float)(boardstack.top().score) + next_value - now_value);
 		}
 		for (int i = 0; i < 8; i++){
 			float new_value1 = record_rec.get_OneFeature_Score(1, boardstack.top().state, i) + delta ;
@@ -417,6 +506,61 @@ int Fib2584Ai::GetFibOrder(int Fibnumber)
 }
 
 
+BitBoard Fib2584Ai::TransformArrayBoardToBitBoard(int arrayboard[4][4])
+{
+
+	// first, transform the number of array board to order of fibonacci number
+	// example, 89 -> F_10
+	int fibonacciboard[4][4] = {};
+	for (int i = 0 ;i < 4 ; i++){
+		for(int j = 0 ; j< 4 ; j++){
+			for(int l = 0 ; l< 32 ; l++){
+				if(arrayboard[i][j] == Board::fibonacci_[l]){
+					fibonacciboard[i][j] = l;
+				}
+			}
+		}
+	}
+
+
+	/*
+	1   2  3  4
+	5   6  7  8
+	9  10 11 12
+	13 14 15 16
+	1~3 are in left board
+	5~16 are in right board
+	4 is in both boards;
+	*/
+
+	unsigned long long int left_of_bitboard = 0;
+	unsigned long long int right_of_bitboard = 0;
+	unsigned long long int base = 1;
+	for (int i = 3 ; i> 0 ; i--){
+		for (int j = 3 ; j >= 0 ; j--){
+			right_of_bitboard += base * fibonacciboard[i][j];
+			base *= 32;
+		}
+	}
+	if(arrayboard[0][3] > 15){
+		right_of_bitboard += base * ( fibonacciboard[0][3] - 16 );
+		left_of_bitboard += 1;
+	}
+	else{
+		right_of_bitboard += base * fibonacciboard[0][3];
+	}
+
+	base = 2;
+	for (int i = 2 ; i >= 0  ; i--){
+		left_of_bitboard += base * fibonacciboard[0][i];
+		base = base * 32;
+	}
+	
+	BitBoard bitboard(left_of_bitboard, right_of_bitboard);
+
+
+	return bitboard;
+}
 /**********************************
 You can implement any additional functions
 you may need.

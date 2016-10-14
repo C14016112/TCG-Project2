@@ -3,6 +3,7 @@
 #pragma once
 #include "assert.h"
 #include "Fib2584/MoveDirection.h"
+#include "Fib2584/GameBoard.h"
 #include "stdio.h"
 class MakeMoveTable
 {
