@@ -20,9 +20,9 @@ Record_Rectangle::Record_Rectangle()
 		index[1][5][i] = 15 - 4 * ( i % 2 ) - i / 2 - 4;
 		index[1][6][i] = 12 + ( i % 2) - 4 * ( i / 2) + 1;
 		index[1][7][i] = 4 - 4 * ( i % 2) + (i / 2) + 4;
-
 	}
 	iUpperBound = iUpperBound_6tile;
+	iTableSize = iUpperBound*iUpperBound*iUpperBound*iUpperBound*iUpperBound*iUpperBound;
 	Data1 = new float[iUpperBound*iUpperBound*iUpperBound*iUpperBound*iUpperBound*iUpperBound];
 	Data2 = new float[iUpperBound*iUpperBound*iUpperBound*iUpperBound*iUpperBound*iUpperBound];
 	for (int i = 0 ; i< iUpperBound*iUpperBound*iUpperBound*iUpperBound*iUpperBound*iUpperBound; i++){
@@ -76,7 +76,7 @@ float Record_Rectangle::get_OneFeature_Score(int tablenumber, int board[4][4], i
 {
 #ifdef DEBUG
 	assert(tablenumber == 1 || tablenumber == 2)
-	assert(no >= 0 && no < 8);
+		assert(no >= 0 && no < 8);
 #endif
 	int index1 = board[index[tablenumber - 1][no][0] / 4][index[tablenumber - 1][no][0] % 4];
 	int index2 = board[index[tablenumber - 1][no][1] / 4][index[tablenumber - 1][no][1] % 4];
@@ -98,7 +98,7 @@ void Record_Rectangle::set_OneFeature_Score(int tablenumber, int board[4][4], in
 	assert(tablenumber == 1 || tablenumber == 2 );
 	assert(no >= 0 && no < 8);
 #endif
-		
+
 	int index1 = board[index[tablenumber - 1][no][0] / 4][index[tablenumber - 1][no][0] % 4];
 	int index2 = board[index[tablenumber - 1][no][1] / 4][index[tablenumber - 1][no][1] % 4];
 	int index3 = board[index[tablenumber - 1][no][2] / 4][index[tablenumber - 1][no][2] % 4];
@@ -111,4 +111,56 @@ void Record_Rectangle::set_OneFeature_Score(int tablenumber, int board[4][4], in
 		Data1[position] = value;
 	else 
 		Data2[position] = value;
+}
+
+void Record_Rectangle::ReadWeightTable(){
+	char filename[30] = "WeightTable_Rec_1.bin";
+	char filename2[30] = "WeightTable_Rec_2.bin";
+
+	ifstream fin1;
+	fin1.open(filename, ios::in | ios::binary );
+	ifstream fin2;
+	fin2.open(filename2, ios::in | ios::binary );
+
+
+	if( !fin1.is_open()){
+		printf("The file '%s' was not open\n", filename);
+		return ;
+	}
+
+	if( !fin2.is_open()){
+		printf("The file '%s' was not open\n", filename2);
+		return ;
+	}
+
+	fin1.read(reinterpret_cast<char*>(Data1), (iTableSize) * sizeof(float));
+	fin2.read(reinterpret_cast<char*>(Data2), (iTableSize) * sizeof(float));
+	fin1.close();
+	fin2.close();
+}
+
+void Record_Rectangle::WriteWeightTable()
+{
+	char filename[30] = "WeightTable_Rec_1.bin";
+	char filename2[30] = "WeightTable_Rec_2.bin";
+
+	ofstream fout1;
+	fout1.open(filename, ios::out | ios::binary );
+	ofstream fout2;
+	fout2.open(filename2, ios::out | ios::binary );
+
+	if( !fout1.is_open()){
+		printf("The file '%s' was not open\n", filename);
+		return ;
+	}
+
+	if( !fout2.is_open()){
+		printf("The file '%s' was not open\n", filename2);
+		return ;
+	}
+
+	fout1.write(reinterpret_cast<char*>(Data1), (iTableSize) * sizeof(float));
+	fout2.write(reinterpret_cast<char*>(Data2), (iTableSize) * sizeof(float));
+	fout1.close();
+	fout2.close();
 }

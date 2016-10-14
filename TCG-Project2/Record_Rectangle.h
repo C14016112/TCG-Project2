@@ -3,6 +3,10 @@
 #pragma once
 #include "assert.h"
 #include "stdio.h"
+#include <iostream>
+#include <fstream>
+#include <ctime>
+#include "Fib2584/GameBoard.h"
 /*
 Class that save the data of strategy, only deal with four tiles one time
 
@@ -29,12 +33,15 @@ public:
 	float getScore(int board[4][4]);
 	float get_OneFeature_Score(int tablenumber, int board[4][4], int no);
 	void set_OneFeature_Score(int tablenumber, int board[4][4], int no, float value);
+	void ReadWeightTable();
+	void WriteWeightTable();
 private:
 	float *Data1;
 	float *Data2;
 	float *Data3;
 	int index[2][8][6];
 	int iUpperBound;
+	int iTableSize;
 };
 
 #endif

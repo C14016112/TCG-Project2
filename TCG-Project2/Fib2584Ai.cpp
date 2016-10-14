@@ -4,7 +4,7 @@
 Fib2584Ai::Fib2584Ai()
 {
 //	LEARNING_RATE = 0.0025;
-	LEARNING_RATE = 0.001;
+	LEARNING_RATE = 0.01;
 }
 
 void Fib2584Ai::initialize(int argc, char* argv[])
@@ -32,7 +32,7 @@ void Fib2584Ai::gameOver(int finalboard[4][4], int iScore)
 
 float Fib2584Ai::Evaluate(int board[4][4])
 {
-	return record_rec.getScore(board) + record_axe.getScore(board);
+		return record_rec.getScore(board) + record_axe.getScore(board) + record_straightline.getScore((board));
 
 }
 
@@ -106,7 +106,7 @@ void Fib2584Ai::Learn_Evaluation(int finalboard[4][4], int finalscore)
 	bool isFinal = true;
 
 	while(boardstack.empty() == false){
-		
+
 		now_value = boardstack.top().weight;
 		if (isFinal == true){
 			delta = LEARNING_RATE * now_value * -1;
@@ -116,7 +116,6 @@ void Fib2584Ai::Learn_Evaluation(int finalboard[4][4], int finalscore)
 			next_value = nextboard.weight;
 			delta = LEARNING_RATE * ((float)(finalscore - boardstack.top().score) + next_value - now_value);
 		}
-
 		for (int i = 0; i < 8; i++){
 			float new_value1 = record_rec.get_OneFeature_Score(1, boardstack.top().state, i) + delta ;
 			record_rec.set_OneFeature_Score(1, boardstack.top().state, i, new_value1);
@@ -126,26 +125,24 @@ void Fib2584Ai::Learn_Evaluation(int finalboard[4][4], int finalscore)
 
 			float new_value3 = record_axe.get_OneFeature_Score(1, boardstack.top().state, i) + delta ;
 			record_axe.set_OneFeature_Score(1, boardstack.top().state, i, new_value3);
-			
-			float new_value4 = record_axe.get_OneFeature_Score(2, boardstack.top().state, i) + delta ;
-			record_axe.set_OneFeature_Score(2, boardstack.top().state, i, new_value4);
-			
-			float new_value5 = record_axe.get_OneFeature_Score(3, boardstack.top().state, i) + delta ;
-			record_axe.set_OneFeature_Score(3, boardstack.top().state, i, new_value5);
 
+			float new_value = record_straightline.get_OneFeature_Score(boardstack.top().state, i) + delta;
+			record_straightline.set_OneFeature_Score(boardstack.top().state, i, new_value);
 		}
-		
+
 		nextboard = boardstack.top();
 		boardstack.pop();
 	}
 
-	
 }
 
 
 void Fib2584Ai::ReadWeightTable()
 {
-	char filename[30] = "WeightTable_Rec_1.bin";
+	record_axe.ReadWeightTable();
+	record_rec.ReadWeightTable();
+	record_straightline.ReadWeightTable();
+	/*char filename[30] = "WeightTable_Rec_1.bin";
 	char filename2[30] = "WeightTable_Rec_2.bin";
 	char filename3[30] = "WeightTable_Axe_1.bin";
 	char filename4[30] = "WeightTable_Axe_2.bin";
@@ -215,12 +212,14 @@ void Fib2584Ai::ReadWeightTable()
 	fin2.close();
 	fin3.close();
 	fin4.close();
-	fin5.close();
+	fin5.close();*/
 }
 void Fib2584Ai::WriteWeightTable()
 {
-
-	char filename[30] = "WeightTable_Rec_1.bin";
+	record_axe.WriteWeightTable();
+	record_rec.WriteWeightTable();
+	record_straightline.WriteWeightTable();
+	/*char filename[30] = "WeightTable_Rec_1.bin";
 	char filename2[30] = "WeightTable_Rec_2.bin";
 	char filename3[30] = "WeightTable_Axe_1.bin";
 	char filename4[30] = "WeightTable_Axe_2.bin";
@@ -287,7 +286,7 @@ void Fib2584Ai::WriteWeightTable()
 	fout2.close();
 	fout3.close();
 	fout4.close();
-	fout5.close();
+	fout5.close();*/
 }
 
 bool Fib2584Ai::isFull(int board[4][4])
@@ -416,6 +415,7 @@ int Fib2584Ai::GetFibOrder(int Fibnumber)
 		break;
 	}
 }
+
 
 /**********************************
 You can implement any additional functions

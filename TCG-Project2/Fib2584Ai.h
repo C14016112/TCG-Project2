@@ -7,6 +7,7 @@
 #include "MakeMoveTable.h"
 #include "Record_Rectangle.h"
 #include "Record_Axe.h"
+#include "Record_StraightLine.h"
 #include <iostream>
 #include <fstream>
 #include <stack>
@@ -44,6 +45,7 @@ private:
 	float LEARNING_RATE;
 	Record_Rectangle record_rec;
 	Record_Axe record_axe;
+	Record_StraightLine record_straightline;
 	MakeMoveTable move;
 	std::stack<Board> boardstack;
 };
