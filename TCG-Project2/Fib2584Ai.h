@@ -3,21 +3,36 @@
 
 #include <cstdlib>
 #include <ctime>
-#include "Fib2584/GameBoard.h"
-#include "MakeMoveTable.h"
-#include "Record_Rectangle.h"
-#include "Record_Axe.h"
-#include "Record_StraightLine.h"
-#include "Board.h"
-#include <iostream>
-#include <fstream>
+#include "Fib2584/MoveDirection.h"
+#include "Feature_4tile.h"
+#include "Feature_6tile.h"
+#include "Feature_TileNumber.h"
 #include <stack>
-#include "time.h"
+#include "GameBoard_Extend.h"
+#define LEARNING_RATE 0.001
+//#define __BOXATANGLEMODE__ // box at angle mode
+//#define __BOXATSIDEMODE__ // box at side mode
+//#define __BOXATMIDDLEMODE__ // box at middle mode
+#define __OUTSIDEAXEMODE__ // out side axe mode
+#define __INSIDEAXEMODE__  // in side axe mode
+//#define __OUTSIDELINEMODE__ // out side line mode
+#define __INSIDELINEMODE__ // in side line mode
+#define __OUTSIDERECMODE__ // out side rectangle mode
+//#define __INSIDERECMODE__ // in side rectangle mode
+//#define __TRIANGLEMODE__ // triangle mode
+#define __TRAININGMODE__ // training mode
+#define __COUNTTILENUMBERMODE__ // count tile number mode
+//#define __TRAININGSTAGE2MODE__ // training stage 2 mode
+//#define __WRITELOGMODE__ // write log mode
+#define __READWEIGHTTABLEMODE__ // read weight table mode
+//#define __WRITEWEIGHTTABLEMODE__ // write weight table mode
+#define NOMOVEPENALTY -1000000
 
-struct Board_Struct{
+struct Array_Board{
 	int state[4][4];
-	int score; 
+	int award;
 };
+
 class Fib2584Ai
 {
 public:
@@ -26,29 +41,54 @@ public:
 	void initialize(int argc, char* argv[]);
 	// generate one move
 	MoveDirection generateMove(int board[4][4]);
+	MoveDirection FindBestDirection(int board[4][4]);
+	float Evaluate(int board[4][4]);
 	// do some action when game over
 	void gameOver(int board[4][4], int iScore);
-	void WriteWeightTable();
-	void ReadWeightTable();
-	BitBoard TransformArrayBoardToBitBoard(int arrayboard[4][4]);
-	/**********************************
-	You can implement any additional functions
-	or define any variables you may need.
-	**********************************/
+	void Learning();
+	void WriteToWeightTable();
+	void ReadFromWeightTable();
+	void WriteLog();
 private:
-	float Evaluate(int board[4][4]);
-	MoveDirection FindBestDirection(int board[4][4]);
-	void Learn_Evaluation(int finalboard[4][4], int finalscore);
-	bool isFull(int board[4][4]);
-	bool isEmpty(int board[4][4]);
-	int GetFibOrder(int Fibnumber);
-private:
-	float LEARNING_RATE;
-	Record_Rectangle record_rec;
-	Record_Axe record_axe;
-	Record_StraightLine record_straightline;
-	MakeMoveTable move;
-	std::stack<Board_Struct> boardstack;
+#ifdef __INSIDELINEMODE__
+	Feature_4tile Line_Inside;
+#endif
+#ifdef __OUTSIDELINEMODE__
+	Feature_4tile Line_Outside;
+#endif
+#ifdef __OUTSIDEAXEMODE__
+	Feature_6tile Axe_Outside;
+#endif
+#ifdef __INSIDEAXEMODE__
+	Feature_6tile Axe_Inside;
+#endif
+#ifdef __OUTSIDERECMODE__
+	Feature_6tile Rec_Outside;
+#endif
+#ifdef __INSIDERECMODE__
+	Feature_6tile Rec_Inside;
+#endif
+#ifdef __TRIANGLEMODE__
+	Feature_6tile Triangle;
+#endif
+#ifdef __BOXATANGLEMODE__
+	Feature_4tile Box_Angle;
+#endif
+#ifdef __BOXATMIDDLEMODE__
+	Feature_4tile Box_Middle;
+#endif
+#ifdef __BOXATSIDEMODE__
+	Feature_4tile Box_Side;
+#endif
+#ifdef __COUNTTILENUMBERMODE__
+	Feature_TileNumber Tile_Num;
+#endif
+#ifdef __CONSTANTVALUEMODE__
+	float Adjust_Weight;
+#endif
+	MakeMoveTable Move;
+	std::stack<Array_Board> Array_Board_Stack;
+	bool isSameBoard(int board1[4][4], int board2[4][4]);
 };
 
 #endif

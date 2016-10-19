@@ -4,44 +4,34 @@
 #include "Fib2584/MoveDirection.h"
 #include "Fib2584/Statistic.h"
 #include "Fib2584Ai.h"
-#include "MakeMoveTable.h"
-
 using namespace std;
 
 int main(int argc, char* argv[])
 {
-
-	double start, end;
-	double start2, end2;
-	start = clock();
-
-	bool isRead = false;
-	bool isWrite = false;
-
+	int diff = 0;
+	struct tm *ptr;
+	time_t lt;
+	lt =time(NULL);
+	ptr=gmtime(&lt);
+	printf(ctime(&lt));
+	MakeMoveTable move;
 	/*if(argc == 1) {
 		cerr << "usage: play_game rounds [other arguments which your AI needs]" << endl;
 		return 1;
-	}
-	int iPlayRounds = atoi(argv[1]);*/
-	
-	int iPlayRounds = 100000;
+	}*/
+	//int iPlayRounds = atoi(argv[1]);
+	int iPlayRounds = 10000;
 	// create and initialize AI
 	Fib2584Ai ai;
 	ai.initialize(argc, argv);
-
-	if(isRead == true)
-		ai.ReadWeightTable();
-
+	
 	// initialize statistic data
 	Statistic statistic;
 	statistic.setStartTime();
 	// play each round
-
-	start2 = clock();
-
 	for(int i = 0;i < iPlayRounds;i++) {
-
-		
+		if(i > 0 && i % 1000 == 0)
+			printf(" %d \n", i);
 		GameBoard gameBoard;
 		gameBoard.initialize();
 		int iScore = 0;
@@ -49,12 +39,49 @@ int main(int argc, char* argv[])
 		while(!gameBoard.terminated()) {
 			gameBoard.getArrayBoard(arrayBoard);
 			MoveDirection moveDirection = ai.generateMove(arrayBoard);
-			
+
 			GameBoard originalBoard = gameBoard;
 			iScore += gameBoard.move(moveDirection);
 			if(originalBoard == gameBoard)
 				continue;
 			statistic.increaseOneMove();
+
+			//--------------------------------------------------
+			//test check the move table
+
+			/*int b[4][4] = {};
+			gameBoard.getArrayBoard(b);
+			int original[4][4] = {};
+			originalBoard.getArrayBoard(original);
+			for (int i = 0 ; i<4 ; i++){
+				for (int j = 0 ; j<4 ; j++){
+					original[i][j] = GetFibOrder(original[i][j]);
+					b[i][j] = GetFibOrder(b[i][j]);
+				}
+			}
+			move.Move(moveDirection, original);
+			for (int i = 0 ; i<4 ; i++){
+				for (int j = 0 ;j<4; j++){
+					int di = b[i][j] - original[i][j];
+					diff += di * di;
+				}
+			}*/
+			/*for (int k = 0 ;k<4 ; k++){
+				for (int l = 0 ; l<4 ;l++){
+					printf(" %d ", b[k][l]);
+				}
+				printf("\n");
+			}
+			printf("\n");
+			for (int k = 0 ;k<4 ; k++){
+				for (int l = 0 ; l<4 ;l++){
+					printf(" %d ", original[k][l]);
+				}
+				printf("\n");
+			}
+			printf("\n");
+			getchar();*/
+			//--------------------------------------------------
 
 			gameBoard.addRandomTile();
 		}
@@ -65,34 +92,28 @@ int main(int argc, char* argv[])
 		// update statistic data
 		statistic.updateScore(iScore);
 		statistic.updateMaxTile(gameBoard.getMaxTile());
-		if (isWrite == true && i > 0 && i % 100001 == 0)
-			ai.WriteWeightTable();
-		
-		if(i % 1000 == 0)
-			printf(" %d %d  \n", i, iScore);
 
-		if ( i > 0 && i %  10000 == 0){
+
+		if (i % 10000== 0 && i != 0) {
+			printf("----------[ Show  statistic ]----------\n");
 			statistic.setFinishTime();
-			printf("\n-----------------------------------------------\n");
 			statistic.show();
-			printf("\n-----------------------------------------------\n");
+			statistic.reset();
 			statistic.setStartTime();
+			printf("---------------------------------------\n" );
+			if (i % 50000 == 0 && i != 0) {
+				ai.WriteToWeightTable();
+			}
 		}
 	}
-	end2 = clock();
-
-	printf("\nThe finish time without reading and writing data is : %f \n", (end2 - start2 ) / CLOCKS_PER_SEC);
 	statistic.setFinishTime();
-
-	// output statistic data
 	
+	ai.WriteToWeightTable();
+	// output statistic data
 	statistic.show();
-
-	if (isWrite == true)
-		ai.WriteWeightTable();
-
-	end = clock();
-
-	printf("The finish time including reading and writing data is : %f \n", (end - start )/CLOCKS_PER_SEC );
+	//printf(" the difference is %d ", diff);
+#ifdef _DEBUG
+	system("pause");
+#endif
 	return 0;
 }
