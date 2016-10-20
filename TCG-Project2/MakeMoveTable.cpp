@@ -2,8 +2,9 @@
 
 MakeMoveTable::MakeMoveTable()
 {
-	Move_Table = new int[pow(iUpperbound, 4)*5];
-	for (int i = 0 ; i< pow(iUpperbound, 4)*5 ; i++)
+	iTableSize = iUpperbound * iUpperbound * iUpperbound * iUpperbound *5;
+	Move_Table = new int[iTableSize];
+	for (int i = 0 ; i< iTableSize ; i++)
 		Move_Table[i] = 0;
 	// move table for moving to left
 	for (int i = 0 ; i< iUpperbound ; i++){
@@ -69,7 +70,7 @@ MakeMoveTable::MakeMoveTable()
 						}
 					}
 					for (int m = 0 ; m < 5 ; m++){
-						Move_Table[5 * i + 5 * j * iUpperbound + 5 * k * pow(iUpperbound, 2) + 5 * l * pow(iUpperbound, 3) + m] = index[m];
+						Move_Table[5 * i + 5 * j * iUpperbound + 5 * k *iUpperbound * iUpperbound + 5 * l * iUpperbound*iUpperbound*iUpperbound + m] = index[m];
 					}
 				}
 			}
@@ -164,9 +165,10 @@ int MakeMoveTable::Move(int action, int CurrentBoard[4][4]){
 
 void MakeMoveTable::GetDataFromMoveTable(const int i, const int j, const int k, const int l, int index[5])
 {
-	index[0] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * pow(iUpperbound, 2) + 5 * l *pow(iUpperbound, 3) + 0];
-	index[1] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * pow(iUpperbound, 2) + 5 * l *pow(iUpperbound, 3) + 1];
-	index[2] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * pow(iUpperbound, 2) + 5 * l *pow(iUpperbound, 3) + 2];
-	index[3] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * pow(iUpperbound, 2) + 5 * l *pow(iUpperbound, 3) + 3];
-	index[4] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * pow(iUpperbound, 2) + 5 * l *pow(iUpperbound, 3) + 4];
+	index[0] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * iUpperbound * iUpperbound + 5 * l * iUpperbound * iUpperbound * iUpperbound + 0];
+	index[1] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * iUpperbound * iUpperbound + 5 * l * iUpperbound * iUpperbound * iUpperbound + 1];
+	index[2] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * iUpperbound * iUpperbound + 5 * l * iUpperbound * iUpperbound * iUpperbound + 2];
+	index[3] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * iUpperbound * iUpperbound + 5 * l * iUpperbound * iUpperbound * iUpperbound + 3];
+	index[4] = Move_Table[ 5 * i + 5 * j * iUpperbound + 5 * k * iUpperbound * iUpperbound + 5 * l * iUpperbound * iUpperbound * iUpperbound + 4];
 }
+

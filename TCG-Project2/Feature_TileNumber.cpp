@@ -3,8 +3,9 @@
 
 Feature_TileNumber::Feature_TileNumber(void)
 {
-	Data = new float[pow(12, iUpperbound - iLowerBound)];
-	for (int i = 0 ; i< pow(12, iUpperbound - iLowerBound); i++)
+	iTableSize = pow(4, iRange);
+	Data = new float[iTableSize];
+	for (int i = 0 ; i< iTableSize; i++)
 		Data[i] = 0;
 }
 
@@ -16,7 +17,7 @@ Feature_TileNumber::~Feature_TileNumber(void)
 
 float Feature_TileNumber::getWeight(int board[4][4])
 {
-	int tile_count[iUpperbound - iLowerBound] = {};
+	int tile_count[iRange] = {};
 	for (int i = 0 ; i < 4; i++){
 		for (int j = 0 ; j< 4 ;j ++){
 			if(board[i][j] > iLowerBound){
@@ -25,7 +26,7 @@ float Feature_TileNumber::getWeight(int board[4][4])
 		}
 	}
 	int position = 0;
-	for(int i = 0 ; i< iUpperbound - iLowerBound; i++){
+	for(int i = 0 ; i< iRange; i++){
 		position += pow(12, i) * tile_count[i] ;
 	}
 	return Data[position];
@@ -33,7 +34,7 @@ float Feature_TileNumber::getWeight(int board[4][4])
 
 void Feature_TileNumber::setWeight(int board[4][4], const float weight)
 {
-	int tile_count[iUpperbound - iLowerBound] = {};
+	int tile_count[iRange] = {};
 	for (int i = 0 ; i < 4; i++){
 		for (int j = 0 ; j< 4 ;j ++){
 			if(board[i][j] > iLowerBound){
@@ -42,7 +43,7 @@ void Feature_TileNumber::setWeight(int board[4][4], const float weight)
 		}
 	}
 	int position = 0;
-	for(int i = 0 ; i< iUpperbound - iLowerBound; i++){
+	for(int i = 0 ; i< iRange; i++){
 		position += pow(12, i) * tile_count[i] ;
 	}
 	Data[position] = weight;
@@ -58,7 +59,7 @@ void Feature_TileNumber::ReadFromWeightTable(char * filename)
 			return ;
 		}
 
-		fin.read(reinterpret_cast<char*>(Data), (pow(12, iUpperbound - iLowerBound)) * sizeof(float));
+		fin.read(reinterpret_cast<char*>(Data), (iTableSize) * sizeof(float));
 		fin.close();
 	}
 }
@@ -73,7 +74,7 @@ void Feature_TileNumber::WriteToWeightTable(char * filename)
 		return ;
 	}
 
-	fout.write(reinterpret_cast<char*>(Data), (pow(12, iUpperbound - iLowerBound)) * sizeof(float));
+	fout.write(reinterpret_cast<char*>(Data), (iTableSize) * sizeof(float));
 	fout.close();
 }
 

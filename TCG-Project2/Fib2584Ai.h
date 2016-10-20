@@ -7,9 +7,13 @@
 #include "Feature_4tile.h"
 #include "Feature_6tile.h"
 #include "Feature_TileNumber.h"
+#include "Feature_MergeTile.h"
+#include "Feature_MergeCount.h"
 #include <stack>
 #include "GameBoard_Extend.h"
-#define LEARNING_RATE 0.001
+#include <map>
+#define LEARNING_RATE 0.01
+#define PlayRound 300000
 //#define __BOXATANGLEMODE__ // box at angle mode
 //#define __BOXATSIDEMODE__ // box at side mode
 //#define __BOXATMIDDLEMODE__ // box at middle mode
@@ -22,10 +26,12 @@
 //#define __TRIANGLEMODE__ // triangle mode
 #define __TRAININGMODE__ // training mode
 #define __COUNTTILENUMBERMODE__ // count tile number mode
+//#define __MERGETILEMODE__ // merge tile mode
+//#define __MERGECOUNTMODE__ // total number of mergeable count mode
 //#define __TRAININGSTAGE2MODE__ // training stage 2 mode
 //#define __WRITELOGMODE__ // write log mode
-#define __READWEIGHTTABLEMODE__ // read weight table mode
-//#define __WRITEWEIGHTTABLEMODE__ // write weight table mode
+//#define __READWEIGHTTABLEMODE__ // read weight table mode
+#define __WRITEWEIGHTTABLEMODE__ // write weight table mode
 #define NOMOVEPENALTY -1000000
 
 struct Array_Board{
@@ -49,6 +55,7 @@ public:
 	void WriteToWeightTable();
 	void ReadFromWeightTable();
 	void WriteLog();
+	int GetMaxTile(int board[4][4]);
 private:
 #ifdef __INSIDELINEMODE__
 	Feature_4tile Line_Inside;
@@ -83,12 +90,21 @@ private:
 #ifdef __COUNTTILENUMBERMODE__
 	Feature_TileNumber Tile_Num;
 #endif
+#ifdef __MERGETILEMODE__
+	Feature_MergeTile MergeTile_Row1;
+	Feature_MergeTile MergeTile_Row2;
+#endif
+#ifdef __MERGECOUNTMODE__
+	Feature_MergeCount Merge_Count;
+#endif
 #ifdef __CONSTANTVALUEMODE__
 	float Adjust_Weight;
 #endif
 	MakeMoveTable Move;
 	std::stack<Array_Board> Array_Board_Stack;
 	bool isSameBoard(int board1[4][4], int board2[4][4]);
+	std::map<int, int> mapFibOrder;  
+	
 };
 
 #endif

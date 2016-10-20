@@ -60,10 +60,51 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 #ifdef __COUNTTILENUMBERMODE__
 	printf("Feature: Tile Number is used\n");
 #endif
+#ifdef __MERGETILEMODE__
+	int row1[4] = {0, 1, 2, 3};
+	int row2[4] = {4, 5, 6, 7};
+	MergeTile_Row1.SetParameter(row1);
+	MergeTile_Row2.SetParameter(row2);
+ 	printf("Feature: MergeTile is used\n");
+#endif
+#ifdef __MERGECOUNTMODE__
+	printf("Feature: MergeCount is used\n");
+#endif
 #ifdef __CONSTANTVALUEMODE__
 	Adjust_Weight = 0;
 #endif
-
+	mapFibOrder[0] = 0;
+	mapFibOrder[1] = 1;
+	mapFibOrder[2] = 2;
+	mapFibOrder[3] = 3;
+	mapFibOrder[5] = 4;
+	mapFibOrder[8] = 5;
+	mapFibOrder[13] = 6;
+	mapFibOrder[21] = 7;
+	mapFibOrder[34] = 8;
+	mapFibOrder[55] = 9;
+	mapFibOrder[89] = 10;
+	mapFibOrder[144] = 11;
+	mapFibOrder[233] = 12;
+	mapFibOrder[377] = 13;
+	mapFibOrder[610] = 14;
+	mapFibOrder[987] = 15;
+	mapFibOrder[1597] = 16;
+	mapFibOrder[2584] = 17;
+	mapFibOrder[4181] = 18;
+	mapFibOrder[6765] = 19;
+	mapFibOrder[10946] = 20;
+	mapFibOrder[17711] = 21;
+	mapFibOrder[28657] = 22;
+	mapFibOrder[46368] = 23;
+	mapFibOrder[75025] = 24;
+	mapFibOrder[121393] = 25;
+	mapFibOrder[196418] = 26;
+	mapFibOrder[317811] = 27;
+	mapFibOrder[514229] = 28;
+	mapFibOrder[832040] = 29;
+	mapFibOrder[1346269] = 30;
+	mapFibOrder[2178309] = 31;
 	ReadFromWeightTable();
 	return;
 }
@@ -79,7 +120,7 @@ MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 
 	for (int j = 0 ; j<4 ;j ++){
 		for (int k = 0 ;k<4 ;k++){
-			board[j][k] = GetFibOrder(board[j][k]);
+			board[j][k] = mapFibOrder[(board[j][k])];
 		}
 	}
 	Array_Board b_struct;
@@ -148,6 +189,14 @@ float Fib2584Ai::Evaluate(int board[4][4])
 #endif
 #ifdef __COUNTTILENUMBERMODE__
 	value += Tile_Num.getWeight(board);
+#endif
+#ifdef __MERGETILEMODE__
+	if(GetMaxTile(board) > iLowerBound){
+		value += MergeTile_Row1.getWeight(board) + MergeTile_Row2.getWeight(board);
+	}
+#endif
+#ifdef __MERGECOUNTMODE__
+	value += Merge_Count.getWeight(board);
 #endif
 #ifdef __CONSTANTVALUEMODE__
 	value += Adjust_Weight;
@@ -218,6 +267,20 @@ void Fib2584Ai::Learning()
 		float tile_num_newvalue = Tile_Num.getWeight(Array_Board_Stack.top().state) + delta;
 		Tile_Num.setWeight(Array_Board_Stack.top().state, tile_num_newvalue);
 #endif
+#ifdef __MERGETILEMODE__
+		if(GetMaxTile(Array_Board_Stack.top().state )> iLowerBound){
+			for (int i = 0 ;i<4 ; i++){
+				float merge_tile_newvalue = MergeTile_Row1.getWeight(Array_Board_Stack.top().state,i) + delta;
+				MergeTile_Row1.setWeight(Array_Board_Stack.top().state, i, merge_tile_newvalue);
+				merge_tile_newvalue = MergeTile_Row2.getWeight(Array_Board_Stack.top().state, i) + delta;
+				MergeTile_Row2.setWeight(Array_Board_Stack.top().state, i, merge_tile_newvalue);
+			}
+		}
+#endif
+#ifdef __MERGECOUNTMODE__
+		float merge_count_newvalue = Merge_Count.getWeight(Array_Board_Stack.top().state) + delta;
+		Merge_Count.setWeight(Array_Board_Stack.top().state, merge_count_newvalue);
+#endif
 #ifdef __CONSTANTVALUEMODE__
 		Adjust_Weight += delta;
 #endif
@@ -234,37 +297,44 @@ void Fib2584Ai::WriteToWeightTable()
 #ifdef __WRITEWEIGHTTABLEMODE__
 	printf("Write WeightTable Mode is opened\n");
 #ifdef __INSIDELINEMODE__
-	Line_Inside.WriteWeightTable("Line_Inside_WeightTable2");
+	Line_Inside.WriteToWeightTable("Line_Inside_WeightTable");
 #endif
 #ifdef __OUTSIDELINEMODE__
-	Line_Outside.WriteWeightTable("Line_Outside_WeightTable2");
+	Line_Outside.WriteToWeightTable("Line_Outside_WeightTable");
 #endif
 #ifdef __OUTSIDEAXEMODE__
-	Axe_Outside.WriteWeightTable("Axe_Outside_WeightTable");
+	Axe_Outside.WriteToWeightTable("Axe_Outside_WeightTable");
 #endif
 #ifdef __INSIDEAXEMODE__
-	Axe_Inside.WriteWeightTable("Axe_Inside_WeightTable");
+	Axe_Inside.WriteToWeightTable("Axe_Inside_WeightTable");
 #endif
 #ifdef __OUTSIDERECMODE__
-	Rec_Outside.WriteWeightTable("Rec_Outside_WeightTable");
+	Rec_Outside.WriteToWeightTable("Rec_Outside_WeightTable");
 #endif
 #ifdef __INSIDERECMODE__
-	Rec_Inside.WriteWeightTable("Rec_Inside_WeightTable");
+	Rec_Inside.WriteToWeightTable("Rec_Inside_WeightTable");
 #endif
 #ifdef __TRIANGLEMODE__
-	Triangle.WriteWeightTable("Triangle_WeightTable");
+	Triangle.WriteToWeightTable("Triangle_WeightTable");
 #endif
 #ifdef __BOXATANGLEMODE__
-	Box_Angle.WriteWeightTable("Box_Angle_WeightTable2");
+	Box_Angle.WriteToWeightTable("Box_Angle_WeightTable");
 #endif
 #ifdef __BOXATMIDDLEMODE__
-	Box_Middle.WriteWeightTable("Box_Middle_WeightTable2");
+	Box_Middle.WriteToWeightTable("Box_Middle_WeightTable");
 #endif
 #ifdef __BOXATSIDEMODE__
-	Box_Side.WriteWeightTable("Box_Side_WeightTable2");
+	Box_Side.WriteToWeightTable("Box_Side_WeightTable");
 #endif
 #ifdef __COUNTTILENUMBERMODE__
 	Tile_Num.WriteToWeightTable("Tile_Num_WeightTable");
+#endif
+#ifdef __MERGETILEMODE__
+	MergeTile_Row1.WriteToWeightTable("Merge_Tile_WeightTable1");
+	MergeTile_Row2.WriteToWeightTable("Merge_Tile_WeightTable2");
+#endif
+#ifdef __MERGECOUNTMODE__
+	Merge_Count.WriteToWeightTable("Merge_Count_WeightTable");
 #endif
 #endif
 }
@@ -274,37 +344,44 @@ void Fib2584Ai::ReadFromWeightTable()
 #ifdef __READWEIGHTTABLEMODE__
 	printf("Read WeightTable Mode is opened\n");
 #ifdef __INSIDELINEMODE__
-	Line_Inside.ReadWeightTable("Line_Inside_WeightTable");
+	Line_Inside.ReadFromWeightTable("Line_Inside_WeightTable");
 #endif
 #ifdef __OUTSIDELINEMODE__
-	Line_Outside.ReadWeightTable("Line_Outside_WeightTable");
+	Line_Outside.ReadFromWeightTable("Line_Outside_WeightTable");
 #endif
 #ifdef __OUTSIDEAXEMODE__
-	Axe_Outside.ReadWeightTable("Axe_Outside_WeightTable");
+	Axe_Outside.ReadFromWeightTable("Axe_Outside_WeightTable");
 #endif
 #ifdef __INSIDEAXEMODE__
-	Axe_Inside.ReadWeightTable("Axe_Inside_WeightTable");
+	Axe_Inside.ReadFromWeightTable("Axe_Inside_WeightTable");
 #endif
 #ifdef __OUTSIDERECMODE__
-	Rec_Outside.ReadWeightTable("Rec_Outside_WeightTable");
+	Rec_Outside.ReadFromWeightTable("Rec_Outside_WeightTable");
 #endif
 #ifdef __INSIDERECMODE__
-	Rec_Inside.ReadWeightTable("Rec_Inside_WeightTable");
+	Rec_Inside.ReadFromWeightTable("Rec_Inside_WeightTable");
 #endif
 #ifdef __TRIANGLEMODE__
-	Triangle.ReadWeightTable("Triangle_WeightTable");
+	Triangle.ReadFromWeightTable("Triangle_WeightTable");
 #endif
 #ifdef __BOXATANGLEMODE__
-	Box_Angle.ReadWeightTable("Box_Angle_WeightTable");
+	Box_Angle.ReadFromWeightTable("Box_Angle_WeightTable");
 #endif
 #ifdef __BOXATMIDDLEMODE__
-	Box_Middle.ReadWeightTable("Box_Middle_WeightTable");
+	Box_Middle.ReadFromWeightTable("Box_Middle_WeightTable");
 #endif
 #ifdef __BOXATSIDEMODE__
-	Box_Side.ReadWeightTable("Box_Side_WeightTable");
+	Box_Side.ReadFromWeightTable("Box_Side_WeightTable");
 #endif
 #ifdef __COUNTTILENUMBERMODE__
 	Tile_Num.ReadFromWeightTable("Tile_Num_WeightTable");
+#endif
+#ifdef __MERGETILEMODE__
+	MergeTile_Row1.ReadFromWeightTable("Merge_Tile_WeightTable1");
+	MergeTile_Row2.ReadFromWeightTable("Merge_Tile_WeightTable2");
+#endif
+#ifdef __MERGECOUNTMODE__
+	Merge_Count.ReadFromWeightTable("Merge_Count_WeightTable");
 #endif
 #endif
 }
@@ -325,6 +402,18 @@ bool Fib2584Ai::isSameBoard( int board1[4][4], int board2[4][4])
 		}
 	}
 	return true;
+}
+
+int Fib2584Ai::GetMaxTile(int board[4][4])
+{
+	int max = 0;
+	for (int i = 0 ;i<4 ; i++){
+		for (int j = 0 ;j<4 ; j++){
+			if(board[i][j] > max)
+				max = board[i][j];
+		}
+	}
+	return max;
 }
 /**********************************
 You can implement any additional functions

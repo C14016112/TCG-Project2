@@ -6,7 +6,7 @@
 #include "Fib2584/MoveTable.h"
 #include "Fib2584/BitBoard.h"
 #include "Fib2584/Random.h"
-
+#include <map>
 using namespace std;
 
 class GameBoard_Extend
@@ -40,6 +40,7 @@ private:
 	int getFibonacci(int index);
 private:
 	BitBoard board_;
+	std::map<int, int> mapFibOrder;  
 };
 
 #endif

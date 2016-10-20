@@ -4,7 +4,7 @@
 #include "Fib2584/MoveDirection.h"
 #include "Fib2584/Statistic.h"
 #include "Fib2584Ai.h"
-using namespace std;
+#include <map>
 
 int main(int argc, char* argv[])
 {
@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}*/
 	//int iPlayRounds = atoi(argv[1]);
-	int iPlayRounds = 10000;
+	int iPlayRounds = PlayRound;
 	// create and initialize AI
 	Fib2584Ai ai;
 	ai.initialize(argc, argv);
@@ -45,44 +45,6 @@ int main(int argc, char* argv[])
 			if(originalBoard == gameBoard)
 				continue;
 			statistic.increaseOneMove();
-
-			//--------------------------------------------------
-			//test check the move table
-
-			/*int b[4][4] = {};
-			gameBoard.getArrayBoard(b);
-			int original[4][4] = {};
-			originalBoard.getArrayBoard(original);
-			for (int i = 0 ; i<4 ; i++){
-				for (int j = 0 ; j<4 ; j++){
-					original[i][j] = GetFibOrder(original[i][j]);
-					b[i][j] = GetFibOrder(b[i][j]);
-				}
-			}
-			move.Move(moveDirection, original);
-			for (int i = 0 ; i<4 ; i++){
-				for (int j = 0 ;j<4; j++){
-					int di = b[i][j] - original[i][j];
-					diff += di * di;
-				}
-			}*/
-			/*for (int k = 0 ;k<4 ; k++){
-				for (int l = 0 ; l<4 ;l++){
-					printf(" %d ", b[k][l]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-			for (int k = 0 ;k<4 ; k++){
-				for (int l = 0 ; l<4 ;l++){
-					printf(" %d ", original[k][l]);
-				}
-				printf("\n");
-			}
-			printf("\n");
-			getchar();*/
-			//--------------------------------------------------
-
 			gameBoard.addRandomTile();
 		}
 		gameBoard.getArrayBoard(arrayBoard);
@@ -97,6 +59,7 @@ int main(int argc, char* argv[])
 		if (i % 10000== 0 && i != 0) {
 			printf("----------[ Show  statistic ]----------\n");
 			statistic.setFinishTime();
+			printf(" Game Count: %d \n", i);
 			statistic.show();
 			statistic.reset();
 			statistic.setStartTime();

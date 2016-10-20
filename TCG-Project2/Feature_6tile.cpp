@@ -2,6 +2,7 @@
 
 Feature_6tile::Feature_6tile()
 {
+	iTableSize = iUpperbound*iUpperbound*iUpperbound*iUpperbound*iUpperbound*iUpperbound;
 }
 
 void Feature_6tile::SetParameter(int input_index[6])
@@ -18,8 +19,8 @@ void Feature_6tile::SetParameter(int input_index[6])
 			}
 		}
 	}
-	Data = new float[pow(iUpperbound, 6)];
-	for (int i = 0 ; i< pow(iUpperbound, 6); i++){
+	Data = new float[iTableSize];
+	for (int i = 0 ; i< iTableSize; i++){
 		Data[i] = 0;
 	}
 }
@@ -29,12 +30,11 @@ Feature_6tile::~Feature_6tile()
 	delete Data;
 }
 
-float Feature_6tile::getWeight(int board[4][4]){
-
-	float value = 0;
-	for (int i = 0 ; i< 8 ; i++){
-		value = value + getWeight(board, i);
-	}
+float Feature_6tile::getWeight(int board[4][4])
+{
+	float value = getWeight(board, 0) + getWeight(board, 1) + getWeight(board, 2)
+		+ getWeight(board, 3) + getWeight(board, 4) + getWeight(board, 5) 
+		+ getWeight(board, 6) + getWeight(board, 7);
 	return value;
 }
 
@@ -43,11 +43,13 @@ float Feature_6tile::getWeight(int board[4][4], int no)
 #ifdef _DEBUG
 	assert(no >= 0 && no < 8);
 #endif
-	int position = 0;
-	for (int i = 0 ; i< 6 ;i++){
-		position += pow(iUpperbound, i) * board[index[no][i] / 4][index[no][i] % 4];
-	}
-	return Data[position];
+	int position = board[index[no][0] / 4][index[no][0] % 4]
+	+ iUpperbound * board[index[no][1] / 4][index[no][1] % 4]
+	+ iUpperbound * iUpperbound * board[index[no][2] / 4][index[no][2] % 4]
+	+ iUpperbound * iUpperbound * iUpperbound * board[index[no][3] / 4][index[no][3] % 4]
+	+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][4] / 4][index[no][4] % 4]
+	+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][5] / 4][index[no][5] % 4];
+	return  Data[position];
 }
 
 void Feature_6tile::setWeight(int board[4][4], int no, float weight)
@@ -56,15 +58,17 @@ void Feature_6tile::setWeight(int board[4][4], int no, float weight)
 	assert(no >= 0 && no < 8);
 #endif
 	
-	int position = 0;
-	for (int i = 0 ; i< 6 ;i++){
-		position += pow(iUpperbound, i) * board[index[no][i] / 4][index[no][i] % 4];
-	}
+	int position = board[index[no][0] / 4][index[no][0] % 4]
+	+ iUpperbound * board[index[no][1] / 4][index[no][1] % 4]
+	+ iUpperbound * iUpperbound * board[index[no][2] / 4][index[no][2] % 4]
+	+ iUpperbound * iUpperbound * iUpperbound * board[index[no][3] / 4][index[no][3] % 4]
+	+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][4] / 4][index[no][4] % 4]
+	+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][5] / 4][index[no][5] % 4];
 	Data[position] = weight;
 }
 
 
-void Feature_6tile::ReadWeightTable(const char *filename){
+void Feature_6tile::ReadFromWeightTable(const char *filename){
 
 	ifstream fin;
 	fin.open(filename, ios::in | ios::binary );
@@ -74,12 +78,12 @@ void Feature_6tile::ReadWeightTable(const char *filename){
 		return ;
 	}
 
-	fin.read(reinterpret_cast<char*>(Data), (pow(iUpperbound, 6)) * sizeof(float));
+	fin.read(reinterpret_cast<char*>(Data), (iTableSize) * sizeof(float));
 	fin.close();
 }
 
 
-void Feature_6tile::WriteWeightTable(const char *filename)
+void Feature_6tile::WriteToWeightTable(const char *filename)
 {
 	ofstream fout;
 	fout.open(filename, ios::out | ios::binary );
@@ -89,7 +93,7 @@ void Feature_6tile::WriteWeightTable(const char *filename)
 		return ;
 	}
 
-	fout.write(reinterpret_cast<char*>(Data), (pow(iUpperbound, 6)) * sizeof(float));
+	fout.write(reinterpret_cast<char*>(Data), (iTableSize) * sizeof(float));
 	fout.close();
 }
 

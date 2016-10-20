@@ -21,7 +21,6 @@ void Statistic::reset()
 
 void Statistic::show()
 {
-	cout << "Game Count: " << iGameCount_ << endl;
 	cout << "Win rate(610)  : " << iWinGame_610 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Win rate(2584) : " << iWinGame_2584 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Win rate(6765) : " << iWinGame_6765 / (double)iGameCount_ * 100.0 << "%\n";

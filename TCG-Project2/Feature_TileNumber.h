@@ -5,7 +5,7 @@
 #include"GameBoard_Extend.h"
 #include <iostream>
 #include <fstream>
-#define iLowerBound 15
+#define iRange (iUpperbound - iLowerBound)
 #pragma once
 class Feature_TileNumber
 {
@@ -19,6 +19,6 @@ public:
 	int pow(int x, int y);
 private:
 	float *Data;
+	int iTableSize;
 };
-
 #endif

@@ -10,6 +10,38 @@ board_(0)
 
 void GameBoard_Extend::initialize()
 {
+	mapFibOrder[0] = 0;
+	mapFibOrder[1] = 1;
+	mapFibOrder[2] = 2;
+	mapFibOrder[3] = 3;
+	mapFibOrder[5] = 4;
+	mapFibOrder[8] = 5;
+	mapFibOrder[13] = 6;
+	mapFibOrder[21] = 7;
+	mapFibOrder[34] = 8;
+	mapFibOrder[55] = 9;
+	mapFibOrder[89] = 10;
+	mapFibOrder[144] = 11;
+	mapFibOrder[233] = 12;
+	mapFibOrder[377] = 13;
+	mapFibOrder[610] = 14;
+	mapFibOrder[987] = 15;
+	mapFibOrder[1597] = 16;
+	mapFibOrder[2584] = 17;
+	mapFibOrder[4181] = 18;
+	mapFibOrder[6765] = 19;
+	mapFibOrder[10946] = 20;
+	mapFibOrder[17711] = 21;
+	mapFibOrder[28657] = 22;
+	mapFibOrder[46368] = 23;
+	mapFibOrder[75025] = 24;
+	mapFibOrder[121393] = 25;
+	mapFibOrder[196418] = 26;
+	mapFibOrder[317811] = 27;
+	mapFibOrder[514229] = 28;
+	mapFibOrder[832040] = 29;
+	mapFibOrder[1346269] = 30;
+	mapFibOrder[2178309] = 31;
 	board_ = 0;
 	addRandomTile();
 	addRandomTile();

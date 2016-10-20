@@ -29,14 +29,14 @@ public:
 	float getWeight(int board[4][4]);
 	float getWeight(int board[4][4], int no);
 	void setWeight(int board[4][4], int no, float value);
-	void ReadWeightTable(const char *filename);
-	void WriteWeightTable(const char *filename);
+	void ReadFromWeightTable(const char *filename);
+	void WriteToWeightTable(const char *filename);
 	int UpsideDown(const int index);
 	int Rotate(const int index);
 private:
 	float *Data;
 	int index[8][6];
-	char *filename;
+	int iTableSize;
 };
 
 #endif

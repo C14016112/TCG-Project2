@@ -20,6 +20,7 @@ private:
 	int MoveDown(int CurrentBoard[4][4]);
 	int MoveRight(int CurrentBoard[4][4]);
 	int *Move_Table;
+	int iTableSize;
 	
 };
 
