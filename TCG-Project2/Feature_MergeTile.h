@@ -28,6 +28,8 @@ public:
 	float getWeight(int board[4][4]);
 	float getWeight(int board[4][4], int no);
 	void setWeight(int board[4][4], int no, float value);
+	void Update(int board[4][4], const float error);
+	int GetMergeNumber(int board[4][4], int no);
 	void ReadFromWeightTable(const char * filename);
 	void WriteToWeightTable(const char * filename);
 	int UpsideDown(const int index);
@@ -35,6 +37,8 @@ public:
 	int pow(int x, int y);
 private:
 	float *Data;
+	float *numerator;
+	float *denumorator;
 	int index[4][4];
 	int iTableSize;
 };

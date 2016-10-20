@@ -5,8 +5,13 @@ Feature_TileNumber::Feature_TileNumber(void)
 {
 	iTableSize = pow(4, iRange);
 	Data = new float[iTableSize];
-	for (int i = 0 ; i< iTableSize; i++)
+	numerator = new float[iTableSize];
+	denumorator = new float[iTableSize];
+	for (int i = 0 ; i< iTableSize; i++){
 		Data[i] = 0;
+		numerator[i] = 0.00000001;
+		denumorator[i] = 0.00000001;
+	}
 }
 
 
@@ -47,6 +52,25 @@ void Feature_TileNumber::setWeight(int board[4][4], const float weight)
 		position += pow(12, i) * tile_count[i] ;
 	}
 	Data[position] = weight;
+}
+
+void Feature_TileNumber::Update(int board[4][4], const float error)
+{
+	int tile_count[iRange] = {};
+	for (int i = 0 ; i < 4; i++){
+		for (int j = 0 ; j< 4 ;j ++){
+			if(board[i][j] > iLowerBound){
+				tile_count[board[i][j] - iLowerBound]++;
+			}
+		}
+	}
+	int position = 0;
+	for(int i = 0 ; i< iRange; i++){
+		position += pow(12, i) * tile_count[i] ;
+	}
+	denumorator[position] += abs(error);
+	numerator[position] = abs(numerator[position] + error);
+	Data[position] += error * numerator[position] / denumorator[position];
 }
 void Feature_TileNumber::ReadFromWeightTable(char * filename)
 {

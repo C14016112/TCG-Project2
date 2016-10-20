@@ -44,24 +44,7 @@ float Feature_MergeTile::getWeight(int board[4][4], int no)
 #ifdef _DEBUG
 	assert(no >= 0 && no < 4);
 #endif
-	int position = 0;
-	int tile_count[iRange] = {};
-	//int *tile_count = new int[iRange];
-	for (int i = 0 ; i< iRange; i++)
-		tile_count[i] = 0;
-	for (int i = 0 ; i< 3 ; i++){
-		if( board[index[no][i] / 4][index[no][i] % 4] == board[index[no][i+1] / 4][index[no][1+1] % 4] + 1 || 
-			board[index[no][i] / 4][index[no][i] % 4] == board[index[no][i+1] / 4][index[no][i+1] % 4] - 1)
-		{
-			//tile_count[ board[index[no][i] / 4][index[no][i] % 4] ]++;
-			//tile_count[ board[index[no][i+1] / 4][index[no][i+1] % 4] ]++;
-		}
-	}
-	for(int i = 0 ;i<iRange ;i++){
-		position += pow(3, i) * tile_count[i];
-	}
-	//delete tile_count;
-	return  Data[position];
+	return  Data[GetMergeNumber(board, no)];
 }
 
 void Feature_MergeTile::setWeight(int board[4][4], int no, float weight)
@@ -69,10 +52,18 @@ void Feature_MergeTile::setWeight(int board[4][4], int no, float weight)
 #ifdef _DEBUG
 	assert(no >= 0 && no < 4);
 #endif
+	Data[GetMergeNumber(board, no)] = weight;
+}
+
+void Feature_MergeTile::Update(int board[4][4], const float error)
+{
+	for (int i = 0 ;i<4 ; i++)
+		Data[GetMergeNumber(board,i)] += error;
+}
+int Feature_MergeTile::GetMergeNumber(int board[4][4], int no)
+{
 	int position = 0;
 	int tile_count[iRange] = {};
-	for (int i = 0 ; i< iRange; i++)
-		tile_count[i] = 0;
 	for (int i = 0 ; i< 3 ; i++){
 		if( board[index[no][i] / 4][index[no][i] % 4] == board[index[no][i+1] / 4][index[no][1+1] % 4] + 1 || 
 			board[index[no][i] / 4][index[no][i] % 4] == board[index[no][i+1] / 4][index[no][i+1] % 4] - 1)
@@ -86,10 +77,8 @@ void Feature_MergeTile::setWeight(int board[4][4], int no, float weight)
 	for(int i = 0 ;i<iRange ;i++){
 		position += pow(3, i) * tile_count[i];
 	}
-	Data[position] = weight;
+	return position;
 }
-
-
 void Feature_MergeTile::ReadFromWeightTable(const char * filename){
 
 	ifstream fin;

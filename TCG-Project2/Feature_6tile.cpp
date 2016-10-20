@@ -20,8 +20,12 @@ void Feature_6tile::SetParameter(int input_index[6])
 		}
 	}
 	Data = new float[iTableSize];
+	numerator = new float[iTableSize];
+	denumorator = new float[iTableSize];
 	for (int i = 0 ; i< iTableSize; i++){
 		Data[i] = 0;
+		numerator[i] = 0.00000001;
+		denumorator[i] = 0.00000001;
 	}
 }
 
@@ -67,7 +71,20 @@ void Feature_6tile::setWeight(int board[4][4], int no, float weight)
 	Data[position] = weight;
 }
 
-
+void Feature_6tile::Update(int board[4][4], const float error)
+{
+	for (int no = 0 ; no < 8 ; no++){
+		int position = board[index[no][0] / 4][index[no][0] % 4]
+		+ iUpperbound * board[index[no][1] / 4][index[no][1] % 4]
+		+ iUpperbound * iUpperbound * board[index[no][2] / 4][index[no][2] % 4]
+		+ iUpperbound * iUpperbound * iUpperbound * board[index[no][3] / 4][index[no][3] % 4]
+		+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][4] / 4][index[no][4] % 4]
+		+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][5] / 4][index[no][5] % 4];
+		denumorator[position] += abs(error);
+		numerator[position] = abs(numerator[position] + error);
+		Data[position] += error * numerator[position] / denumorator[position];
+	}
+}
 void Feature_6tile::ReadFromWeightTable(const char *filename){
 
 	ifstream fin;

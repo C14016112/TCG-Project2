@@ -43,17 +43,17 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 	printf("Feature: Triangle is used\n");
 #endif
 #ifdef __BOXATANGLEMODE__
-	int box_angle_index[6] = {0, 1, 4, 5};
+	int box_angle_index[4] = {0, 1, 4, 5};
 	Box_Angle.SetParameter(box_angle_index);
 	printf("Feature: Box_Angle is used\n");
 #endif
 #ifdef __BOXATMIDDLEMODE__
-	int box_middle_index[6] = {5, 6, 9, 10};
+	int box_middle_index[4] = {5, 6, 9, 10};
 	Box_Middle.SetParameter(box_middle_index);
 	printf("Feature: Box_Middle is used\n");
 #endif
 #ifdef __BOXATSIDEMODE__
-	int box_side_index[6] = {1, 2, 5, 6};
+	int box_side_index[4] = {1, 2, 5, 6};
 	Box_Side.SetParameter(box_side_index);
 	printf("Feature: Box_Side is used\n");
 #endif
@@ -68,6 +68,10 @@ void Fib2584Ai::initialize(int argc, char* argv[])
  	printf("Feature: MergeTile is used\n");
 #endif
 #ifdef __MERGECOUNTMODE__
+	int mergecount_row1[4] = {0, 1, 2, 3};
+	int mergecount_row2[4] = {4, 5, 6, 7};
+	MergeCount_Row1.SetParameter(mergecount_row1);
+	MergeCount_Row2.SetParameter(mergecount_row2);
 	printf("Feature: MergeCount is used\n");
 #endif
 #ifdef __CONSTANTVALUEMODE__
@@ -196,7 +200,7 @@ float Fib2584Ai::Evaluate(int board[4][4])
 	}
 #endif
 #ifdef __MERGECOUNTMODE__
-	value += Merge_Count.getWeight(board);
+	value += MergeCount_Row1.getWeight(board) + MergeCount_Row2.getWeight(board);
 #endif
 #ifdef __CONSTANTVALUEMODE__
 	value += Adjust_Weight;
@@ -221,66 +225,50 @@ void Fib2584Ai::Learning()
 	while(Array_Board_Stack.empty() == false){
 		delta = LEARNING_RATE * ( nextaward + nextvalue - Evaluate(Array_Board_Stack.top().state));
 
-		for(int i = 0 ; i < 8; i++){
 #ifdef __INSIDELINEMODE__
-			float line_inside_newvalue = Line_Inside.getWeight(Array_Board_Stack.top().state, i) + delta;
-			Line_Inside.setWeight(Array_Board_Stack.top().state, i, line_inside_newvalue);
-#endif
-#ifdef __OUTSIDELINEMODE__
-			float line_outside_newvalue = Line_Outside.getWeight(Array_Board_Stack.top().state, i) + delta ;
-			Line_Outside.setWeight(Array_Board_Stack.top().state, i, line_outside_newvalue);
+			Line_Inside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __OUTSIDEAXEMODE__
-			float axe_outside_newvalue = Axe_Outside.getWeight(Array_Board_Stack.top().state, i) + delta;
-			Axe_Outside.setWeight(Array_Board_Stack.top().state, i, axe_outside_newvalue);
+			Axe_Outside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __INSIDEAXEMODE__
-			float axe_inside_newvalue = Axe_Inside.getWeight(Array_Board_Stack.top().state, i) + delta;
-			Axe_Inside.setWeight(Array_Board_Stack.top().state, i, axe_inside_newvalue);
+			Axe_Inside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __OUTSIDERECMODE__
-			float rec_outside_newvalue = Rec_Outside.getWeight(Array_Board_Stack.top().state, i) + delta;
-			Rec_Outside.setWeight(Array_Board_Stack.top().state, i, rec_outside_newvalue);
+			Rec_Outside.Update(Array_Board_Stack.top().state, delta);
+#endif
+#ifdef __OUTSIDELINEMODE__
+			Line_Outside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __INSIDERECMODE__
-			float rec_inside_newvalue = Rec_Inside.getWeight(Array_Board_Stack.top().state, i) + delta;
-			Rec_Inside.setWeight(Array_Board_Stack.top().state, i, rec_inside_newvalue);
+			Rec_Inside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __TRIANGLEMODE__
-			float triangle_newvalue = Triangle.getWeight(Array_Board_Stack.top().state, i) + delta;
-			Triangle.setWeight(Array_Board_Stack.top().state, i, triangle_newvalue);
+			Triangle.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __BOXATANGLEMODE__
-			float box_angle_newvalue = Box_Angle.getWeight(Array_Board_Stack.top().state, i) + delta;
-			Box_Angle.setWeight(Array_Board_Stack.top().state, i, box_angle_newvalue);
+			Box_Angle.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __BOXATMIDDLEMODE__
-			float box_middle_newvalue = Box_Middle.getWeight(Array_Board_Stack.top().state, i) + delta;
-			Box_Middle.setWeight(Array_Board_Stack.top().state, i, box_middle_newvalue);
+			Box_Middle.setWeight(Array_Board_Stack.top().state, i, box_angle_newvalue);
 #endif
 #ifdef __BOXATSIDEMODE__
-			float box_side_newvalue = Box_Side.getWeight(Array_Board_Stack.top().state, i) + delta;
-			Box_Side.setWeight(Array_Board_Stack.top().state, i, box_side_newvalue);
+			Box_Side.setWeight(Array_Board_Stack.top().state, i, box_middle_newvalue);
 #endif
-		}
+#ifdef __MERGECOUNTMODE__
+			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);
+			MergeCount_Row2.Update(Array_Board_Stack.top().state, delta);
+#endif
 #ifdef __COUNTTILENUMBERMODE__
-		float tile_num_newvalue = Tile_Num.getWeight(Array_Board_Stack.top().state) + delta;
-		Tile_Num.setWeight(Array_Board_Stack.top().state, tile_num_newvalue);
+		Tile_Num.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __MERGETILEMODE__
 		if(GetMaxTile(Array_Board_Stack.top().state )> iLowerBound){
-			for (int i = 0 ;i<4 ; i++){
-				float merge_tile_newvalue = MergeTile_Row1.getWeight(Array_Board_Stack.top().state,i) + delta;
-				MergeTile_Row1.setWeight(Array_Board_Stack.top().state, i, merge_tile_newvalue);
-				merge_tile_newvalue = MergeTile_Row2.getWeight(Array_Board_Stack.top().state, i) + delta;
-				MergeTile_Row2.setWeight(Array_Board_Stack.top().state, i, merge_tile_newvalue);
-			}
+			MergeTile_Row1.Update(Array_Board_Stack.top().state, delta);
+			MergeTile_Row2.Update(Array_Board_Stack.top().state, delta);
 		}
 #endif
-#ifdef __MERGECOUNTMODE__
-		float merge_count_newvalue = Merge_Count.getWeight(Array_Board_Stack.top().state) + delta;
-		Merge_Count.setWeight(Array_Board_Stack.top().state, merge_count_newvalue);
-#endif
+
 #ifdef __CONSTANTVALUEMODE__
 		Adjust_Weight += delta;
 #endif
@@ -334,7 +322,8 @@ void Fib2584Ai::WriteToWeightTable()
 	MergeTile_Row2.WriteToWeightTable("Merge_Tile_WeightTable2");
 #endif
 #ifdef __MERGECOUNTMODE__
-	Merge_Count.WriteToWeightTable("Merge_Count_WeightTable");
+	MergeCount_Row1.WriteToWeightTable("Merge_Count_WeightTable1");
+	MergeCount_Row2.WriteToWeightTable("Merge_Count_WeightTable2");
 #endif
 #endif
 }
@@ -381,7 +370,8 @@ void Fib2584Ai::ReadFromWeightTable()
 	MergeTile_Row2.ReadFromWeightTable("Merge_Tile_WeightTable2");
 #endif
 #ifdef __MERGECOUNTMODE__
-	Merge_Count.ReadFromWeightTable("Merge_Count_WeightTable");
+	MergeCount_Row1.ReadFromWeightTable("Merge_Count_WeightTable1");
+	MergeCount_Row2.ReadFromWeightTable("Merge_Count_WeightTable2");
 #endif
 #endif
 }

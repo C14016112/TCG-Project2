@@ -14,10 +14,13 @@ public:
 	~Feature_TileNumber(void);
 	float getWeight(int board[4][4]);
 	void setWeight(int board[4][4], const float weight);
+	void Update(int board[4][4], const float error);
 	void ReadFromWeightTable(char * filename);
 	void WriteToWeightTable(char * filename);
 	int pow(int x, int y);
 private:
+	float *numerator;
+	float *denumorator;
 	float *Data;
 	int iTableSize;
 };

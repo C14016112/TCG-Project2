@@ -13,7 +13,7 @@
 #include "GameBoard_Extend.h"
 #include <map>
 #define LEARNING_RATE 0.01
-#define PlayRound 300000
+#define PlayRound 50000
 //#define __BOXATANGLEMODE__ // box at angle mode
 //#define __BOXATSIDEMODE__ // box at side mode
 //#define __BOXATMIDDLEMODE__ // box at middle mode
@@ -31,7 +31,7 @@
 //#define __TRAININGSTAGE2MODE__ // training stage 2 mode
 //#define __WRITELOGMODE__ // write log mode
 //#define __READWEIGHTTABLEMODE__ // read weight table mode
-#define __WRITEWEIGHTTABLEMODE__ // write weight table mode
+//#define __WRITEWEIGHTTABLEMODE__ // write weight table mode
 #define NOMOVEPENALTY -1000000
 
 struct Array_Board{
@@ -95,7 +95,8 @@ private:
 	Feature_MergeTile MergeTile_Row2;
 #endif
 #ifdef __MERGECOUNTMODE__
-	Feature_MergeCount Merge_Count;
+	Feature_MergeCount MergeCount_Row1;
+	Feature_MergeCount MergeCount_Row2;
 #endif
 #ifdef __CONSTANTVALUEMODE__
 	float Adjust_Weight;

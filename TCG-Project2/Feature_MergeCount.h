@@ -23,16 +23,20 @@ class Feature_MergeCount
 public:
 	Feature_MergeCount();
 	~Feature_MergeCount();
-
-	float getWeight(int board[4][4]);
-	void setWeight(int board[4][4], float value);
-	int MergeableNumber(int board[4][4]);
-	bool isMergeable(int x, int y);
+	void SetParameter(const int input_index[4]);
+	float getWeight(const int board[4][4]);
+	float getWeight(const int board[4][4], const int no);
+	void setWeight(const int board[4][4], const int no, const float value);
+	void Update(const int board[4][4], const float errer);
+	int MergeableNumber(const int board[4][4], const int no);
+	bool isMergeable(const int x, const int y);
 	void ReadFromWeightTable(const char * filename);
 	void WriteToWeightTable(const char * filename);
+	int UpsideDown(const int index);
+	int Rotate(const int index);
 private:
-	float Data[16];
-	int iTableSize;
+	float Data[3];
+	int index[8][4];
 };
 
 #endif

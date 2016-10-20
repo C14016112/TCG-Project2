@@ -2,9 +2,25 @@
 
 Feature_MergeCount::Feature_MergeCount()
 {
-	iTableSize = 16;
-	for (int i = 0 ; i< iTableSize; i++){
+
+	for (int i = 0 ; i< 3; i++){
 		Data[i] = 0;
+	}
+}
+
+void Feature_MergeCount::SetParameter(const int input_index[4])
+{
+	for (int i = 0 ; i<4 ; i++){
+		for(int j = 0; j<4; j++){
+			if(i == 0){
+				index[i][j] = input_index[j];
+				index[i+4][j] = UpsideDown(index[i][j]);
+			}
+			else{
+				index[i][j] = Rotate(index[i-1][j]);
+				index[i+4][j] = Rotate(index[i+4-1][j]);
+			}
+		}
 	}
 }
 
@@ -12,34 +28,45 @@ Feature_MergeCount::~Feature_MergeCount()
 {
 }
 
-float Feature_MergeCount::getWeight(int board[4][4])
+float Feature_MergeCount::getWeight(const int board[4][4])
 {
-	return  Data[MergeableNumber(board)];
+	float value = 0;
+	for(int i = 0 ;i<8 ;i++)
+		value += Data[MergeableNumber(board, i)];
+	return  value;
 }
 
-void Feature_MergeCount::setWeight(int board[4][4], float weight)
+float Feature_MergeCount::getWeight(const int board[4][4], const int no)
 {
-	Data[MergeableNumber(board)] = weight;
+	return  Data[MergeableNumber(board, no)];
 }
 
-int Feature_MergeCount::MergeableNumber(int board[4][4])
+void Feature_MergeCount::setWeight(const int board[4][4], const int no, const float weight)
 {
-	int count = 0;
-	for (int i = 0; i<4 ; i++){
-		for (int j = 0 ; j<4; j++){
-			if(i + 1 < 4){
-				if(isMergeable(board[i][j], board[i+1][j]) == true)
-					count++;
-			}
-			if( j + 1 < 4){
-				if(isMergeable(board[i][j], board[i][j+1]) == true)
-					count++;
-			}
-		}
+	Data[MergeableNumber(board, no)] = weight;
+}
+
+void Feature_MergeCount::Update(const int board[4][4], const float error)
+{
+	for (int i = 0 ; i < 8 ; i++){
+		Data[MergeableNumber(board, i)] += error;
 	}
-	return count;
 }
-bool Feature_MergeCount::isMergeable(int x, int y)
+
+int Feature_MergeCount::MergeableNumber(const int board[4][4], const int no)
+{
+	if(isMergeable(board[index[no][1] / 4][ index[no][1] % 4], board[index[no][2] / 4][index[no][2] % 4]) == false ){
+		if(isMergeable(board[index[no][0] / 4][ index[no][0] % 4], board[index[no][1] / 4][index[no][1] % 4]) == true ){
+			if(isMergeable(board[index[no][2] / 4][ index[no][2] % 4], board[index[no][3] / 4][index[no][3] % 4]) == true )
+				return 2;
+			else
+				return 1;
+		}
+		else return 0;
+	}
+	return 1;
+}
+bool Feature_MergeCount::isMergeable(const int x, const int y)
 {
 	if(x - y == 1 || y - x == 1)
 		return true;
@@ -47,6 +74,7 @@ bool Feature_MergeCount::isMergeable(int x, int y)
 		return true;
 	return false;
 }
+
 
 void Feature_MergeCount::ReadFromWeightTable(const char * filename){
 
@@ -58,7 +86,7 @@ void Feature_MergeCount::ReadFromWeightTable(const char * filename){
 		return ;
 	}
 
-	fin.read(reinterpret_cast<char*>(Data), (iTableSize) * sizeof(float));
+	fin.read(reinterpret_cast<char*>(Data), (3) * sizeof(float));
 	fin.close();
 
 }
@@ -74,6 +102,23 @@ void Feature_MergeCount::WriteToWeightTable(const char * filename)
 		return ;
 	}
 
-	fout.write(reinterpret_cast<char*>(Data), (iTableSize) * sizeof(float));
+	fout.write(reinterpret_cast<char*>(Data), (3) * sizeof(float));
 	fout.close();
+}
+
+
+int Feature_MergeCount::UpsideDown(const int index){
+#ifdef _DEBUG
+	assert(index >= 0 && index < 16);
+#endif
+	return upsidedown_table[index];
+}
+
+
+int Feature_MergeCount::Rotate(const int index)
+{
+#ifdef _DEBUG
+	assert(index >= 0 && index < 16);
+#endif
+	return rotate_table[index];
 }
