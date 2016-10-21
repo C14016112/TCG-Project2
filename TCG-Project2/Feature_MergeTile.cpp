@@ -8,16 +8,23 @@ Feature_MergeTile::Feature_MergeTile()
 Feature_MergeTile::~Feature_MergeTile()
 {
 	delete Data;
+	delete numerator;
+	delete denumorator;
 }
 
 void Feature_MergeTile::SetParameter(int inputindex[4])
 {
+	normalization_factor = std::sqrt(4.);
 	iTableSize = 1;
 	for (int i = 0 ;i < iRange; i++)
 		iTableSize *= 3;
 	Data = new float[iTableSize];
+	numerator = new float[iTableSize];
+	denumorator = new float[iTableSize];
 	for (int i = 0 ; i< iTableSize; i++){
 		Data[i] = 0;
+		numerator[i] = 0.00000001;
+		denumorator[i] = 0.00000001;
 	}
 
 	index[0][0] = inputindex[0];
@@ -57,8 +64,12 @@ void Feature_MergeTile::setWeight(int board[4][4], int no, float weight)
 
 void Feature_MergeTile::Update(int board[4][4], const float error)
 {
-	for (int i = 0 ;i<4 ; i++)
-		Data[GetMergeNumber(board,i)] += error;
+	for (int i = 0 ;i<4 ; i++){
+		int position = GetMergeNumber(board, i);
+		numerator[position] += error;
+		denumorator[position] += abs(error);
+		Data[position] += LEARNING_RATE * error * abs(numerator[position]) / denumorator[position] / normalization_factor;
+	}
 }
 int Feature_MergeTile::GetMergeNumber(int board[4][4], int no)
 {

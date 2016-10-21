@@ -3,6 +3,7 @@
 
 Feature_TileNumber::Feature_TileNumber(void)
 {
+	normalization_factor = 1;
 	iTableSize = pow(4, iRange);
 	Data = new float[iTableSize];
 	numerator = new float[iTableSize];
@@ -18,59 +19,44 @@ Feature_TileNumber::Feature_TileNumber(void)
 Feature_TileNumber::~Feature_TileNumber(void)
 {
 	delete Data;
+	delete numerator;
+	delete denumorator;
 }
 
 float Feature_TileNumber::getWeight(int board[4][4])
 {
-	int tile_count[iRange] = {};
-	for (int i = 0 ; i < 4; i++){
-		for (int j = 0 ; j< 4 ;j ++){
-			if(board[i][j] > iLowerBound){
-				tile_count[board[i][j] - iLowerBound]++;
-			}
-		}
-	}
-	int position = 0;
-	for(int i = 0 ; i< iRange; i++){
-		position += pow(12, i) * tile_count[i] ;
-	}
-	return Data[position];
+	return Data[getPosition(board)];
 }
 
 void Feature_TileNumber::setWeight(int board[4][4], const float weight)
 {
+	Data[getPosition(board)] = weight;
+}
+
+int Feature_TileNumber::getPosition(int board[4][4])
+{
+	return 0;
 	int tile_count[iRange] = {};
 	for (int i = 0 ; i < 4; i++){
 		for (int j = 0 ; j< 4 ;j ++){
-			if(board[i][j] > iLowerBound){
+			if(board[i][j] >= iLowerBound){
 				tile_count[board[i][j] - iLowerBound]++;
 			}
 		}
 	}
 	int position = 0;
 	for(int i = 0 ; i< iRange; i++){
-		position += pow(12, i) * tile_count[i] ;
+		position += pow(12, i) * std::min(tile_count[i],4) ;
 	}
-	Data[position] = weight;
+	return position;
 }
 
 void Feature_TileNumber::Update(int board[4][4], const float error)
 {
-	int tile_count[iRange] = {};
-	for (int i = 0 ; i < 4; i++){
-		for (int j = 0 ; j< 4 ;j ++){
-			if(board[i][j] > iLowerBound){
-				tile_count[board[i][j] - iLowerBound]++;
-			}
-		}
-	}
-	int position = 0;
-	for(int i = 0 ; i< iRange; i++){
-		position += pow(12, i) * tile_count[i] ;
-	}
+	int position = getPosition(board);
 	denumorator[position] += abs(error);
-	numerator[position] = abs(numerator[position] + error);
-	Data[position] += error * numerator[position] / denumorator[position];
+	numerator[position] += error;
+	Data[position] += LEARNING_RATE * error * abs(numerator[position]) / denumorator[position] / normalization_factor;
 }
 void Feature_TileNumber::ReadFromWeightTable(char * filename)
 {

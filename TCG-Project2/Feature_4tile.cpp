@@ -6,6 +6,7 @@ Feature_4tile::Feature_4tile()
 
 void Feature_4tile::SetParameter(int input_index[4])
 {
+	normalization_factor = 1 / std::sqrt(8.);
 	iTableSize = iUpperbound*iUpperbound*iUpperbound*iUpperbound;
 	for (int i = 0 ; i<4 ; i++){
 		for(int j = 0; j<4; j++){
@@ -33,6 +34,8 @@ void Feature_4tile::SetParameter(int input_index[4])
 Feature_4tile::~Feature_4tile()
 {
 	delete Data;
+	delete numerator;
+	delete denumorator;
 }
 
 float Feature_4tile::getWeight(int board[4][4]){
@@ -76,8 +79,8 @@ void Feature_4tile::Update(int board[4][4],const float error){
 		+ iUpperbound * iUpperbound * board[index[i][2] / 4][index[i][2] % 4]
 		+ iUpperbound * iUpperbound * iUpperbound * board[index[i][3] / 4][index[i][3] % 4];
 		denumorator[position] += abs(error);
-		numerator[position] = abs(numerator[position] + error);
-		Data[position] += error * numerator[position] / denumorator[position];
+		numerator[position] += error;
+		Data[position] += LEARNING_RATE * error * abs(numerator[position]) / denumorator[position] / normalization_factor;
 	}
 }
 

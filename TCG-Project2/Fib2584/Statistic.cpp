@@ -68,3 +68,8 @@ void Statistic::setFinishTime()
 {
 	timeDifference_ += clock();
 }
+
+void Statistic::WriteLog(int Round)
+{
+
+}

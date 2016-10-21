@@ -1,11 +1,10 @@
 #ifndef __FEATURE_TILENUMBER_H__
 #define __FEATURE_TILENUMBER_J__
 #include "Fib2584/BitBoard.h"
-#include "Board.h"
+#include "Mode_Definition.h"
 #include"GameBoard_Extend.h"
 #include <iostream>
 #include <fstream>
-#define iRange (iUpperbound - iLowerBound)
 #pragma once
 class Feature_TileNumber
 {
@@ -14,6 +13,7 @@ public:
 	~Feature_TileNumber(void);
 	float getWeight(int board[4][4]);
 	void setWeight(int board[4][4], const float weight);
+	int getPosition(int board[4][4]);
 	void Update(int board[4][4], const float error);
 	void ReadFromWeightTable(char * filename);
 	void WriteToWeightTable(char * filename);
@@ -23,5 +23,6 @@ private:
 	float *denumorator;
 	float *Data;
 	int iTableSize;
+	float normalization_factor;
 };
 #endif

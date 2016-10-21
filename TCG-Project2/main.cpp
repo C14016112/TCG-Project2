@@ -75,8 +75,6 @@ int main(int argc, char* argv[])
 	// output statistic data
 	statistic.show();
 	//printf(" the difference is %d ", diff);
-#ifdef _DEBUG
 	system("pause");
-#endif
 	return 0;
 }

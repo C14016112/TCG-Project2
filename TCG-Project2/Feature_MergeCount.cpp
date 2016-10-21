@@ -5,7 +5,10 @@ Feature_MergeCount::Feature_MergeCount()
 
 	for (int i = 0 ; i< 3; i++){
 		Data[i] = 0;
+		numerator[i] = 0.00000001;
+		denumorator[i] = 0.00000001;
 	}
+	normalization_factor = std::sqrt(8.);
 }
 
 void Feature_MergeCount::SetParameter(const int input_index[4])
@@ -49,7 +52,10 @@ void Feature_MergeCount::setWeight(const int board[4][4], const int no, const fl
 void Feature_MergeCount::Update(const int board[4][4], const float error)
 {
 	for (int i = 0 ; i < 8 ; i++){
-		Data[MergeableNumber(board, i)] += error;
+		int position = MergeableNumber(board, i);
+		numerator[position] += error;
+		denumorator[position] += abs(error);
+		Data[position] += LEARNING_RATE * error * abs(numerator[position]) / denumorator[position] / normalization_factor;
 	}
 }
 

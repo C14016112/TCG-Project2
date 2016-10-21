@@ -6,59 +6,71 @@ Fib2584Ai::Fib2584Ai()
 
 void Fib2584Ai::initialize(int argc, char* argv[])
 {
+	feature_number = 0;
 	srand(time(NULL));
 #ifdef __INSIDELINEMODE__
 	int line_inside_index[4] = {1, 5, 9, 13};
 	Line_Inside.SetParameter(line_inside_index);
 	printf("Feature: Line Inside is used\n");
+	feature_number++;
 #endif
 #ifdef __OUTSIDELINEMODE__
 	int line_outside_index[4] = {0, 4, 8, 12};
 	Line_Outside.SetParameter(line_outside_index);
 	printf("Feature: Line Outside is used\n");
+	feature_number++;
 #endif
 #ifdef __OUTSIDEAXEMODE__
 	int axe_outside_index[6] = {12, 8, 4, 0, 1, 5};
 	Axe_Outside.SetParameter(axe_outside_index);
 	printf("Feature: Axe Outside is used\n");
+	feature_number++;
 #endif
 #ifdef __INSIDEAXEMODE__
 	int axe_inside_index[6] = {13, 9, 5, 1, 2, 6};
 	Axe_Inside.SetParameter(axe_inside_index);
 	printf("Feature: Axe Inside is used\n");
+	feature_number++;
 #endif
 #ifdef __OUTSIDERECMODE__
 	int rec_outside_index[6] = {8, 4, 0, 1, 5, 9};
 	Rec_Outside.SetParameter(rec_outside_index);
 	printf("Feature: Rec Outside is used\n");
+	feature_number++;
 #endif
 #ifdef __INSIDERECMODE__
 	int rec_inside_index[6] = {9, 5, 1, 2, 6, 10};
 	Rec_Inside.SetParameter(rec_inside_index);
 	printf("Feature: Rec Inside is used\n");
+	feature_number++;
 #endif
 #ifdef __TRIANGLEMODE__
 	int triangle_index[6] = {0, 1, 2, 4, 5, 8};
 	Triangle.SetParameter(triangle_index);
 	printf("Feature: Triangle is used\n");
+	feature_number++;
 #endif
 #ifdef __BOXATANGLEMODE__
 	int box_angle_index[4] = {0, 1, 4, 5};
 	Box_Angle.SetParameter(box_angle_index);
 	printf("Feature: Box_Angle is used\n");
+	feature_number++;
 #endif
 #ifdef __BOXATMIDDLEMODE__
 	int box_middle_index[4] = {5, 6, 9, 10};
 	Box_Middle.SetParameter(box_middle_index);
 	printf("Feature: Box_Middle is used\n");
+	feature_number++;
 #endif
 #ifdef __BOXATSIDEMODE__
 	int box_side_index[4] = {1, 2, 5, 6};
 	Box_Side.SetParameter(box_side_index);
 	printf("Feature: Box_Side is used\n");
+	feature_number++;
 #endif
 #ifdef __COUNTTILENUMBERMODE__
 	printf("Feature: Tile Number is used\n");
+	feature_number++;
 #endif
 #ifdef __MERGETILEMODE__
 	int row1[4] = {0, 1, 2, 3};
@@ -66,6 +78,8 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 	MergeTile_Row1.SetParameter(row1);
 	MergeTile_Row2.SetParameter(row2);
  	printf("Feature: MergeTile is used\n");
+	feature_number++;
+	feature_number++;
 #endif
 #ifdef __MERGECOUNTMODE__
 	int mergecount_row1[4] = {0, 1, 2, 3};
@@ -223,7 +237,7 @@ void Fib2584Ai::Learning()
 	float delta = 0;
 
 	while(Array_Board_Stack.empty() == false){
-		delta = LEARNING_RATE * ( nextaward + nextvalue - Evaluate(Array_Board_Stack.top().state));
+		delta = (nextaward + nextvalue - Evaluate(Array_Board_Stack.top().state)) / feature_number;
 
 #ifdef __INSIDELINEMODE__
 			Line_Inside.Update(Array_Board_Stack.top().state, delta);

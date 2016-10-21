@@ -7,6 +7,7 @@ Feature_6tile::Feature_6tile()
 
 void Feature_6tile::SetParameter(int input_index[6])
 {
+	normalization_factor = std::sqrt(8.);
 	for (int i = 0 ; i<4 ; i++){
 		for(int j = 0; j<6; j++){
 			if(i == 0){
@@ -32,6 +33,8 @@ void Feature_6tile::SetParameter(int input_index[6])
 Feature_6tile::~Feature_6tile()
 {
 	delete Data;
+	delete numerator;
+	delete denumorator;
 }
 
 float Feature_6tile::getWeight(int board[4][4])
@@ -81,8 +84,8 @@ void Feature_6tile::Update(int board[4][4], const float error)
 		+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][4] / 4][index[no][4] % 4]
 		+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][5] / 4][index[no][5] % 4];
 		denumorator[position] += abs(error);
-		numerator[position] = abs(numerator[position] + error);
-		Data[position] += error * numerator[position] / denumorator[position];
+		numerator[position] += error;
+		Data[position] += LEARNING_RATE * error * abs(numerator[position]) / denumorator[position] / normalization_factor;
 	}
 }
 void Feature_6tile::ReadFromWeightTable(const char *filename){

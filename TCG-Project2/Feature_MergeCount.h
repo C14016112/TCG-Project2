@@ -8,7 +8,7 @@
 #include <ctime>
 #include "Fib2584/GameBoard.h"
 #include "MakeMoveTable.h"
-#include "Board.h"
+#include "Mode_Definition.h"
 #include "math.h"
 #include "string.h"
 #include "Feature_TileNumber.h"
@@ -36,7 +36,10 @@ public:
 	int Rotate(const int index);
 private:
 	float Data[3];
+	float numerator[3];
+	float denumorator[3];
 	int index[8][4];
+	float normalization_factor;
 };
 
 #endif

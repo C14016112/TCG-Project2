@@ -8,7 +8,7 @@
 #include <ctime>
 #include "Fib2584/GameBoard.h"
 #include "MakeMoveTable.h"
-#include "Board.h"
+#include "Mode_Definition.h"
 #include "math.h"
 #include "string.h"
 /*
@@ -40,6 +40,7 @@ private:
 	float *denumorator;
 	int index[8][4];
 	int iTableSize;
+	float normalization_factor;
 };
 
 #endif
