@@ -91,6 +91,9 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 #ifdef __CONSTANTVALUEMODE__
 	Adjust_Weight = 0;
 #endif
+#ifdef __WRITELOGMODE__
+	printf("Write Log Mode is opened\n");
+#endif
 	mapFibOrder[0] = 0;
 	mapFibOrder[1] = 1;
 	mapFibOrder[2] = 2;

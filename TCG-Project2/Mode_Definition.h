@@ -18,15 +18,17 @@
 //#define __MERGETILEMODE__ // merge tile mode
 #define __MERGECOUNTMODE__ // total number of mergeable count mode
 //#define __TRAININGSTAGE2MODE__ // training stage 2 mode
-//#define __WRITELOGMODE__ // write log mode
-//#define __READWEIGHTTABLEMODE__ // read weight table mode
-//#define __WRITEWEIGHTTABLEMODE__ // write weight table mode
+#define __WRITELOGMODE__ // write log mode
+#define __READWEIGHTTABLEMODE__ // read weight table mode
+#define __WRITEWEIGHTTABLEMODE__ // write weight table mode
+//#define __TESTMOVESPPED__ // test the speed of move table and framework
 #define NOMOVEPENALTY -1000000
 
 #define LEARNING_RATE 0.1
 #define iUpperbound 22
 #define iLowerBound 15
 #define iRange 7
+#define LogPeriod 10000
 const int upsidedown_table[16] = {3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12};
 const int rotate_table[16] = {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12};
 

@@ -8,13 +8,23 @@
 
 int main(int argc, char* argv[])
 {
-	int diff = 0;
+#ifdef __TESTMOVESPPEDMODE__
+	MakeMoveTable move;
+	double start1, start2, end1, end2;
+	double totaltime1 = 0, totaltime2 = 0;
+#endif
+	// show the time and write in the log
 	struct tm *ptr;
 	time_t lt;
 	lt =time(NULL);
 	ptr=gmtime(&lt);
 	printf(ctime(&lt));
-	MakeMoveTable move;
+
+	FILE * pFile;
+	pFile = fopen ("Log.txt","a");
+	fprintf(pFile, ctime(&lt));
+	fprintf(pFile, "LogPeriod = %d\n", LogPeriod);
+	fclose(pFile);
 	/*if(argc == 1) {
 		cerr << "usage: play_game rounds [other arguments which your AI needs]" << endl;
 		return 1;
@@ -46,6 +56,17 @@ int main(int argc, char* argv[])
 				continue;
 			statistic.increaseOneMove();
 			gameBoard.addRandomTile();
+
+#ifdef __TESTMOVESPPEDMODE__
+			start1 = clock();
+			originalBoard.move(moveDirection);
+			end1 = clock();
+			totaltime1 += end1 - start1;
+			start2 = clock();
+			move.Move(1, arrayBoard);
+			end2 = clock();
+			totaltime2 += end2 - start2;*/
+#endif
 		}
 		gameBoard.getArrayBoard(arrayBoard);
 		ai.gameOver(arrayBoard, iScore);
@@ -63,11 +84,21 @@ int main(int argc, char* argv[])
 			statistic.show();
 			statistic.reset();
 			statistic.setStartTime();
+#ifdef __TESTMOVESPEEDMODE__
+			printf("The move time of framework: %f\n", totaltime1 / CLOCKS_PER_SEC);
+			printf("The move time of selftable: %f\n", totaltime2 / CLOCKS_PER_SEC);
+			printf("framework / selftable = %f\n", totaltime1/totaltime2);
 			printf("---------------------------------------\n" );
+			getchar();
+#endif
 			if (i % 50000 == 0 && i != 0) {
 				ai.WriteToWeightTable();
 			}
 		}
+#ifdef __WRITELOGMODE__
+		if(i % LogPeriod == 0 && i > 0)
+			statistic.WriteLog(i);
+#endif
 	}
 	statistic.setFinishTime();
 	

@@ -4,11 +4,11 @@
 #include <cstdlib>
 #include <ctime>
 #include "Fib2584/MoveDirection.h"
-#include "Feature_4tile.h"
-#include "Feature_6tile.h"
-#include "Feature_TileNumber.h"
-#include "Feature_MergeTile.h"
-#include "Feature_MergeCount.h"
+#include "Tuple_4tile.h"
+#include "Tuple_6tile.h"
+#include "Tuple_LargeTileCount.h"
+#include "Tuple_MergeTile.h"
+#include "Tuple_MergeCount.h"
 #include <stack>
 #include "GameBoard_Extend.h"
 #include <map>
@@ -39,45 +39,45 @@ public:
 	int GetMaxTile(int board[4][4]);
 private:
 #ifdef __INSIDELINEMODE__
-	Feature_4tile Line_Inside;
+	Tuple_4tile Line_Inside;
 #endif
 #ifdef __OUTSIDELINEMODE__
-	Feature_4tile Line_Outside;
+	Tuple_4tile Line_Outside;
 #endif
 #ifdef __OUTSIDEAXEMODE__
-	Feature_6tile Axe_Outside;
+	Tuple_6tile Axe_Outside;
 #endif
 #ifdef __INSIDEAXEMODE__
-	Feature_6tile Axe_Inside;
+	Tuple_6tile Axe_Inside;
 #endif
 #ifdef __OUTSIDERECMODE__
-	Feature_6tile Rec_Outside;
+	Tuple_6tile Rec_Outside;
 #endif
 #ifdef __INSIDERECMODE__
-	Feature_6tile Rec_Inside;
+	Tuple_6tile Rec_Inside;
 #endif
 #ifdef __TRIANGLEMODE__
-	Feature_6tile Triangle;
+	Tuple_6tile Triangle;
 #endif
 #ifdef __BOXATANGLEMODE__
-	Feature_4tile Box_Angle;
+	Tuple_4tile Box_Angle;
 #endif
 #ifdef __BOXATMIDDLEMODE__
-	Feature_4tile Box_Middle;
+	Tuple_4tile Box_Middle;
 #endif
 #ifdef __BOXATSIDEMODE__
-	Feature_4tile Box_Side;
+	Tuple_4tile Box_Side;
 #endif
 #ifdef __COUNTTILENUMBERMODE__
-	Feature_TileNumber Tile_Num;
+	Tuple_LargeTileCount Tile_Num;
 #endif
 #ifdef __MERGETILEMODE__
-	Feature_MergeTile MergeTile_Row1;
-	Feature_MergeTile MergeTile_Row2;
+	Tuple_MergeTile MergeTile_Row1;
+	Tuple_MergeTile MergeTile_Row2;
 #endif
 #ifdef __MERGECOUNTMODE__
-	Feature_MergeCount MergeCount_Row1;
-	Feature_MergeCount MergeCount_Row2;
+	Tuple_MergeCount MergeCount_Row1;
+	Tuple_MergeCount MergeCount_Row2;
 #endif
 #ifdef __CONSTANTVALUEMODE__
 	float Adjust_Weight;

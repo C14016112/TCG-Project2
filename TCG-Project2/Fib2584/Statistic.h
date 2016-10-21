@@ -2,7 +2,11 @@
 #define __STATISTIC_H__
 
 #include <ctime>
+#include "stdio.h"
 #include <iostream>
+#include <fstream>
+#include <ctime>
+#include "GameBoard.h"
 
 using std::cout;
 using std::endl;

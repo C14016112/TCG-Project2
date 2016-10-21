@@ -71,5 +71,14 @@ void Statistic::setFinishTime()
 
 void Statistic::WriteLog(int Round)
 {
-
+	printf("Write Log...");
+	FILE * pFile;
+	pFile = fopen ("Log.txt","a");
+	fprintf (pFile, "Round: %4d, MaxTile = %d, MaxScore = %d, Average Score = %2.2f\n"
+		, Round/1000, iMaxTileOverall_, iMaxScoreOverall_, iTotalScore_ / iGameCount_);
+	fprintf( pFile, "610: %2.2f%%, 2584: %2.2f%%, 6765: %2.2f%%, 10946: %2.2f%%\n\n",
+		iWinGame_610 / (double)iGameCount_*100.0, iWinGame_2584 / (double)iGameCount_ * 100.0,
+		 iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0);
+	fclose (pFile);
+	printf(" End! \n");
 }
