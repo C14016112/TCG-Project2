@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	FILE * pFile;
 	pFile = fopen ("Log.txt","a");
 	fprintf(pFile, ctime(&lt));
-	fprintf(pFile, "LogPeriod = %d\n", LogPeriod);
+	fprintf(pFile, "LogPeriod = %d\n\n", LogPeriod);
 	fclose(pFile);
 	/*if(argc == 1) {
 		cerr << "usage: play_game rounds [other arguments which your AI needs]" << endl;
@@ -75,8 +75,10 @@ int main(int argc, char* argv[])
 		// update statistic data
 		statistic.updateScore(iScore);
 		statistic.updateMaxTile(gameBoard.getMaxTile());
-
-
+#ifdef __WRITELOGMODE__
+		if(i % LogPeriod == 0 && i > 0)
+			statistic.WriteLog(i, LogPeriod);
+#endif
 		if (i % 10000== 0 && i != 0) {
 			printf("----------[ Show  statistic ]----------\n");
 			statistic.setFinishTime();
@@ -95,10 +97,6 @@ int main(int argc, char* argv[])
 				ai.WriteToWeightTable();
 			}
 		}
-#ifdef __WRITELOGMODE__
-		if(i % LogPeriod == 0 && i > 0)
-			statistic.WriteLog(i);
-#endif
 	}
 	statistic.setFinishTime();
 	

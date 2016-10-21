@@ -23,7 +23,7 @@ public:
 	void updateMaxTile(int iTile);
 	void setStartTime();
 	void setFinishTime();
-	void WriteLog(int Round);
+	void WriteLog(int Round, int LogPeriod);
 private:
 	int iMaxTileOverall_;
 	int iWinGame_610;
