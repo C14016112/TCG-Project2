@@ -5,8 +5,10 @@ Tuple_MergeCount::Tuple_MergeCount()
 
 	for (int i = 0 ; i< 3; i++){
 		Data[i] = 0;
+#ifdef __TCLMODE__
 		numerator[i] = 0.00000001;
 		denumorator[i] = 0.00000001;
+#endif
 	}
 	normalization_factor = std::sqrt(8.);
 }
@@ -53,9 +55,13 @@ void Tuple_MergeCount::Update(const int board[4][4], const float error)
 {
 	for (int i = 0 ; i < 8 ; i++){
 		int position = MergeableNumber(board, i);
+#ifdef __TCLMODE__
 		numerator[position] += error;
 		denumorator[position] += abs(error);
 		Data[position] += LEARNING_RATE * error * abs(numerator[position]) / denumorator[position] / normalization_factor;
+#else 
+		Data[position] += LEARNING_RATE * error / normalization_factor;
+#endif
 	}
 }
 
@@ -86,23 +92,61 @@ void Tuple_MergeCount::ReadFromWeightTable(const char * filename){
 
 	ifstream fin;
 	fin.open(filename, ios::in | ios::binary );
-
 	if( !fin.is_open()){
 		printf("The file '%s' was not open\n", filename);
 		return ;
 	}
-
 	fin.read(reinterpret_cast<char*>(Data), (3) * sizeof(float));
 	fin.close();
-
+#ifdef __TCLMODE__
+	char name[100] = {0};
+	char name2[100] = {0};
+	sprintf(name, "%s_coherence_numerator", filename);
+	fin.open(name, ios::in | ios::binary );
+	if( !fin.is_open()){
+		printf("The file '%s' was not open\n", name);
+		return ;
+	}
+	fin.read(reinterpret_cast<char*>(numerator), (3) * sizeof(float));
+	fin.close();
+	sprintf(name2, "%s_coherence_denumorator", filename);
+	fin.open(name2, ios::in | ios::binary );
+	if( !fin.is_open()){
+		printf("The file '%s' was not open\n", name2);
+		return ;
+	}
+	fin.read(reinterpret_cast<char*>(denumorator), (3) * sizeof(float));
+	fin.close();
+#endif
 }
 
 
 void Tuple_MergeCount::WriteToWeightTable(const char * filename)
 {
 	ofstream fout;
-	fout.open(filename, ios::out | ios::binary );
+#ifdef __TCLMODE__
+	char name[100] = {0};
+	char name2[100] = {0};
+	sprintf(name, "%s_coherence_numerator", filename);
+	fout.open(name, ios::out | ios::binary );
+	if( !fout.is_open()){
+		printf("The file '%s' was not open\n", name);
+		return ;
+	}
+	fout.write(reinterpret_cast<char*>(numerator), (3) * sizeof(float));
+	fout.close();
 
+	sprintf(name2, "%s_coherence_denumorator", filename);
+	fout.open(name2, ios::out | ios::binary );
+	if( !fout.is_open()){
+		printf("The file '%s' was not open\n", name2);
+		return ;
+	}
+	fout.write(reinterpret_cast<char*>(denumorator), (3) * sizeof(float));
+	fout.close();
+#endif
+
+	fout.open(filename, ios::out | ios::binary );
 	if( !fout.is_open()){
 		printf("The file '%s' was not open\n", filename);
 		return ;

@@ -19,8 +19,10 @@ public:
 	void WriteToWeightTable(char * filename);
 	int pow(int x, int y);
 private:
+#ifdef __TCLMODE__
 	float *numerator;
 	float *denumorator;
+#endif
 	float *Data;
 	int iTableSize;
 	float normalization_factor;

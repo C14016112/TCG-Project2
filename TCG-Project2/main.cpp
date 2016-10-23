@@ -5,6 +5,7 @@
 #include "Fib2584/Statistic.h"
 #include "Fib2584Ai.h"
 #include <map>
+#include <omp.h>
 
 int main(int argc, char* argv[])
 {
@@ -39,7 +40,8 @@ int main(int argc, char* argv[])
 	Statistic statistic;
 	statistic.setStartTime();
 	// play each round
-	for(int i = 0;i < iPlayRounds;i++) {
+
+	for (int i = 0 ; i< iPlayRounds; i++){
 		if(i > 0 && i % 1000 == 0)
 			printf(" %d \n", i);
 		GameBoard gameBoard;
@@ -76,8 +78,7 @@ int main(int argc, char* argv[])
 		statistic.updateScore(iScore);
 		statistic.updateMaxTile(gameBoard.getMaxTile());
 #ifdef __WRITELOGMODE__
-		if(i % LogPeriod == 0 && i > 0)
-			statistic.WriteLog(i, LogPeriod);
+		statistic.WriteLog(i, LogPeriod);
 #endif
 		if (i % 10000== 0 && i != 0) {
 			printf("----------[ Show  statistic ]----------\n");

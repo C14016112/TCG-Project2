@@ -36,8 +36,10 @@ public:
 	int Rotate(const int index);
 private:
 	float Data[3];
+#ifdef __TCLMODE__
 	float numerator[3];
 	float denumorator[3];
+#endif
 	int index[8][4];
 	float normalization_factor;
 };

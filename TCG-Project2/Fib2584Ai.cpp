@@ -267,10 +267,10 @@ void Fib2584Ai::Learning()
 			Box_Angle.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __BOXATMIDDLEMODE__
-			Box_Middle.setWeight(Array_Board_Stack.top().state, i, box_angle_newvalue);
+			Box_Middle.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __BOXATSIDEMODE__
-			Box_Side.setWeight(Array_Board_Stack.top().state, i, box_middle_newvalue);
+			Box_Side.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __MERGECOUNTMODE__
 			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);

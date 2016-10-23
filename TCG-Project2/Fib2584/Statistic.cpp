@@ -71,14 +71,21 @@ void Statistic::setFinishTime()
 
 void Statistic::WriteLog(int Round, int LogPeriod)
 {
-	printf("Write Log...");
 	FILE * pFile;
-	pFile = fopen ("Log.txt","a");
-	fprintf (pFile, "Round: %d, MaxTile = %d, MaxScore = %d, Average Score = %2.2f\n"
-		, Round / LogPeriod, iMaxTileOverall_, iMaxScoreOverall_, iTotalScore_ / iGameCount_);
-	fprintf( pFile, "610: %2.2f%%, 2584: %2.2f%%, 6765: %2.2f%%, 10946: %2.2f%%\n\n",
-		iWinGame_610 / (double)iGameCount_*100.0, iWinGame_2584 / (double)iGameCount_ * 100.0,
-		 iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0);
-	fclose (pFile);
-	printf(" End! \n");
+	if( Round > 0 && Round % (LogPeriod*10) == 0){
+		pFile = fopen ("Log.txt","a");
+		fprintf (pFile, "Round: %d, MaxTile = %d, MaxScore = %d, Average Score = %2.2f\n"
+			, Round / LogPeriod, iMaxTileOverall_, iMaxScoreOverall_, iTotalScore_*1. / iGameCount_);
+		fprintf( pFile, "610: %2.2f%%, 2584: %2.2f%%, 6765: %2.2f%%, 10946: %2.2f%%\n\n",
+			iWinGame_610 / (double)iGameCount_*100.0, iWinGame_2584 / (double)iGameCount_ * 100.0,
+			iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0);
+		fclose (pFile);
+	}
+	if(Round > 0 && Round % LogPeriod == 0){
+		pFile = fopen("Log.csv", "a");
+		fprintf(pFile, "%d, %d, %d, %f, %2.2f%%, %2.2f%%, %2.2f%%, %2.2f%%\n", Round / LogPeriod, iMaxTileOverall_,
+			iMaxScoreOverall_,  iTotalScore_ * 1. / iGameCount_, iWinGame_610 / (double)iGameCount_*100.0,
+			iWinGame_2584 / (double)iGameCount_ * 100.0,iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0);
+		fclose(pFile);
+	}
 }

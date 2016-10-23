@@ -37,8 +37,10 @@ public:
 	int pow(int x, int y);
 private:
 	float *Data;
+#ifdef __TCLMODE__
 	float *numerator;
 	float *denumorator;
+#endif
 	int index[4][4];
 	int iTableSize;
 	float normalization_factor;

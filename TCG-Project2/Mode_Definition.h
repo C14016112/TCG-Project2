@@ -28,7 +28,7 @@
 #define iUpperbound 22
 #define iLowerBound 15
 #define iRange 7
-#define LogPeriod 10000
+#define LogPeriod 1000
 const int upsidedown_table[16] = {3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12};
 const int rotate_table[16] = {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12};
 

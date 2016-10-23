@@ -36,8 +36,10 @@ public:
 	int Rotate(const int index);
 private:
 	float *Data;
+#ifdef __TCLMODE__
 	float *numerator;
 	float *denumorator;
+#endif
 	int index[8][6];
 	int iTableSize;
 	float normalization_factor;
