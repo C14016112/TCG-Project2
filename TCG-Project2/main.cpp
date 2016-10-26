@@ -14,6 +14,8 @@ void PlayGame(Fib2584Ai &, Statistic &, std::stack<Array_Board> &);
 void PlayGame(Fib2584Ai &, Statistic &);
 #endif
 
+void WriteLog();
+
 int main(int argc, char* argv[])
 {
 #ifdef __TESTMOVESPPEDMODE__
@@ -21,18 +23,7 @@ int main(int argc, char* argv[])
 	double start1, start2, end1, end2;
 	double totaltime1 = 0, totaltime2 = 0;
 #endif
-	// show the time and write in the log
-	struct tm *ptr;
-	time_t lt;
-	lt =time(NULL);
-	ptr=gmtime(&lt);
-	printf(ctime(&lt));
-
-	FILE * pFile;
-	pFile = fopen ("Log.txt","a");
-	fprintf(pFile, ctime(&lt));
-	fprintf(pFile, "LogPeriod = %d\n\n", LogPeriod*3);
-	fclose(pFile);
+	WriteLog();
 	/*if(argc == 1) {
 		cerr << "usage: play_game rounds [other arguments which your AI needs]" << endl;
 		return 1;
@@ -89,7 +80,6 @@ int main(int argc, char* argv[])
 		if (i % 50 == 0) {
 			ai.WriteToWeightTable();
 		}
-			
 	}
 		
 	
@@ -160,3 +150,23 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic)
 	}
 }
 #endif
+
+void WriteLog()
+{
+	// show the time and write in the log
+	struct tm *ptr;
+	time_t lt;
+	lt = time(NULL);
+	ptr = gmtime(&lt);
+	printf(ctime(&lt));
+
+	FILE * pFile;
+	pFile = fopen("Log.txt", "a");
+	fprintf(pFile, ctime(&lt));
+	fprintf(pFile, "LogPeriod = %d, Learning Rate = %f", LogPeriod * 3, LEARNING_RATE);
+#ifdef __TCLAMBDAMODE__
+	fprintf(pFile, ", Lambda = %f ", LAMBDA);
+#endif
+	fprintf(pFile, "\n\n");
+	fclose(pFile);
+}
