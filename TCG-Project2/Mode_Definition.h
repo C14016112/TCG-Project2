@@ -1,8 +1,10 @@
 #ifndef __MODEDEFINITION_H__
 #define __MODEDEFINITION_H__
 
-#define PlayRound 5000000
+#define PlayRound 1000
+#define __PARALLELMODE__ // parallel mode
 #define __TCLMODE__ // tcl mode
+#define __TCLAMBDAMODE__ // tcl( \lambda ) mode
 //#define __BOXATANGLEMODE__ // box at angle mode
 //#define __BOXATSIDEMODE__ // box at side mode
 //#define __BOXATMIDDLEMODE__ // box at middle mode
@@ -29,6 +31,7 @@
 #define iLowerBound 15
 #define iRange 7
 #define LogPeriod 1000
+#define LAMBDA 0.5
 const int upsidedown_table[16] = {3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12};
 const int rotate_table[16] = {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12};
 

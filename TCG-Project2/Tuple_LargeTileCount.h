@@ -3,6 +3,7 @@
 #include "Fib2584/BitBoard.h"
 #include "Mode_Definition.h"
 #include"GameBoard_Extend.h"
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #pragma once

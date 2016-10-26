@@ -8,6 +8,12 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 {
 	feature_number = 0;
 	srand(time(NULL));
+#ifdef __PARALLELMODE__
+	printf("Parallel: Parallel Mode is opened\n");
+#endif
+#ifdef __TCLAMBDAMODE__
+	printf("TC Lambda Mode is opened\n");
+#endif
 #ifdef __INSIDELINEMODE__
 	int line_inside_index[4] = {1, 5, 9, 13};
 	Line_Inside.SetParameter(line_inside_index);
@@ -130,13 +136,23 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 	return;
 }
 
-
+#ifdef __PARALLELMODE__
+MoveDirection Fib2584Ai::generateMove(int board[4][4], std::stack<Array_Board> & Array_Board_Stack)
+{
+	return FindBestDirection(board, Array_Board_Stack);
+}
+#else
 MoveDirection Fib2584Ai::generateMove(int board[4][4])
 {
 	return FindBestDirection(board);
 }
+#endif
 
+#ifdef __PARALLELMODE__
+MoveDirection Fib2584Ai::FindBestDirection(int board[4][4], std::stack<Array_Board> & Array_Board_Stack)
+#else
 MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
+#endif
 {
 
 	for (int j = 0 ; j<4 ;j ++){
@@ -169,10 +185,10 @@ MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 		}
 	}
 	b_struct.award = award[next_dir];
+#ifdef __TRAININGMODE__
 	Array_Board_Stack.push(b_struct);
+#endif
 	return next_dir;
-
-
 }
 
 float Fib2584Ai::Evaluate(int board[4][4])
@@ -225,23 +241,43 @@ float Fib2584Ai::Evaluate(int board[4][4])
 	return value;
 }
 
+#ifdef __PARALLELMODE__
+void Fib2584Ai::gameOver(int board[4][4], int iScore, std::stack<Array_Board> & Array_Board_Stack)
+{
+#ifdef __TRAININGMODE__
+	Learning(Array_Board_Stack);
+#endif
+	return;
+}
+#else
 void Fib2584Ai::gameOver(int board[4][4], int iScore)
 {
 #ifdef __TRAININGMODE__
 	Learning();
 #endif
-	return;
 }
+#endif
 
+#ifdef __PARALLELMODE__
+void Fib2584Ai::Learning(std::stack<Array_Board> & Array_Board_Stack)
+#else
 void Fib2584Ai::Learning()
+#endif
 {
 	int nextaward = 0;
-	int nextvalue = 0;
+	float nextvalue = 0;
+	float nextaward_weight = 0;
+	float totalvalue = 0;
 	float delta = 0;
+	float FinalTerm = 0;
 
 	while(Array_Board_Stack.empty() == false){
+#ifdef __TCLAMBDAMODE__
+		//delta = ((nextvalue * (1 - LAMBDA) ) + nextaward - Evaluate(Array_Board_Stack.top().state)) / feature_number; 
+		delta = ((totalvalue + (1 - nextaward_weight) * FinalTerm ) - Evaluate(Array_Board_Stack.top().state)) / feature_number;
+#else
 		delta = (nextaward + nextvalue - Evaluate(Array_Board_Stack.top().state)) / feature_number;
-
+#endif
 #ifdef __INSIDELINEMODE__
 			Line_Inside.Update(Array_Board_Stack.top().state, delta);
 #endif
@@ -267,10 +303,10 @@ void Fib2584Ai::Learning()
 			Box_Angle.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __BOXATMIDDLEMODE__
-			Box_Middle.Update(Array_Board_Stack.top().state, delta);
+			Box_Middle.setWeight(Array_Board_Stack.top().state, i, box_angle_newvalue);
 #endif
 #ifdef __BOXATSIDEMODE__
-			Box_Side.Update(Array_Board_Stack.top().state, delta);
+			Box_Side.setWeight(Array_Board_Stack.top().state, i, box_middle_newvalue);
 #endif
 #ifdef __MERGECOUNTMODE__
 			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);
@@ -289,12 +325,24 @@ void Fib2584Ai::Learning()
 #ifdef __CONSTANTVALUEMODE__
 		Adjust_Weight += delta;
 #endif
+#ifdef __TCLAMBDAMODE__
 		nextvalue = Evaluate(Array_Board_Stack.top().state);
 		nextaward = Array_Board_Stack.top().award;
+		if (FinalTerm == 0)
+			FinalTerm += nextvalue + nextaward;
+		else
+			FinalTerm += nextaward;
+		nextaward_weight = nextaward_weight * LAMBDA + LAMBDA;
+		totalvalue = totalvalue * LAMBDA + nextaward_weight * nextaward + LAMBDA * nextvalue;
+		
+#else
+		nextvalue = Evaluate(Array_Board_Stack.top().state);
+		nextaward = Array_Board_Stack.top().award;
+#endif
+		
 		Array_Board_Stack.pop();
 	}
 }
-
 
 
 void Fib2584Ai::WriteToWeightTable()

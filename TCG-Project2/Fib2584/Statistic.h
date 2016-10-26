@@ -23,13 +23,14 @@ public:
 	void updateMaxTile(int iTile);
 	void setStartTime();
 	void setFinishTime();
-	void WriteLog(int Round, int LogPeriod);
+	void WriteLog(int Round);
 private:
 	int iMaxTileOverall_;
 	int iWinGame_610;
 	int iWinGame_2584;
 	int iWinGame_6765;
 	int iWinGame_10946;
+	int iWinGame_17711;
 	int iMaxScoreOverall_;
 	int iTotalScore_;
 	int iGameCount_;

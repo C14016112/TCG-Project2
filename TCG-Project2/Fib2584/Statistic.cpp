@@ -12,6 +12,7 @@ void Statistic::reset()
 	iWinGame_2584 = 0;
 	iWinGame_6765 = 0;
 	iWinGame_10946 = 0;
+	iWinGame_17711 = 0;
 	iMaxScoreOverall_ = 0;
 	iTotalScore_ = 0;
 	iGameCount_ = 0;
@@ -25,6 +26,7 @@ void Statistic::show()
 	cout << "Win rate(2584) : " << iWinGame_2584 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Win rate(6765) : " << iWinGame_6765 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Win rate(10946): " << iWinGame_10946 / (double)iGameCount_ * 100.0 << "%\n";
+	cout << "Win rate(17711): " << iWinGame_17711 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Max score: " << iMaxScoreOverall_ << endl;
 	cout << "Average score: " << iTotalScore_ / iGameCount_ << endl;
 	cout << "Max tile: " << iMaxTileOverall_ << endl;
@@ -32,6 +34,7 @@ void Statistic::show()
 	cout << dTotalTime / (double)iMoveCount_ << " sec/move" << endl;
 	cout << iMoveCount_ / dTotalTime << " moves/sec" << endl;
 	cout << "Total Time: " << dTotalTime << endl;
+	cout << "Total Count: " << iGameCount_ << endl;
 }
 
 void Statistic::increaseOneGame()
@@ -56,6 +59,7 @@ void Statistic::updateMaxTile(int iTile)
 	iWinGame_2584 += iTile >= 2584?1:0;
 	iWinGame_6765 += iTile >= 6765?1:0;
 	iWinGame_10946 += iTile >= 10946?1:0;
+	iWinGame_17711 += iTile >= 17711 ? 1 : 0;
 	iMaxTileOverall_ = iTile > iMaxTileOverall_?iTile:iMaxTileOverall_;
 }
 
@@ -69,23 +73,22 @@ void Statistic::setFinishTime()
 	timeDifference_ += clock();
 }
 
-void Statistic::WriteLog(int Round, int LogPeriod)
+void Statistic::WriteLog(int Round)
 {
 	FILE * pFile;
-	if( Round > 0 && Round % (LogPeriod*10) == 0){
-		pFile = fopen ("Log.txt","a");
-		fprintf (pFile, "Round: %d, MaxTile = %d, MaxScore = %d, Average Score = %2.2f\n"
-			, Round / LogPeriod, iMaxTileOverall_, iMaxScoreOverall_, iTotalScore_*1. / iGameCount_);
-		fprintf( pFile, "610: %2.2f%%, 2584: %2.2f%%, 6765: %2.2f%%, 10946: %2.2f%%\n\n",
-			iWinGame_610 / (double)iGameCount_*100.0, iWinGame_2584 / (double)iGameCount_ * 100.0,
-			iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0);
-		fclose (pFile);
-	}
-	if(Round > 0 && Round % LogPeriod == 0){
-		pFile = fopen("Log.csv", "a");
-		fprintf(pFile, "%d, %d, %d, %f, %2.2f%%, %2.2f%%, %2.2f%%, %2.2f%%\n", Round / LogPeriod, iMaxTileOverall_,
-			iMaxScoreOverall_,  iTotalScore_ * 1. / iGameCount_, iWinGame_610 / (double)iGameCount_*100.0,
-			iWinGame_2584 / (double)iGameCount_ * 100.0,iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0);
-		fclose(pFile);
-	}
+	pFile = fopen ("Log.txt","a");
+	fprintf (pFile, "Round: %d, MaxTile = %d, MaxScore = %d, Average Score = %2.2f\n"
+		, Round, iMaxTileOverall_, iMaxScoreOverall_, iTotalScore_*1. / iGameCount_);
+	fprintf( pFile, "610: %2.2f%%, 2584: %2.2f%%, 6765: %2.2f%%, 10946: %2.2f%%, 17711: %2.2f%%\n\n",
+		iWinGame_610 / (double)iGameCount_*100.0, iWinGame_2584 / (double)iGameCount_ * 100.0,
+		iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0,
+		iWinGame_17711 / (double)iGameCount_ * 100.0);
+	fclose (pFile);
+
+	pFile = fopen("Log.csv", "a");
+	fprintf(pFile, "%d, %d, %d, %f, %2.2f%%, %2.2f%%, %2.2f%%, %2.2f%%, %2.2f%%\n", Round, iMaxTileOverall_,
+		iMaxScoreOverall_,  iTotalScore_ * 1. / iGameCount_, iWinGame_610 / (double)iGameCount_*100.0,
+		iWinGame_2584 / (double)iGameCount_ * 100.0,iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0, 
+		iWinGame_17711 / (double)iGameCount_ * 100.0);
+	fclose(pFile);
 }

@@ -6,6 +6,13 @@
 #include "Fib2584Ai.h"
 #include <map>
 #include <omp.h>
+#include <stack>
+
+#ifdef __PARALLELMODE__
+void PlayGame(Fib2584Ai &, Statistic &, std::stack<Array_Board> &);
+#else
+void PlayGame(Fib2584Ai &, Statistic &);
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -24,7 +31,7 @@ int main(int argc, char* argv[])
 	FILE * pFile;
 	pFile = fopen ("Log.txt","a");
 	fprintf(pFile, ctime(&lt));
-	fprintf(pFile, "LogPeriod = %d\n\n", LogPeriod);
+	fprintf(pFile, "LogPeriod = %d\n\n", LogPeriod*3);
 	fclose(pFile);
 	/*if(argc == 1) {
 		cerr << "usage: play_game rounds [other arguments which your AI needs]" << endl;
@@ -40,35 +47,108 @@ int main(int argc, char* argv[])
 	Statistic statistic;
 	statistic.setStartTime();
 	// play each round
+	std::stack<Array_Board> Array_Board_Stack1;
+	std::stack<Array_Board> Array_Board_Stack2;
+	std::stack<Array_Board> Array_Board_Stack3;
+	for (int i = 1; i <= 3000; i++){
+		printf(" %d \n", i);
+#ifdef __PARALLELMODE__
+#pragma omp parallel sections
+	{
 
-	for (int i = 0 ; i< iPlayRounds; i++){
-		if(i > 0 && i % 1000 == 0)
-			printf(" %d \n", i);
+#pragma omp section
+		{
+			PlayGame(ai, statistic, Array_Board_Stack1);
+		}
+#pragma omp section
+		{
+			PlayGame(ai, statistic, Array_Board_Stack2);
+		}
+#pragma omp section
+		{
+			PlayGame(ai, statistic, Array_Board_Stack3);
+		}
+	}
+#else 
+		for (int j = 0; j < 3; j++){
+			PlayGame(ai, statistic);
+		}
+#endif
+#ifdef __WRITELOGMODE__
+		statistic.WriteLog(i);
+#endif
+		if (i % 10 == 0) {
+			printf("----------[ Show  statistic ]----------\n");
+			statistic.setFinishTime();
+			printf(" Game Count: %d \n", i);
+			statistic.show();
+			statistic.reset();
+			statistic.setStartTime();
+			
+		}
+		if (i % 50 == 0) {
+			ai.WriteToWeightTable();
+		}
+			
+	}
+		
+	
+	//statistic.setFinishTime();
+	//statistic.show();
+	//ai.WriteToWeightTable();
+	
+	return 0;
+}
+
+#ifdef __PARALLELMODE__
+void PlayGame(Fib2584Ai &ai, Statistic &statistic, std::stack<Array_Board> & arrayboard_stack)
+{
+	for (int i = 0; i< PlayRound; i++){
 		GameBoard gameBoard;
 		gameBoard.initialize();
 		int iScore = 0;
 		int arrayBoard[4][4];
-		while(!gameBoard.terminated()) {
+		while (!gameBoard.terminated()) {
+			gameBoard.getArrayBoard(arrayBoard);
+			MoveDirection moveDirection = ai.generateMove(arrayBoard, arrayboard_stack);
+
+			GameBoard originalBoard = gameBoard;
+			iScore += gameBoard.move(moveDirection);
+			if (originalBoard == gameBoard)
+				continue;
+			statistic.increaseOneMove();
+			gameBoard.addRandomTile();
+
+		}
+		gameBoard.getArrayBoard(arrayBoard);
+		ai.gameOver(arrayBoard, iScore, arrayboard_stack);
+		statistic.increaseOneGame();
+
+		// update statistic data
+		statistic.updateScore(iScore);
+		statistic.updateMaxTile(gameBoard.getMaxTile());
+
+	}
+
+}
+#else
+void PlayGame(Fib2584Ai &ai, Statistic &statistic)
+{
+	for (int i = 0; i< PlayRound; i++){
+		GameBoard gameBoard;
+		gameBoard.initialize();
+		int iScore = 0;
+		int arrayBoard[4][4];
+		while (!gameBoard.terminated()) {
 			gameBoard.getArrayBoard(arrayBoard);
 			MoveDirection moveDirection = ai.generateMove(arrayBoard);
 
 			GameBoard originalBoard = gameBoard;
 			iScore += gameBoard.move(moveDirection);
-			if(originalBoard == gameBoard)
+			if (originalBoard == gameBoard)
 				continue;
 			statistic.increaseOneMove();
 			gameBoard.addRandomTile();
-
-#ifdef __TESTMOVESPPEDMODE__
-			start1 = clock();
-			originalBoard.move(moveDirection);
-			end1 = clock();
-			totaltime1 += end1 - start1;
-			start2 = clock();
-			move.Move(1, arrayBoard);
-			end2 = clock();
-			totaltime2 += end2 - start2;*/
-#endif
 		}
 		gameBoard.getArrayBoard(arrayBoard);
 		ai.gameOver(arrayBoard, iScore);
@@ -77,34 +157,6 @@ int main(int argc, char* argv[])
 		// update statistic data
 		statistic.updateScore(iScore);
 		statistic.updateMaxTile(gameBoard.getMaxTile());
-#ifdef __WRITELOGMODE__
-		statistic.WriteLog(i, LogPeriod);
-#endif
-		if (i % 10000== 0 && i != 0) {
-			printf("----------[ Show  statistic ]----------\n");
-			statistic.setFinishTime();
-			printf(" Game Count: %d \n", i);
-			statistic.show();
-			statistic.reset();
-			statistic.setStartTime();
-#ifdef __TESTMOVESPEEDMODE__
-			printf("The move time of framework: %f\n", totaltime1 / CLOCKS_PER_SEC);
-			printf("The move time of selftable: %f\n", totaltime2 / CLOCKS_PER_SEC);
-			printf("framework / selftable = %f\n", totaltime1/totaltime2);
-			printf("---------------------------------------\n" );
-			getchar();
-#endif
-			if (i % 50000 == 0 && i != 0) {
-				ai.WriteToWeightTable();
-			}
-		}
 	}
-	statistic.setFinishTime();
-	
-	ai.WriteToWeightTable();
-	// output statistic data
-	statistic.show();
-	//printf(" the difference is %d ", diff);
-	system("pause");
-	return 0;
 }
+#endif
