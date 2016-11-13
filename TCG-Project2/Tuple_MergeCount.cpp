@@ -2,7 +2,8 @@
 
 Tuple_MergeCount::Tuple_MergeCount()
 {
-	iTableSize = 3;
+	for (int i = 0; i < STAGENUM; i++)
+		iTableSize[i] = 3;
 	normalization_factor = std::sqrt(8.);
 	Constructor();
 }
@@ -39,20 +40,23 @@ float Tuple_MergeCount::getWeight(int board[4][4])
 float Tuple_MergeCount::getWeight(int board[4][4], int no)
 {
 	int position = MergeableNumber(board, no);
-	return getWeightFromTable(position, board);
+	int stage = GetStage(board);
+	return getWeightFromTable(position, board, stage);
 }
 
 void Tuple_MergeCount::setWeight(int board[4][4], int no, float weight)
 {
 	int position = MergeableNumber(board, no);
-	setWeightToTable(position, weight, board);
+	int stage = GetStage(board);
+	setWeightToTable(position, weight, board, stage);
 }
 
 void Tuple_MergeCount::Update(int board[4][4], float error)
 {
 	for (int i = 0 ; i < 8 ; i++){
 		int position = MergeableNumber(board, i);
-		UpdateTable(position, error, board);
+		int stage = GetStage(board);
+		UpdateTable(position, error, board, stage);
 	}
 }
 

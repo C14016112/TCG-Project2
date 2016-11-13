@@ -34,21 +34,21 @@ public:
 	void WriteToWeightTable(const char * filename);
 	int UpsideDown(const int index);
 	int Rotate(const int index);
-	void UpdateTable(int pos, const float err, int board[4][4]);
-	float getWeightFromTable(int position, int board[4][4]);
-	void setWeightToTable(int position, float value, int board[4][4]);
+	void UpdateTable(int pos, const float err, int board[4][4], int stage);
+	float getWeightFromTable(int position, int board[4][4], int stage);
+	void setWeightToTable(int position, float value, int board[4][4], int stage);
 	int GetMaxTile(int board[4][4]);
 	void Constructor();
 	void Desturctor();
+	int GetStage(int board[4][4]);
 protected:
 	float **Data;
 #ifdef __TCLMODE__
 	float **numerator;
 	float **denumorator;
 #endif
-	int iTableSize;
+	int iTableSize[STAGENUM];
 	float normalization_factor;
-	int *threshold;
 };
 
 #endif

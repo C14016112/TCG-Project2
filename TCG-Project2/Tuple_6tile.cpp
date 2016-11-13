@@ -6,7 +6,8 @@ Tuple_6tile::Tuple_6tile()
 
 void Tuple_6tile::SetParameter(int input_index[6])
 {
-	iTableSize = iUpperbound*iUpperbound*iUpperbound*iUpperbound*iUpperbound*iUpperbound;
+	for (int stage = 0; stage < STAGENUM; stage++)
+		iTableSize[stage] = stage_threshold[stage]*stage_threshold[stage]*stage_threshold[stage]*stage_threshold[stage]*stage_threshold[stage]*stage_threshold[stage];
 	normalization_factor = std::sqrt(8.);
 	Constructor();
 
@@ -42,13 +43,14 @@ float Tuple_6tile::getWeight(int board[4][4], int no)
 #ifdef _DEBUG
 	assert(no >= 0 && no < 8);
 #endif
+	int stage = GetStage(board);
 	int position = board[index[no][0] / 4][index[no][0] % 4]
-	+ iUpperbound * board[index[no][1] / 4][index[no][1] % 4]
-	+ iUpperbound * iUpperbound * board[index[no][2] / 4][index[no][2] % 4]
-	+ iUpperbound * iUpperbound * iUpperbound * board[index[no][3] / 4][index[no][3] % 4]
-	+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][4] / 4][index[no][4] % 4]
-	+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][5] / 4][index[no][5] % 4];
-	return getWeightFromTable(position, board);
+	+ stage_threshold[stage] * board[index[no][1] / 4][index[no][1] % 4]
+	+ stage_threshold[stage] * stage_threshold[stage] * board[index[no][2] / 4][index[no][2] % 4]
+	+ stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * board[index[no][3] / 4][index[no][3] % 4]
+	+ stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * board[index[no][4] / 4][index[no][4] % 4]
+	+ stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * board[index[no][5] / 4][index[no][5] % 4];
+	return getWeightFromTable(position, board, stage);
 }
 
 void Tuple_6tile::setWeight(int board[4][4], int no, float weight)
@@ -56,41 +58,44 @@ void Tuple_6tile::setWeight(int board[4][4], int no, float weight)
 #ifdef _DEBUG
 	assert(no >= 0 && no < 8);
 #endif
-	
+	int stage = GetStage(board);
 	int position = board[index[no][0] / 4][index[no][0] % 4]
-	+ iUpperbound * board[index[no][1] / 4][index[no][1] % 4]
-	+ iUpperbound * iUpperbound * board[index[no][2] / 4][index[no][2] % 4]
-	+ iUpperbound * iUpperbound * iUpperbound * board[index[no][3] / 4][index[no][3] % 4]
-	+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][4] / 4][index[no][4] % 4]
-	+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][5] / 4][index[no][5] % 4];
-	setWeightToTable(position, weight, board);
+	+ stage_threshold[stage] * board[index[no][1] / 4][index[no][1] % 4]
+	+ stage_threshold[stage] * stage_threshold[stage] * board[index[no][2] / 4][index[no][2] % 4]
+	+ stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * board[index[no][3] / 4][index[no][3] % 4]
+	+ stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * board[index[no][4] / 4][index[no][4] % 4]
+	+ stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * board[index[no][5] / 4][index[no][5] % 4];
+	setWeightToTable(position, weight, board, stage);
 }
 
 void Tuple_6tile::Update(int board[4][4], const float error)
 {
+	int stage = GetStage(board);
 	for (int no = 0 ; no < 8 ; no++){
 		int position = board[index[no][0] / 4][index[no][0] % 4]
-		+ iUpperbound * board[index[no][1] / 4][index[no][1] % 4]
-		+ iUpperbound * iUpperbound * board[index[no][2] / 4][index[no][2] % 4]
-		+ iUpperbound * iUpperbound * iUpperbound * board[index[no][3] / 4][index[no][3] % 4]
-		+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][4] / 4][index[no][4] % 4]
-		+ iUpperbound * iUpperbound * iUpperbound * iUpperbound * iUpperbound * board[index[no][5] / 4][index[no][5] % 4];
+		+ stage_threshold[stage] * board[index[no][1] / 4][index[no][1] % 4]
+		+ stage_threshold[stage] * stage_threshold[stage] * board[index[no][2] / 4][index[no][2] % 4]
+		+ stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * board[index[no][3] / 4][index[no][3] % 4]
+		+ stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * board[index[no][4] / 4][index[no][4] % 4]
+		+ stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * stage_threshold[stage] * board[index[no][5] / 4][index[no][5] % 4];
 
 		float weight = 1;
 		if (board[index[no][0] / 4][index[no][0] % 4] > board[index[no][1] / 4][index[no][1] % 4]) {
 			for (int j = 0; j < 5; j++) {
 				if (board[index[no][j] / 4][index[no][j] % 4] == board[index[no][j + 1] / 4][board[no][j + 1] % 4] + 2)
 					weight *= 1.1;
+				else break;
 			}
 		}
 		else {
 			for (int j = 0; j < 5; j++) {
 				if (board[index[no][j] / 4][index[no][j] % 4] == board[index[no][j + 1] / 4][board[no][j + 1] % 4] - 2)
 					weight *= 1.1;
+				else break;
 			}
 		}
 		weight -= 1;
-		UpdateTable(position, error + (float)std::abs(error) * weight, board);
+		UpdateTable(position, error + (float)std::abs(error) * weight, board, stage);
 		//UpdateTable(position, error, board);
 	}
 }

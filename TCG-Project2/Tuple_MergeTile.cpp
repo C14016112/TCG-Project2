@@ -13,9 +13,8 @@ Tuple_MergeTile::~Tuple_MergeTile()
 void Tuple_MergeTile::SetParameter(int inputindex[4])
 {
 	normalization_factor = std::sqrt(4.);
-	iTableSize = 1;
-	for (int i = 0 ;i < iRange; i++)
-		iTableSize *= 3;
+	for (int i = 0; i < STAGENUM; i++)
+		iTableSize[i] = pow(3, iRange);
 	Constructor();
 
 	index[0][0] = inputindex[0];
@@ -42,8 +41,9 @@ float Tuple_MergeTile::getWeight(int board[4][4], int no)
 #ifdef _DEBUG
 	assert(no >= 0 && no < 4);
 #endif
+	int stage = GetStage(board);
 	int position = GetMergeNumber(board, no);
-	return getWeightFromTable(position, board);
+	return getWeightFromTable(position, board, stage);
 }
 
 void Tuple_MergeTile::setWeight(int board[4][4], int no, float weight)
@@ -51,15 +51,17 @@ void Tuple_MergeTile::setWeight(int board[4][4], int no, float weight)
 #ifdef _DEBUG
 	assert(no >= 0 && no < 4);
 #endif
+	int stage = GetStage(board);
 	int position = GetMergeNumber(board, no);
-	setWeightToTable(position, weight, board);
+	setWeightToTable(position, weight, board, stage);
 }
 
 void Tuple_MergeTile::Update(int board[4][4], const float error)
 {
+	int stage = GetStage(board);
 	for (int i = 0 ;i<4 ; i++){
 		int position = GetMergeNumber(board, i);
-		UpdateTable(position, error, board);
+		UpdateTable(position, error, board, stage);
 	}
 }
 int Tuple_MergeTile::GetMergeNumber(int board[4][4], int no)

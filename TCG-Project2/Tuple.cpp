@@ -13,14 +13,8 @@ Tuple::~Tuple()
 
 }
 
-void Tuple::UpdateTable(int position, const float error, int board[4][4])
+void Tuple::UpdateTable(int position, const float error, int board[4][4], int stage)
 {
-	int stage = 0;
-	int maxtile = GetMaxTile(board);
-	for (int i = 0; i < STAGENUM - 1; i++) {
-		if (maxtile >= threshold[i])
-			stage++;
-	}
 #ifdef __TCLMODE__
 	denumorator[stage][position] += abs(error);
 	numerator[stage][position] += error;
@@ -39,7 +33,7 @@ void Tuple::ReadFromWeightTable(const char * filename) {
 		if (!fin.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
-		fin.read(reinterpret_cast<char*>(Data[i]), (iTableSize)* sizeof(float));
+		fin.read(reinterpret_cast<char*>(Data[i]), (iTableSize[i])* sizeof(float));
 		fin.close();
 #ifdef __TCLMODE__
 		sprintf(name, "%s%d_coherence_numerator", filename, i);
@@ -47,14 +41,14 @@ void Tuple::ReadFromWeightTable(const char * filename) {
 		if (!fin.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
-		fin.read(reinterpret_cast<char*>(numerator[i]), (iTableSize)* sizeof(float));
+		fin.read(reinterpret_cast<char*>(numerator[i]), (iTableSize[i])* sizeof(float));
 		fin.close();
 		sprintf(name, "%s%d_coherence_denumorator", filename, i);
 		fin.open(name, ios::in | ios::binary);
 		if (!fin.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
-		fin.read(reinterpret_cast<char*>(denumorator[i]), (iTableSize)* sizeof(float));
+		fin.read(reinterpret_cast<char*>(denumorator[i]), (iTableSize[i])* sizeof(float));
 		fin.close();
 #endif
 	}
@@ -73,7 +67,7 @@ void Tuple::WriteToWeightTable(const char * filename)
 		if (!fout.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
-		fout.write(reinterpret_cast<char*>(numerator[i]), (iTableSize)* sizeof(float));
+		fout.write(reinterpret_cast<char*>(numerator[i]), (iTableSize[i])* sizeof(float));
 		fout.close();
 
 		sprintf(name, "%s%d_coherence_denumorator", filename, i);
@@ -81,7 +75,7 @@ void Tuple::WriteToWeightTable(const char * filename)
 		if (!fout.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
-		fout.write(reinterpret_cast<char*>(denumorator[i]), (iTableSize)* sizeof(float));
+		fout.write(reinterpret_cast<char*>(denumorator[i]), (iTableSize[i])* sizeof(float));
 		fout.close();
 #endif
 		sprintf(name, "%s%d", filename, i);
@@ -90,7 +84,7 @@ void Tuple::WriteToWeightTable(const char * filename)
 			printf("The file '%s' was not open\n", name);
 		}
 
-		fout.write(reinterpret_cast<char*>(Data[i]), (iTableSize)* sizeof(float));
+		fout.write(reinterpret_cast<char*>(Data[i]), (iTableSize[i])* sizeof(float));
 		fout.close();
 
 	}
@@ -115,59 +109,46 @@ int Tuple::Rotate(const int index)
 }
 
 
-float Tuple::getWeightFromTable(int position, int board[4][4])
+float Tuple::getWeightFromTable(int position, int board[4][4], int stage)
 {
-	int stage = 0;
-	int maxtile = GetMaxTile(board);
-	for (int i = 0; i < STAGENUM - 1; i++) {
-		if (maxtile >= threshold[i])
-			stage++;
-	}
-
 	return Data[stage][position];
 }
 
-void Tuple::setWeightToTable(int position, float value, int board[4][4])
+void Tuple::setWeightToTable(int position, float value, int board[4][4], int stage)
 {
-	int stage = 0;
-	int maxtile = GetMaxTile(board);
-	for (int i = 0; i < STAGENUM - 1; i++) {
-		if (maxtile >= threshold[i])
-			stage++;
-	}
 	Data[stage][position] = value;
 }
 
 void Tuple::Constructor()
 {
+	
 	Data = new float*[STAGENUM];
-	for (int i = 0; i < STAGENUM; i++)
-		Data[i] = new float[iTableSize];
+		
 #ifdef __TCLMODE__
 	numerator = new float*[STAGENUM];
 	denumorator = new float*[STAGENUM];
-	for (int i = 0; i < STAGENUM; i++) {
-		numerator[i] = new float[iTableSize];
-		denumorator[i] = new float[iTableSize];
-	}
 #endif
+
+	for (int i = 0; i < STAGENUM; i++) {
+		Data[i] = new float[iTableSize[i]];
+#ifdef __TCLMODE__
+		numerator[i] = new float[iTableSize[i]];
+		denumorator[i] = new float[iTableSize[i]];
+#endif
+	}
 
 	// initialize the table
 
-	for (int i = 0; i < iTableSize; i++) {
-		for (int j = 0; j < STAGENUM; j++) {
-			Data[j][i] = 0;
+	for (int i = 0; i < STAGENUM; i++) {
+		for (int j = 0; j < iTableSize[i]; j++) {
+			Data[i][j] = 0;
 #ifdef __TCLMODE__
-			numerator[j][i] = 0.00000001;
-			denumorator[j][i] = 0.00000001;
+			numerator[i][j] = 0.00000001;
+			denumorator[i][j] = 0.00000001;
 #endif
 		}
 	}
 
-	threshold = new int[STAGENUM];
-	for (int i = 0; i < STAGENUM; i++) {
-		threshold[i] = stage_threshold[i];
-	}
 }
 
 void Tuple::Desturctor()
@@ -180,9 +161,10 @@ void Tuple::Desturctor()
 #endif
 	}
 	delete Data;
+#ifdef __TCLMODE__
 	delete numerator;
 	delete denumorator;
-	delete threshold;
+#endif
 }
 
 int Tuple::GetMaxTile(int board[4][4])
@@ -192,4 +174,15 @@ int Tuple::GetMaxTile(int board[4][4])
 		for (int j = 0; j < 4; j++)
 			if (board[i][j] > maxtile) maxtile = board[i][j];
 	return maxtile;
+}
+
+int Tuple::GetStage(int board[4][4])
+{
+	int stage = 0;
+	int maxtile = GetMaxTile(board);
+	for (int i = 0; i < STAGENUM; i++) {
+		if (maxtile >= stage_threshold[i])
+			stage++;
+	}
+	return stage;
 }

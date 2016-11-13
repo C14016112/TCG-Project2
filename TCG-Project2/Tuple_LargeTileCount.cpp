@@ -4,7 +4,8 @@
 Tuple_LargeTileCount::Tuple_LargeTileCount(void)
 {
 	normalization_factor = 1;
-	iTableSize = pow(4, iRange);
+	for (int i = 0; i < STAGENUM; i++)
+		iTableSize[i] = pow(4, iRange);
 	Constructor();
 }
 
@@ -16,14 +17,16 @@ Tuple_LargeTileCount::~Tuple_LargeTileCount(void)
 
 float Tuple_LargeTileCount::getWeight(int board[4][4])
 {
+	int stage = GetStage(board);
 	int position = getPosition(board);
-	return getWeightFromTable(position, board);
+	return getWeightFromTable(position, board, stage);
 }
 
 void Tuple_LargeTileCount::setWeight(int board[4][4], const float weight)
 {
+	int stage = GetStage(board);
 	int position = getPosition(board);
-	setWeightToTable(position, weight, board);
+	setWeightToTable(position, weight, board, stage);
 }
 
 int Tuple_LargeTileCount::getPosition(int board[4][4])
@@ -46,8 +49,9 @@ int Tuple_LargeTileCount::getPosition(int board[4][4])
 
 void Tuple_LargeTileCount::Update(int board[4][4], const float error)
 {
+	int stage = GetStage(board);
 	int position = getPosition(board);
-	UpdateTable(position, error, board);
+	UpdateTable(position, error, board, stage);
 }
 
 int Tuple_LargeTileCount::pow(int x, int y)
