@@ -6,8 +6,9 @@ Tuple_4tile::Tuple_4tile()
 
 void Tuple_4tile::SetParameter(int input_index[4])
 {
-	normalization_factor = 1 / std::sqrt(8.);
+	normalization_factor = (float)std::sqrt(8.);
 	iTableSize = iUpperbound*iUpperbound*iUpperbound*iUpperbound;
+	Constructor();
 	for (int i = 0 ; i<4 ; i++){
 		for(int j = 0; j<4; j++){
 			if(i == 0){
@@ -21,27 +22,12 @@ void Tuple_4tile::SetParameter(int input_index[4])
 		}
 	}
 
-	Data = new float[iTableSize];
-#ifdef __TCLMODE__
-	numerator = new float[iTableSize];
-	denumorator = new float[iTableSize];
-#endif
-	for (int i = 0 ; i< iTableSize; i++){
-		Data[i] = 0;
-#ifdef __TCLMODE__
-		numerator[i] = 0.00000001;
-		denumorator[i] = 0.00000001;
-#endif
-	}
+
 }
 
 Tuple_4tile::~Tuple_4tile()
 {
-	delete Data;
-#ifdef __TCLMODE__
-	delete numerator;
-	delete denumorator;
-#endif
+	Desturctor();
 }
 
 float Tuple_4tile::getWeight(int board[4][4]){
@@ -62,7 +48,7 @@ float Tuple_4tile::getWeight(int board[4][4], int no)
 		+ iUpperbound * board[index[no][1] / 4][index[no][1] % 4]
 		+ iUpperbound * iUpperbound * board[index[no][2] / 4][index[no][2] % 4]
 		+ iUpperbound * iUpperbound * iUpperbound * board[index[no][3] / 4][index[no][3] % 4];
-	return  Data[position];
+	return  getWeightFromTable(position, board);
 }
 
 void Tuple_4tile::setWeight(int board[4][4], int no, float weight)
@@ -74,7 +60,7 @@ void Tuple_4tile::setWeight(int board[4][4], int no, float weight)
 		+ iUpperbound * board[index[no][1] / 4][index[no][1] % 4]
 		+ iUpperbound * iUpperbound * board[index[no][2] / 4][index[no][2] % 4]
 		+ iUpperbound * iUpperbound * iUpperbound * board[index[no][3] / 4][index[no][3] % 4];
-	Data[position] = weight;
+	setWeightToTable(position, weight, board);
 }
 
 void Tuple_4tile::Update(int board[4][4],const float error){
@@ -84,100 +70,21 @@ void Tuple_4tile::Update(int board[4][4],const float error){
 		+ iUpperbound * board[index[i][1] / 4][index[i][1] % 4]
 		+ iUpperbound * iUpperbound * board[index[i][2] / 4][index[i][2] % 4]
 		+ iUpperbound * iUpperbound * iUpperbound * board[index[i][3] / 4][index[i][3] % 4];
-#ifdef __TCLMODE__
-		denumorator[position] += abs(error);
-		numerator[position] += error;
-		Data[position] += LEARNING_RATE * error * abs(numerator[position]) / denumorator[position] / normalization_factor;
-#else
-		Data[position] += LEARNING_RATE * error / normalization_factor;
-#endif
+		
+		float weight = 1;
+		if (board[index[i][0] / 4][index[i][0] % 4] > board[index[i][1] / 4][index[i][1] % 4]) {
+			for (int j = 0; j < 3; j++) {
+				if (board[index[i][j] / 4][index[i][j] % 4] == board[index[i][j + 1] / 4][board[i][j + 1] % 4] + 2)
+					weight *= 1.1;
+			}
+		}
+		else {
+			for (int j = 0; j < 3; j++) {
+				if (board[index[i][j] / 4][index[i][j] % 4] == board[index[i][j + 1] / 4][board[i][j + 1] % 4] - 2)
+					weight *= 1.1;
+			}
+		}
+		weight -= 1;
+		UpdateTable(position, error + (float) std::abs(error) * weight, board);
 	}
-}
-
-void Tuple_4tile::ReadFromWeightTable(const char * filename){
-
-	ifstream fin;
-	fin.open(filename, ios::in | ios::binary );
-	if( !fin.is_open()){
-		printf("The file '%s' was not open\n", filename);
-		return ;
-	}
-	fin.read(reinterpret_cast<char*>(Data), (iTableSize) * sizeof(float));
-	fin.close();
-#ifdef __TCLMODE__
-	char name[100] = {0};
-	char name2[100] = {0};
-	sprintf(name, "%s_coherence_numerator", filename);
-	fin.open(name, ios::in | ios::binary );
-	if( !fin.is_open()){
-		printf("The file '%s' was not open\n", name);
-		return ;
-	}
-	fin.read(reinterpret_cast<char*>(numerator), (iTableSize) * sizeof(float));
-	fin.close();
-	sprintf(name2, "%s_coherence_denumorator", filename);
-	fin.open(name2, ios::in | ios::binary );
-	if( !fin.is_open()){
-		printf("The file '%s' was not open\n", name2);
-		return ;
-	}
-	fin.read(reinterpret_cast<char*>(denumorator), (iTableSize) * sizeof(float));
-	fin.close();
-#endif
-}
-
-
-void Tuple_4tile::WriteToWeightTable(const char * filename)
-{
-	ofstream fout;
-#ifdef __TCLMODE__
-	char name[100] = {0};
-	char name2[100] = {0};
-	sprintf(name, "%s_coherence_numerator", filename);
-	fout.open(name, ios::out | ios::binary );
-	if( !fout.is_open()){
-		printf("The file '%s' was not open\n", name);
-		return ;
-	}
-	fout.write(reinterpret_cast<char*>(numerator), (iTableSize) * sizeof(float));
-	fout.close();
-
-	sprintf(name2, "%s_coherence_denumorator", filename);
-	fout.open(name2, ios::out | ios::binary );
-	if( !fout.is_open()){
-		printf("The file '%s' was not open\n", name2);
-		return ;
-	}
-	fout.write(reinterpret_cast<char*>(denumorator), (iTableSize) * sizeof(float));
-	fout.close();
-#endif
-	fout.open(filename, ios::out | ios::binary );
-
-	if( !fout.is_open()){
-		printf("The file '%s' was not open\n", filename);
-		return ;
-	}
-
-	fout.write(reinterpret_cast<char*>(Data), (iTableSize) * sizeof(float));
-	fout.close();
-
-	
-}
-
-
-
-int Tuple_4tile::UpsideDown(const int index){
-#ifdef _DEBUG
-	assert(index >= 0 && index < 16);
-#endif
-	return upsidedown_table[index];
-}
-
-
-int Tuple_4tile::Rotate(const int index)
-{
-#ifdef _DEBUG
-	assert(index >= 0 && index < 16);
-#endif
-	return rotate_table[index];
 }

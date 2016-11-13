@@ -2,15 +2,9 @@
 
 Tuple_MergeCount::Tuple_MergeCount()
 {
-
-	for (int i = 0 ; i< 3; i++){
-		Data[i] = 0;
-#ifdef __TCLMODE__
-		numerator[i] = 0.00000001;
-		denumorator[i] = 0.00000001;
-#endif
-	}
+	iTableSize = 3;
 	normalization_factor = std::sqrt(8.);
+	Constructor();
 }
 
 void Tuple_MergeCount::SetParameter(const int input_index[4])
@@ -31,37 +25,34 @@ void Tuple_MergeCount::SetParameter(const int input_index[4])
 
 Tuple_MergeCount::~Tuple_MergeCount()
 {
+	Desturctor();
 }
 
-float Tuple_MergeCount::getWeight(const int board[4][4])
+float Tuple_MergeCount::getWeight(int board[4][4])
 {
 	float value = 0;
-	for(int i = 0 ;i<8 ;i++)
-		value += Data[MergeableNumber(board, i)];
+	for (int i = 0; i < 8; i++)
+		value += getWeight(board, i);
 	return  value;
 }
 
-float Tuple_MergeCount::getWeight(const int board[4][4], const int no)
+float Tuple_MergeCount::getWeight(int board[4][4], int no)
 {
-	return  Data[MergeableNumber(board, no)];
+	int position = MergeableNumber(board, no);
+	return getWeightFromTable(position, board);
 }
 
-void Tuple_MergeCount::setWeight(const int board[4][4], const int no, const float weight)
+void Tuple_MergeCount::setWeight(int board[4][4], int no, float weight)
 {
-	Data[MergeableNumber(board, no)] = weight;
+	int position = MergeableNumber(board, no);
+	setWeightToTable(position, weight, board);
 }
 
-void Tuple_MergeCount::Update(const int board[4][4], const float error)
+void Tuple_MergeCount::Update(int board[4][4], float error)
 {
 	for (int i = 0 ; i < 8 ; i++){
 		int position = MergeableNumber(board, i);
-#ifdef __TCLMODE__
-		numerator[position] += error;
-		denumorator[position] += abs(error);
-		Data[position] += LEARNING_RATE * error * abs(numerator[position]) / denumorator[position] / normalization_factor;
-#else 
-		Data[position] += LEARNING_RATE * error / normalization_factor;
-#endif
+		UpdateTable(position, error, board);
 	}
 }
 
@@ -87,88 +78,3 @@ bool Tuple_MergeCount::isMergeable(const int x, const int y)
 	return false;
 }
 
-
-void Tuple_MergeCount::ReadFromWeightTable(const char * filename){
-
-	ifstream fin;
-	fin.open(filename, ios::in | ios::binary );
-	if( !fin.is_open()){
-		printf("The file '%s' was not open\n", filename);
-		return ;
-	}
-	fin.read(reinterpret_cast<char*>(Data), (3) * sizeof(float));
-	fin.close();
-#ifdef __TCLMODE__
-	char name[100] = {0};
-	char name2[100] = {0};
-	sprintf(name, "%s_coherence_numerator", filename);
-	fin.open(name, ios::in | ios::binary );
-	if( !fin.is_open()){
-		printf("The file '%s' was not open\n", name);
-		return ;
-	}
-	fin.read(reinterpret_cast<char*>(numerator), (3) * sizeof(float));
-	fin.close();
-	sprintf(name2, "%s_coherence_denumorator", filename);
-	fin.open(name2, ios::in | ios::binary );
-	if( !fin.is_open()){
-		printf("The file '%s' was not open\n", name2);
-		return ;
-	}
-	fin.read(reinterpret_cast<char*>(denumorator), (3) * sizeof(float));
-	fin.close();
-#endif
-}
-
-
-void Tuple_MergeCount::WriteToWeightTable(const char * filename)
-{
-	ofstream fout;
-#ifdef __TCLMODE__
-	char name[100] = {0};
-	char name2[100] = {0};
-	sprintf(name, "%s_coherence_numerator", filename);
-	fout.open(name, ios::out | ios::binary );
-	if( !fout.is_open()){
-		printf("The file '%s' was not open\n", name);
-		return ;
-	}
-	fout.write(reinterpret_cast<char*>(numerator), (3) * sizeof(float));
-	fout.close();
-
-	sprintf(name2, "%s_coherence_denumorator", filename);
-	fout.open(name2, ios::out | ios::binary );
-	if( !fout.is_open()){
-		printf("The file '%s' was not open\n", name2);
-		return ;
-	}
-	fout.write(reinterpret_cast<char*>(denumorator), (3) * sizeof(float));
-	fout.close();
-#endif
-
-	fout.open(filename, ios::out | ios::binary );
-	if( !fout.is_open()){
-		printf("The file '%s' was not open\n", filename);
-		return ;
-	}
-
-	fout.write(reinterpret_cast<char*>(Data), (3) * sizeof(float));
-	fout.close();
-}
-
-
-int Tuple_MergeCount::UpsideDown(const int index){
-#ifdef _DEBUG
-	assert(index >= 0 && index < 16);
-#endif
-	return upsidedown_table[index];
-}
-
-
-int Tuple_MergeCount::Rotate(const int index)
-{
-#ifdef _DEBUG
-	assert(index >= 0 && index < 16);
-#endif
-	return rotate_table[index];
-}

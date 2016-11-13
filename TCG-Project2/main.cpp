@@ -41,8 +41,10 @@ int main(int argc, char* argv[])
 	std::stack<Array_Board> Array_Board_Stack1;
 	std::stack<Array_Board> Array_Board_Stack2;
 	std::stack<Array_Board> Array_Board_Stack3;
-	for (int i = 1; i <= 3000; i++){
-		printf(" %d \n", i);
+	for (int i = 1; i <= 1000; i++){
+		printf(" %d ", i);
+		if (i % 10 == 0)
+			printf("\n");
 #ifdef __PARALLELMODE__
 #pragma omp parallel sections
 	{
@@ -75,7 +77,6 @@ int main(int argc, char* argv[])
 			statistic.show();
 			statistic.reset();
 			statistic.setStartTime();
-			
 		}
 		if (i % 50 == 0) {
 			ai.WriteToWeightTable();

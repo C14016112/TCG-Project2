@@ -264,17 +264,27 @@ void Fib2584Ai::Learning(std::stack<Array_Board> & Array_Board_Stack)
 void Fib2584Ai::Learning()
 #endif
 {
+	// TD(lambda)
+	// delta_(t-1) = S_(t-1) + F_(t-1)
+	// where S_(t-1) = Lambda * S_t + r_t * ( 1 - lambda^(T - t) ) + ( 1 - labmda ) * V(state_t)
+	//       F_(t-1) = F_t * lambda + lambda^(T-t) * r_t
+	// S_T = F_T = 0
+
+	float S_t = 0;
+	float F_t = 0;
+	float lambda_power = 1 / LAMBDA;
+
 	int nextaward = 0;
 	float nextvalue = 0;
 	float nextaward_weight = 0;
 	float totalvalue = 0;
 	float delta = 0;
 	float FinalTerm = 0;
+	bool isFinal = true;
 
 	while(Array_Board_Stack.empty() == false){
 #ifdef __TCLAMBDAMODE__
-		//delta = ((nextvalue * (1 - LAMBDA) ) + nextaward - Evaluate(Array_Board_Stack.top().state)) / feature_number; 
-		delta = ((totalvalue + (1 - nextaward_weight) * FinalTerm ) - Evaluate(Array_Board_Stack.top().state)) / feature_number;
+		delta = ((S_t + F_t) - Evaluate(Array_Board_Stack.top().state)) / feature_number;
 #else
 		delta = (nextaward + nextvalue - Evaluate(Array_Board_Stack.top().state)) / feature_number;
 #endif
@@ -328,12 +338,18 @@ void Fib2584Ai::Learning()
 #ifdef __TCLAMBDAMODE__
 		nextvalue = Evaluate(Array_Board_Stack.top().state);
 		nextaward = Array_Board_Stack.top().award;
-		if (FinalTerm == 0)
-			FinalTerm += nextvalue + nextaward;
-		else
-			FinalTerm += nextaward;
-		nextaward_weight = nextaward_weight * LAMBDA + LAMBDA;
-		totalvalue = totalvalue * LAMBDA + nextaward_weight * nextaward + LAMBDA * nextvalue;
+		
+		if (isFinal == true) {
+			lambda_power *= LAMBDA;
+			S_t = 0;
+			F_t = nextaward + nextvalue;
+			isFinal = false;
+		}
+		else {
+			lambda_power *= LAMBDA;
+			S_t = LAMBDA * S_t + nextaward * (1 - lambda_power) + (1 - LAMBDA) * nextvalue;
+			F_t = F_t * LAMBDA + lambda_power * nextaward;
+		}
 		
 #else
 		nextvalue = Evaluate(Array_Board_Stack.top().state);
