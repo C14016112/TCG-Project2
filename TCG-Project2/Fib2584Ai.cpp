@@ -8,6 +8,21 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 {
 	feature_number = 0;
 	srand(time(NULL));
+#ifdef __TCLMODE
+	printf("Tcl Mode is opened.\n ");
+#endif
+#ifdef __RESEARCHMODE__ 
+	printf("Research Mode is opened. \n");
+#endif
+#ifdef __TCLAMBDAMODE__ 
+	printf("TC Lambda Mode is opened. \n");
+#endif
+#ifdef __MULTISTAGE_MAXTILEMODE__
+	printf("Multi-Stage MaxTile Mode is opened.\n");
+#endif
+#ifdef __MULTISTAGE_TILENUMMODE__
+	printf("Multi_Stage TileNumber Mode is opened. \n");
+#endif
 #ifdef __PARALLELMODE__
 	printf("Parallel: Parallel Mode is opened\n");
 #endif
@@ -138,58 +153,96 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 
 #ifdef __PARALLELMODE__
 MoveDirection Fib2584Ai::generateMove(int board[4][4], std::stack<Array_Board> & Array_Board_Stack)
-{
-	return FindBestDirection(board, Array_Board_Stack);
-}
 #else
 MoveDirection Fib2584Ai::generateMove(int board[4][4])
-{
-	return FindBestDirection(board);
-}
-#endif
-
-#ifdef __PARALLELMODE__
-MoveDirection Fib2584Ai::FindBestDirection(int board[4][4], std::stack<Array_Board> & Array_Board_Stack)
-#else
-MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 #endif
 {
-
-	for (int j = 0 ; j<4 ;j ++){
-		for (int k = 0 ;k<4 ;k++){
+	for (int j = 0; j<4; j++) {
+		for (int k = 0; k<4; k++) {
 			board[j][k] = mapFibOrder[(board[j][k])];
 		}
 	}
 	Array_Board b_struct;
 	MoveDirection next_dir = static_cast<MoveDirection>(0);
-	float evaluation[4] = {};
-	int award[4] = {};
-	int movedboard[4][4][4] = {};
-	for (int i = 0 ; i< 4 ; i++){
-		for (int j = 0 ; j<4 ;j ++){
-			for (int k = 0 ;k<4 ;k++){
-				movedboard[i][j][k] = board[j][k];
+#ifdef __RESEARCHMODE__
+	int movedboard[4][4][4] = { 0 };
+	int award[4] = { 0 };
+	float evaluation[4] = { 0 };
+
+	for (int i = 0; i < 4; i++) {
+		SetBoard(movedboard[i], board);
+		award[i] = Move.Move(i, movedboard[i]);
+		if (isSameBoard(movedboard[i], board) == true) {
+			evaluation[i] = NOMOVEPENALTY;
+			continue;
+		}
+
+		// search one layer
+		int empty_count = 0;
+		for (int j = 0; j < 4; j++) {
+			for (int k = 0; k < 4; k++) {
+				if (movedboard[i][j][k] == 0)
+				{
+					empty_count++;
+					int tmpboard1[4][4] = { 0 };
+					int tmpboard2[4][4] = { 0 };
+					SetBoard(tmpboard1, movedboard[i]);
+					SetBoard(tmpboard2, movedboard[i]);
+					tmpboard1[j][k] = 1;
+					tmpboard2[j][k] = 3;
+					MoveDirection tmp_dir1 = FindBestDirection(tmpboard1);
+					MoveDirection tmp_dir2 = FindBestDirection(tmpboard2);
+					evaluation[i] += Move.Move(tmp_dir1, tmpboard1) * 3 / 4 + Move.Move(tmp_dir2, tmpboard2) / 4;
+					evaluation[i] += Evaluate(tmpboard1) * 3 / 4 + Evaluate(tmpboard2) / 4;
+				}
 			}
 		}
-		award[i] = Move.Move(i, movedboard[i]);
-
-		if(isSameBoard(movedboard[i], board) == true)
-			award[i] = NOMOVEPENALTY;
-		evaluation[i] = Evaluate(movedboard[i]);
-		if( award[i] + evaluation[i] >= award[next_dir] + evaluation[next_dir])
+		if (empty_count > 0)
+			evaluation[i] = evaluation[i] / empty_count;
+		else
+			evaluation[i] = NOMOVEPENALTY;
+		if (evaluation[i] > evaluation[next_dir]) {
 			next_dir = static_cast<MoveDirection>(i);
-	}
-	for (int i = 0 ; i<4 ; i++){
-		for (int j = 0 ; j<4 ; j++){
-			b_struct.state[i][j] = movedboard[next_dir][i][j];
 		}
 	}
+	SetBoard(b_struct.state, movedboard[next_dir]);
 	b_struct.award = award[next_dir];
+#else
+	int tmpboard[4][4] = {};
+	SetBoard(tmpboard, board);
+	next_dir = FindBestDirection(tmpboard);
+	b_struct.award = Move.Move(next_dir, tmpboard);
+	SetBoard(b_struct.state, tmpboard);
+#endif
 #ifdef __TRAININGMODE__
 	Array_Board_Stack.push(b_struct);
 #endif
 	return next_dir;
 }
+
+
+MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
+{
+	MoveDirection best_dir = static_cast<MoveDirection>(0);
+
+	float evaluation[4] = {};
+	float search_evaluation[5] = {};
+	int award[4] = {};
+	int movedboard[4][4][4] = {};
+	for (int i = 0; i< 4; i++) {
+		SetBoard(movedboard[i], board);
+		award[i] = Move.Move(i, movedboard[i]);
+
+		if (isSameBoard(movedboard[i], board) == true)
+			award[i] = NOMOVEPENALTY;
+		evaluation[i] = Evaluate(movedboard[i]);
+		if (award[i] + evaluation[i] >= award[best_dir] + evaluation[best_dir])
+			best_dir = static_cast<MoveDirection>(i);
+	}
+
+	return best_dir;
+}
+
 
 float Fib2584Ai::Evaluate(int board[4][4])
 {
@@ -289,47 +342,47 @@ void Fib2584Ai::Learning()
 		delta = (nextaward + nextvalue - Evaluate(Array_Board_Stack.top().state)) / feature_number;
 #endif
 #ifdef __INSIDELINEMODE__
-			Line_Inside.Update(Array_Board_Stack.top().state, delta);
+		Line_Inside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __OUTSIDEAXEMODE__
-			Axe_Outside.Update(Array_Board_Stack.top().state, delta);
+		Axe_Outside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __INSIDEAXEMODE__
-			Axe_Inside.Update(Array_Board_Stack.top().state, delta);
+		Axe_Inside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __OUTSIDERECMODE__
-			Rec_Outside.Update(Array_Board_Stack.top().state, delta);
+		Rec_Outside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __OUTSIDELINEMODE__
-			Line_Outside.Update(Array_Board_Stack.top().state, delta);
+		Line_Outside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __INSIDERECMODE__
-			Rec_Inside.Update(Array_Board_Stack.top().state, delta);
+		Rec_Inside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __TRIANGLEMODE__
-			Triangle.Update(Array_Board_Stack.top().state, delta);
+		Triangle.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __BOXATANGLEMODE__
-			Box_Angle.Update(Array_Board_Stack.top().state, delta);
+		Box_Angle.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __BOXATMIDDLEMODE__
-			Box_Middle.setWeight(Array_Board_Stack.top().state, i, box_angle_newvalue);
+		Box_Middle.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __BOXATSIDEMODE__
-			Box_Side.setWeight(Array_Board_Stack.top().state, i, box_middle_newvalue);
+		Box_Side.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __MERGECOUNTMODE__
-			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);
-			MergeCount_Row2.Update(Array_Board_Stack.top().state, delta);
+		MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);
+		MergeCount_Row2.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __COUNTTILENUMBERMODE__
 		Tile_Num.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __MERGETILEMODE__
-		if(GetMaxTile(Array_Board_Stack.top().state )> iLowerBound){
-			MergeTile_Row1.Update(Array_Board_Stack.top().state, delta);
-			MergeTile_Row2.Update(Array_Board_Stack.top().state, delta);
-		}
+	if(GetMaxTile(Array_Board_Stack.top().state )> iLowerBound){
+		MergeTile_Row1.Update(Array_Board_Stack.top().state, delta);
+		MergeTile_Row2.Update(Array_Board_Stack.top().state, delta);
+	}
 #endif
 
 #ifdef __CONSTANTVALUEMODE__
@@ -360,6 +413,13 @@ void Fib2584Ai::Learning()
 	}
 }
 
+int Fib2584Ai::SetBoard(int b1[4][4], const int b2[4][4])
+{
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			b1[i][j] = b2[i][j];
+	return 0;
+}
 
 void Fib2584Ai::WriteToWeightTable()
 {

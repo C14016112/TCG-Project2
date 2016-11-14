@@ -92,6 +92,10 @@ void Statistic::WriteLog(int Round)
 		iWinGame_610 / (double)iGameCount_*100.0, iWinGame_2584 / (double)iGameCount_ * 100.0,
 		iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0,
 		iWinGame_17711 / (double)iGameCount_ * 100.0);
+	if (Round > 0 && Round % 10 == 0) {
+		setFinishTime();
+		fprintf(pFile, "Total time: %2.2f \n", timeDifference_ / (double)CLOCKS_PER_SEC);
+	}
 	fclose (pFile);
 
 	pFile = fopen("Log.csv", "a");

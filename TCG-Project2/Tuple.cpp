@@ -121,7 +121,6 @@ void Tuple::setWeightToTable(int position, float value, int board[4][4], int sta
 
 void Tuple::Constructor()
 {
-	
 	Data = new float*[STAGENUM];
 		
 #ifdef __TCLMODE__
@@ -179,10 +178,25 @@ int Tuple::GetMaxTile(int board[4][4])
 int Tuple::GetStage(int board[4][4])
 {
 	int stage = 0;
+#ifdef __MULTISTAGE_MAXTILEMODE__
 	int maxtile = GetMaxTile(board);
 	for (int i = 0; i < STAGENUM; i++) {
 		if (maxtile >= stage_threshold[i])
 			stage++;
 	}
+#endif
+#ifdef __MULTISTAGE_TILENUMMODE__
+	int emptytile_count = 0;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			if (board[i][j] == 0)
+				emptytile_count++;
+		}
+	}
+	for (int i = 0; i < STAGENUM; i++) {
+		if (16 - emptytile_count > stage_threshold[i])
+			stage++;
+	}
+#endif
 	return stage;
 }

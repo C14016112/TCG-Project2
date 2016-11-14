@@ -29,21 +29,20 @@ public:
 	// generate one move
 #ifdef __PARALLELMODE__
 	MoveDirection generateMove(int board[4][4], std::stack<Array_Board> &);
-	MoveDirection FindBestDirection(int board[4][4], std::stack<Array_Board> &);
 	void gameOver(int board[4][4], int iScore, std::stack<Array_Board> &);
 	void Learning(std::stack<Array_Board> &);
 #else
 	MoveDirection generateMove(int board[4][4]);
-	MoveDirection FindBestDirection(int board[4][4]);
 	void gameOver(int board[4][4], int iScore);
 	void Learning();
 #endif
+	MoveDirection FindBestDirection(int board[4][4]);
 	float Evaluate(int board[4][4]);
 	void WriteToWeightTable();
 	void ReadFromWeightTable();
 	void WriteLog();
 	int GetMaxTile(int board[4][4]);
-	
+	int SetBoard(int board[4][4], const int board2[4][4]);
 private:
 #ifdef __INSIDELINEMODE__
 	Tuple_4tile Line_Inside;

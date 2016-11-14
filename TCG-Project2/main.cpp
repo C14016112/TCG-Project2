@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	std::stack<Array_Board> Array_Board_Stack1;
 	std::stack<Array_Board> Array_Board_Stack2;
 	std::stack<Array_Board> Array_Board_Stack3;
-	for (int i = 1; i <= 1000; i++){
+	for (int i = 1; i <= iPlayRounds; i++){
 		printf(" %d ", i);
 		if (i % 10 == 0)
 			printf("\n");
@@ -94,7 +94,8 @@ int main(int argc, char* argv[])
 #ifdef __PARALLELMODE__
 void PlayGame(Fib2584Ai &ai, Statistic &statistic, std::stack<Array_Board> & arrayboard_stack)
 {
-	for (int i = 0; i< PlayRound; i++){
+	for (int i = 0; i< LogPeriod; i++){
+		
 		GameBoard gameBoard;
 		gameBoard.initialize();
 		int iScore = 0;
@@ -166,7 +167,67 @@ void WriteLog()
 	fprintf(pFile, ctime(&lt));
 	fprintf(pFile, "LogPeriod = %d, Learning Rate = %f", LogPeriod * 3, LEARNING_RATE);
 #ifdef __TCLAMBDAMODE__
-	fprintf(pFile, ", Lambda = %f ", LAMBDA);
+	fprintf(pFile, ", Lambda = %f \n", LAMBDA);
+#endif
+#ifdef __TCLMODE
+	fprintf(pFile, "Tcl Mode is opened.\n ");
+#endif
+#ifdef __RESEARCHMODE__ 
+	fprintf(pFile, "Research Mode is opened. \n");
+#endif
+#ifdef __TCLAMBDAMODE__ 
+	fprintf(pFile, "TC Lambda Mode is opened. \n");
+#endif
+#ifdef __MULTISTAGE_MAXTILEMODE__
+	fprintf(pFile, "Multi-Stage MaxTile Mode is opened.\n");
+#endif
+#ifdef __MULTISTAGE_TILENUMMODE__
+	fprintf(pFile, "Multi_Stage TileNumber Mode is opened. \n");
+#endif
+#ifdef __PARALLELMODE__
+	fprintf(pFile, "Parallel: Parallel Mode is opened\n");
+#endif
+#ifdef __TCLAMBDAMODE__
+	fprintf(pFile, "TC Lambda Mode is opened\n");
+#endif
+#ifdef __INSIDELINEMODE__
+	fprintf(pFile, "Feature: Line Inside is used\n");
+#endif
+#ifdef __OUTSIDELINEMODE__
+	fprintf(pFile, "Feature: Line Outside is used\n");
+#endif
+#ifdef __OUTSIDEAXEMODE__
+	fprintf(pFile, "Feature: Axe Outside is used\n");
+#endif
+#ifdef __INSIDEAXEMODE__
+	fprintf(pFile, "Feature: Axe Inside is used\n");
+#endif
+#ifdef __OUTSIDERECMODE__
+	fprintf(pFile, "Feature: Rec Outside is used\n");
+#endif
+#ifdef __INSIDERECMODE__
+	fprintf(pFile, "Feature: Rec Inside is used\n");
+#endif
+#ifdef __TRIANGLEMODE__
+	fprintf(pFile, "Feature: Triangle is used\n");
+#endif
+#ifdef __BOXATANGLEMODE__
+	fprintf(pFile, "Feature: Box_Angle is used\n");
+#endif
+#ifdef __BOXATMIDDLEMODE__
+	fprintf(pFile, "Feature: Box_Middle is used\n");
+#endif
+#ifdef __BOXATSIDEMODE__
+	fprintf(pFile, "Feature: Box_Side is used\n");
+#endif
+#ifdef __COUNTTILENUMBERMODE__
+	fprintf(pFile, "Feature: Tile Number is used\n");
+#endif
+#ifdef __MERGETILEMODE__
+	fprintf(pFile, "Feature: MergeTile is used\n");
+#endif
+#ifdef __MERGECOUNTMODE__
+	fprintf(pFile, "Feature: MergeCount is used\n");
 #endif
 	fprintf(pFile, "\n\n");
 	fclose(pFile);
