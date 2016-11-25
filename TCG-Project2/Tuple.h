@@ -11,6 +11,7 @@
 #include "Mode_Definition.h"
 #include "math.h"
 #include "string.h"
+#include <algorithm>
 /*
 Class that save the data of strategy, only deal with four tiles one time
 

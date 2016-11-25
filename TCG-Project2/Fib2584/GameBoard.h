@@ -6,6 +6,7 @@
 #include "MoveTable.h"
 #include "BitBoard.h"
 #include "Random.h"
+#include "./../Mode_Definition.h"
 
 using namespace std;
 
@@ -34,6 +35,7 @@ private:
 	int getTile(int row, int column);
 	int getFibonacci(int index);
 private:
+	int cur_round;
 	BitBoard board_;
 };
 

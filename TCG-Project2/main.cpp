@@ -70,6 +70,7 @@ int main(int argc, char* argv[])
 #ifdef __WRITELOGMODE__
 		statistic.WriteLog(i);
 #endif
+		
 		if (i % 10 == 0) {
 			printf("----------[ Show  statistic ]----------\n");
 			statistic.setFinishTime();
@@ -106,11 +107,14 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic, std::stack<Array_Board> & arr
 
 			GameBoard originalBoard = gameBoard;
 			iScore += gameBoard.move(moveDirection);
-			if (originalBoard == gameBoard)
+			if (originalBoard == gameBoard) {
+				cout << "ilegalmove" << endl;
 				continue;
+			}
+				
 			statistic.increaseOneMove();
 			gameBoard.addRandomTile();
-
+			
 		}
 		gameBoard.getArrayBoard(arrayBoard);
 		ai.gameOver(arrayBoard, iScore, arrayboard_stack);
@@ -119,14 +123,13 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic, std::stack<Array_Board> & arr
 		// update statistic data
 		statistic.updateScore(iScore);
 		statistic.updateMaxTile(gameBoard.getMaxTile());
-
 	}
 
 }
 #else
 void PlayGame(Fib2584Ai &ai, Statistic &statistic)
 {
-	for (int i = 0; i< PlayRound; i++){
+	for (int i = 0; i< LogPeriod; i++){
 		GameBoard gameBoard;
 		gameBoard.initialize();
 		int iScore = 0;
@@ -137,8 +140,10 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic)
 
 			GameBoard originalBoard = gameBoard;
 			iScore += gameBoard.move(moveDirection);
-			if (originalBoard == gameBoard)
+			if (originalBoard == gameBoard) {
+				cout << "ilegalmove" << endl;
 				continue;
+			}
 			statistic.increaseOneMove();
 			gameBoard.addRandomTile();
 		}
@@ -163,17 +168,24 @@ void WriteLog()
 	printf(ctime(&lt));
 
 	FILE * pFile;
+#ifdef __TRAININGMODE__
 	pFile = fopen("Log.txt", "a");
+#else
+	pFile = fopen("Log_Search.txt", "a");
+#endif
 	fprintf(pFile, ctime(&lt));
-	fprintf(pFile, "LogPeriod = %d, Learning Rate = %f", LogPeriod * 3, LEARNING_RATE);
+	fprintf(pFile, "LogPeriod = %d, Learning Rate = %f\n", LogPeriod * 3, LEARNING_RATE);
 #ifdef __TCLAMBDAMODE__
-	fprintf(pFile, ", Lambda = %f \n", LAMBDA);
+	fprintf(pFile, "Lambda = %f \n", LAMBDA);
 #endif
-#ifdef __TCLMODE
-	fprintf(pFile, "Tcl Mode is opened.\n ");
+#ifdef __TCLMODE__
+	fprintf(pFile, "Tcl Mode is opened.\n");
 #endif
-#ifdef __RESEARCHMODE__ 
+#ifdef __SEARCHMODE__ 
 	fprintf(pFile, "Research Mode is opened. \n");
+#endif
+#ifdef __UCTMODE__
+	fprintf(pFile, "UCT Mode is opened. \n");
 #endif
 #ifdef __TCLAMBDAMODE__ 
 	fprintf(pFile, "TC Lambda Mode is opened. \n");

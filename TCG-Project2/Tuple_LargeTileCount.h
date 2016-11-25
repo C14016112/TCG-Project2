@@ -1,6 +1,5 @@
 #ifndef __TUPLE_LARGETILECOUNT_H__
 #define __TUPLE_LARGETILECOUNT_H__
-#include <algorithm>
 #include "Tuple.h"
 #pragma once
 class Tuple_LargeTileCount : public Tuple

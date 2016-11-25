@@ -60,14 +60,17 @@ void Tuple::WriteToWeightTable(const char * filename)
 	for (int i = 0; i < STAGENUM; i++) {
 
 		ofstream fout;
-#ifdef __TCLMODE__
 		char name[100] = { 0 };
+#ifdef __TCLMODE__
+		
 		sprintf(name, "%s%d_coherence_numerator", filename, i);
 		fout.open(name, ios::out | ios::binary);
 		if (!fout.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
+#ifdef __TRAININGMODE__
 		fout.write(reinterpret_cast<char*>(numerator[i]), (iTableSize[i])* sizeof(float));
+#endif
 		fout.close();
 
 		sprintf(name, "%s%d_coherence_denumorator", filename, i);
@@ -75,7 +78,9 @@ void Tuple::WriteToWeightTable(const char * filename)
 		if (!fout.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
+#ifdef __TRAININGMODE__
 		fout.write(reinterpret_cast<char*>(denumorator[i]), (iTableSize[i])* sizeof(float));
+#endif
 		fout.close();
 #endif
 		sprintf(name, "%s%d", filename, i);

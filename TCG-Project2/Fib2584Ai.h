@@ -14,7 +14,6 @@
 #include <map>
 #include "Mode_Definition.h"
 
-
 struct Array_Board{
 	int state[4][4];
 	int award;
@@ -43,6 +42,12 @@ public:
 	void WriteLog();
 	int GetMaxTile(int board[4][4]);
 	int SetBoard(int board[4][4], const int board2[4][4]);
+	int Simulation(int board[4][4], Array_Board & b_struct);
+	double PlayOut(int board[4][4], int deep);
+	bool AddRandomTile(int board[4][4]);
+	double ABSearch(int board[4][4], double alpha, double beta, int depth);
+	double alphabeta_Max(int board[4][4], double alpha, double beta, int depth);
+	double alphabeta_Min(int board[4][4], double alpha, double beta, int depth);
 private:
 #ifdef __INSIDELINEMODE__
 	Tuple_4tile Line_Inside;

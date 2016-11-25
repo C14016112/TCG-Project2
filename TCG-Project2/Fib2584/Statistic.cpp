@@ -29,7 +29,7 @@ void Statistic::show()
 	cout << "Win rate(610)  : " << iWinGame_610 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Win rate(1597) : " << iWinGame_1597 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Win rate(2584) : " << iWinGame_2584 / (double)iGameCount_ * 100.0 << "%\n";
-	cout << "Win rate(4181) : " << iWinGame_2584 / (double)iGameCount_ * 100.0 << "%\n";
+	cout << "Win rate(4181) : " << iWinGame_4181 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Win rate(6765) : " << iWinGame_6765 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Win rate(10946): " << iWinGame_10946 / (double)iGameCount_ * 100.0 << "%\n";
 	cout << "Win rate(17711): " << iWinGame_17711 / (double)iGameCount_ * 100.0 << "%\n";
@@ -41,6 +41,15 @@ void Statistic::show()
 	cout << iMoveCount_ / dTotalTime << " moves/sec" << endl;
 	cout << "Total Time: " << dTotalTime << endl;
 	cout << "Total Count: " << iGameCount_ << endl;
+
+	FILE * pFile;
+#ifdef __TRAININGMODE__
+	pFile = fopen("Log.txt", "a");
+#else
+	pFile = fopen("Log_Search.txt", "a");
+#endif
+	fprintf(pFile, "Total time: %2.2f \n", timeDifference_ / (double)CLOCKS_PER_SEC);
+	fclose(pFile);
 }
 
 void Statistic::increaseOneGame()
@@ -85,20 +94,24 @@ void Statistic::setFinishTime()
 void Statistic::WriteLog(int Round)
 {
 	FILE * pFile;
-	pFile = fopen ("Log.txt","a");
+#ifdef __TRAININGMODE__
+	pFile = fopen("Log.txt", "a");
+#else
+	pFile = fopen("Log_Search.txt", "a");
+#endif
 	fprintf (pFile, "Round: %d, MaxTile = %d, MaxScore = %d, Average Score = %2.2f\n"
 		, Round, iMaxTileOverall_, iMaxScoreOverall_, iTotalScore_*1. / iGameCount_);
 	fprintf( pFile, "610: %2.2f%%, 2584: %2.2f%%, 6765: %2.2f%%, 10946: %2.2f%%, 17711: %2.2f%%\n\n",
 		iWinGame_610 / (double)iGameCount_*100.0, iWinGame_2584 / (double)iGameCount_ * 100.0,
 		iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0,
 		iWinGame_17711 / (double)iGameCount_ * 100.0);
-	if (Round > 0 && Round % 10 == 0) {
-		setFinishTime();
-		fprintf(pFile, "Total time: %2.2f \n", timeDifference_ / (double)CLOCKS_PER_SEC);
-	}
-	fclose (pFile);
+	fclose(pFile);
 
+#ifdef __TRAININGMODE__
 	pFile = fopen("Log.csv", "a");
+#else
+	pFile = fopen("Log_Search.csv", "a");
+#endif
 	fprintf(pFile, "%d, %d, %f, %2.2f%%, %2.2f%%, %2.2f%%, %2.2f%%, %2.2f%%\n", iMaxTileOverall_,
 		iMaxScoreOverall_,  iTotalScore_ * 1. / iGameCount_, iWinGame_610 / (double)iGameCount_*100.0,
 		iWinGame_2584 / (double)iGameCount_ * 100.0,iWinGame_6765 / (double)iGameCount_ * 100.0, iWinGame_10946 / (double)iGameCount_ * 100.0, 

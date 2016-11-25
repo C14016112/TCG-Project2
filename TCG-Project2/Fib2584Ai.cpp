@@ -11,8 +11,11 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 #ifdef __TCLMODE
 	printf("Tcl Mode is opened.\n ");
 #endif
-#ifdef __RESEARCHMODE__ 
-	printf("Research Mode is opened. \n");
+#ifdef __SEARCHMODE__ 
+	printf("Search Mode is opened. \n");
+#endif
+#ifdef __UCTMODE__
+	printf("UCT Mode is opened. \n");
 #endif
 #ifdef __TCLAMBDAMODE__ 
 	printf("TC Lambda Mode is opened. \n");
@@ -25,9 +28,6 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 #endif
 #ifdef __PARALLELMODE__
 	printf("Parallel: Parallel Mode is opened\n");
-#endif
-#ifdef __TCLAMBDAMODE__
-	printf("TC Lambda Mode is opened\n");
 #endif
 #ifdef __INSIDELINEMODE__
 	int line_inside_index[4] = {1, 5, 9, 13};
@@ -164,49 +164,25 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4])
 	}
 	Array_Board b_struct;
 	MoveDirection next_dir = static_cast<MoveDirection>(0);
-#ifdef __RESEARCHMODE__
-	int movedboard[4][4][4] = { 0 };
-	int award[4] = { 0 };
-	float evaluation[4] = { 0 };
-
+#ifdef __SEARCHMODE__
+	float evaluation[4] = {};
+	int award[4] = {};
+	int movedboard[4][4][4] = {};
 	for (int i = 0; i < 4; i++) {
 		SetBoard(movedboard[i], board);
 		award[i] = Move.Move(i, movedboard[i]);
-		if (isSameBoard(movedboard[i], board) == true) {
-			evaluation[i] = NOMOVEPENALTY;
-			continue;
-		}
 
-		// search one layer
-		int empty_count = 0;
-		for (int j = 0; j < 4; j++) {
-			for (int k = 0; k < 4; k++) {
-				if (movedboard[i][j][k] == 0)
-				{
-					empty_count++;
-					int tmpboard1[4][4] = { 0 };
-					int tmpboard2[4][4] = { 0 };
-					SetBoard(tmpboard1, movedboard[i]);
-					SetBoard(tmpboard2, movedboard[i]);
-					tmpboard1[j][k] = 1;
-					tmpboard2[j][k] = 3;
-					MoveDirection tmp_dir1 = FindBestDirection(tmpboard1);
-					MoveDirection tmp_dir2 = FindBestDirection(tmpboard2);
-					evaluation[i] += Move.Move(tmp_dir1, tmpboard1) * 3 / 4 + Move.Move(tmp_dir2, tmpboard2) / 4;
-					evaluation[i] += Evaluate(tmpboard1) * 3 / 4 + Evaluate(tmpboard2) / 4;
-				}
-			}
-		}
-		if (empty_count > 0)
-			evaluation[i] = evaluation[i] / empty_count;
-		else
-			evaluation[i] = NOMOVEPENALTY;
-		if (evaluation[i] > evaluation[next_dir]) {
+		if (isSameBoard(movedboard[i], board) == true)
+			award[i] = NOMOVEPENALTY;
+		//evaluation[i] = ABSearch(movedboard[i], -1000000, 1000000, 0);
+		evaluation[i] = alphabeta_Min(movedboard[i], -100000, 100000, 0);
+		if (award[i] + evaluation[i] >= award[next_dir] + evaluation[next_dir])
 			next_dir = static_cast<MoveDirection>(i);
-		}
 	}
-	SetBoard(b_struct.state, movedboard[next_dir]);
 	b_struct.award = award[next_dir];
+	SetBoard(b_struct.state, movedboard[next_dir]);
+#elif defined __UCTMODE__
+	next_dir = static_cast<MoveDirection>(Simulation(board, b_struct));
 #else
 	int tmpboard[4][4] = {};
 	SetBoard(tmpboard, board);
@@ -546,7 +522,285 @@ int Fib2584Ai::GetMaxTile(int board[4][4])
 	}
 	return max;
 }
-/**********************************
-You can implement any additional functions
-you may need.
-**********************************/
+
+int Fib2584Ai::Simulation(int board[4][4], Array_Board & b_struct)
+{
+	int nodecount[4] = {};
+	double evaluation[4] = {};
+	int movedboard[4][4][4] = {};
+	int score[4] = {};
+	for (int i = 0; i < 4; i++) {
+		int tmpboard[4][4] = {};
+		SetBoard(movedboard[i], board);
+		score[i] = Move.Move(i, movedboard[i]);
+		if (isSameBoard(movedboard[i], board) == true)
+			evaluation[i] = NOMOVEPENALTY;
+		else {
+			SetBoard(tmpboard, movedboard[i]);
+			evaluation[i] = PlayOut(tmpboard, SIMULATIONDEEP);
+		}
+			
+		nodecount[i] ++;
+	}
+	for (int i = 0; i < UCTBRANCHNUM; i++) {
+		int bestdir = 0;
+		int maxevaluation = evaluation[0];
+		for (int j = 1; j < 4; j++) {
+			if (evaluation[j] > maxevaluation) {
+				maxevaluation = evaluation[j];
+				bestdir = j;
+			}
+		}
+		int tmpboard[4][4] = {};
+		SetBoard(tmpboard, movedboard[bestdir]);
+		evaluation[bestdir] = (PlayOut(tmpboard, SIMULATIONDEEP) + nodecount[bestdir] * evaluation[bestdir]) / (nodecount[bestdir] + 1);
+		nodecount[bestdir]++;
+	}
+	
+	int bestdir = 0;
+	int maxevaluation = evaluation[0];
+	for (int j = 1; j < 4; j++) {
+		if (evaluation[j] > maxevaluation) {
+			maxevaluation = evaluation[j];
+			bestdir = j;
+		}
+	}
+	SetBoard(b_struct.state, movedboard[bestdir]);
+	b_struct.award = score[bestdir];
+	return bestdir;
+}
+
+double Fib2584Ai::PlayOut(int board[4][4], int deep)
+{
+	deep--;
+	if (deep <= 0)
+		return Evaluate(board);
+	bool isaddtile = AddRandomTile(board);
+	if (isaddtile == false)
+		return Evaluate(board);
+	int award = Move.Move(FindBestDirection(board), board);
+	return PlayOut(board, deep) + award;
+}
+
+bool Fib2584Ai::AddRandomTile(int board[4][4])
+{
+	int emptypos[16] = { 0 };
+	int empty_count = 0;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			if (board[i][j] == 0) {
+				emptypos[empty_count] = 4 * i + j;
+				empty_count++;
+			}
+		}
+	}
+	if (empty_count == 0)
+		return false;
+	else {
+		int pos = rand() % empty_count;
+		if (rand() % 4 == 3) 
+			board[emptypos[pos] / 4][emptypos[pos] % 4] = 3;
+		else
+			board[emptypos[pos] / 4][emptypos[pos] % 4] = 1;
+	}
+	return true;
+}
+
+//double Fib2584Ai::ABSearch(int board[4][4], double alpha, double beta, int depth)
+//{
+//	
+//	/*
+//	2016/11/21
+//	alpha beta search
+//	since the root node is min node, we need to use negamin algorithm
+//	*/
+//	int score[30] = {};
+//	if (depth == CUT_OFF_DEPTH)
+//		return Evaluate(board);
+//	int branch_number = 0;
+//	int successor_board[30][4][4];
+//	// determine the successor board
+//	if (depth % 2 == 1) {
+//		// max node
+//		// move a direction
+//		for (int i = 0; i < 4; i++) {
+//			int tmpboard[4][4] = {};
+//			SetBoard(tmpboard, board);
+//			int award = Move.Move(i, tmpboard);
+//			if (isSameBoard(tmpboard, board) == false) {
+//				SetBoard(successor_board[branch_number], tmpboard);
+//				score[branch_number] = award;
+//				branch_number++;
+//			}
+//		}
+//	}
+//	else {
+//		// min node
+//		// add a random tile in the board
+//		for (int i = 0; i < 4; i++) {
+//			for (int j = 0; j < 4; j++) {
+//				if (board[i][j] == 0) {
+//					SetBoard(successor_board[branch_number], board);
+//					successor_board[branch_number][i][j] = 1;
+//					branch_number++;
+//					SetBoard(successor_board[branch_number], board);
+//					successor_board[branch_number][i][j] = 3;
+//					branch_number++;
+//				}
+//			}
+//		}
+//	}
+//	if (branch_number == 0 )
+//		return Evaluate(board);
+//
+//	double min_num = alpha;
+//	double max_num = 100000000;
+//	for (int i = 0; i < branch_number; i++) {
+//		double newvalue = -1 * ( ABSearch(successor_board[i], -1 * std::min(beta, max_num), -1 * min_num, depth + 1) + score[i]);
+//		if (newvalue < max_num)
+//			if (min_num == alpha || depth >= (CUT_OFF_DEPTH - 2))
+//				max_num = newvalue;
+//			else
+//				max_num = -1 * (ABSearch(successor_board[i], -1 * newvalue, -1 * alpha, depth + 1) + score[i]);
+//		if (max_num <= alpha)
+//			return max_num;
+//		min_num = std::min(beta, max_num) - 1;
+//	}
+//	return max_num;
+//	
+//}
+
+double Fib2584Ai::ABSearch(int board[4][4], double alpha, double beta, int depth)
+{
+	if (depth == CUT_OFF_DEPTH)
+		return Evaluate(board);
+	/*
+	2016/11/21
+	alpha beta search
+	since the root node is min node, we need to use negamin algorithm
+	*/
+	int score[30] = {};
+	int branch_number = 0;
+	int successor_board[30][4][4];
+	// determine the successor board
+	if (depth % 2 == 1) {
+		// max node
+		// move a direction
+		for (int i = 0; i < 4; i++) {
+			int tmpboard[4][4] = {};
+			SetBoard(tmpboard, board);
+			int award = Move.Move(i, tmpboard);
+			if (isSameBoard(tmpboard, board) == false) {
+				SetBoard(successor_board[branch_number], tmpboard);
+				score[branch_number] = award;
+				branch_number++;
+			}
+		}
+	}
+	else {
+		// min node
+		// add a random tile in the board
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				if (board[i][j] == 0) {
+					SetBoard(successor_board[branch_number], board);
+					successor_board[branch_number][i][j] = 1;
+					branch_number++;
+					SetBoard(successor_board[branch_number], board);
+					successor_board[branch_number][i][j] = 3;
+					branch_number++;
+				}
+			}
+		}
+	}
+
+	if (branch_number == 0 && depth % 2 == 0)
+		return Evaluate(board);
+	else if (branch_number == 0 && depth % 2 == 1) {
+		return 0;
+	}
+		
+
+	//for (int i = 0; i < branch_number; i++) {
+	//	double newvalue = -( ABSearch(successor_board[i], -beta, -alpha, depth + 1) + score[i]);
+	//	if (newvalue<= alpha)
+	//		return alpha;   //  fail hard alpha-cutoff
+	//	if (newvalue < beta)
+	//		beta = newvalue; // beta acts like min in MaxMini
+	//}
+	//return beta;
+
+	for (int i = 0; i < branch_number; i++) {
+		double newvalue = -(ABSearch(successor_board[i], -beta, -alpha, depth + 1) + score[i]);
+		if (newvalue >= beta)
+			return beta;   //  fail hard alpha-cutoff
+		if (newvalue > alpha)
+			alpha = newvalue; // beta acts like min in MaxMini
+	}
+	return alpha;
+}
+
+double Fib2584Ai::alphabeta_Max(int board[4][4], double alpha, double beta, int depth)
+{
+	int score[4] = {};
+	int branch_number = 0;
+	int successor_board[4][4][4];
+	// determine the successor board for max node
+	// try four direction
+	for (int i = 0; i < 4; i++) {
+		int tmpboard[4][4] = {};
+		SetBoard(tmpboard, board);
+		int award = Move.Move(i, tmpboard);
+		if (isSameBoard(tmpboard, board) == false) {
+			SetBoard(successor_board[branch_number], tmpboard);
+			score[branch_number] = award;
+			branch_number++;
+		}
+	}
+	if (branch_number == 0)
+		return Evaluate(board) * 0.9;
+
+	double m = alpha;
+	for (int i = 0; i < branch_number; i++) {
+		double value = alphabeta_Min(successor_board[i] ,m , beta, depth) + score[i];
+		if (value > m)
+			m = value;
+		if (m >= beta)
+			return m;
+	}
+	return m;
+}
+
+double Fib2584Ai::alphabeta_Min(int board[4][4], double alpha, double beta, int depth)
+{
+	if (depth == CUT_OFF_DEPTH) return Evaluate(board);
+	int branch_number = 0;
+	int successor_board[30][4][4];
+	// determine the successor board for min node
+	// try all random tile 
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			if (board[i][j] == 0) {
+				SetBoard(successor_board[branch_number], board);
+				successor_board[branch_number][i][j] = 1;
+				branch_number++;
+				SetBoard(successor_board[branch_number], board);
+				successor_board[branch_number][i][j] = 3;
+				branch_number++;
+			}
+		}
+	}
+	
+	if (branch_number == 0)
+		return Evaluate(board);
+
+	double m = beta;
+	for (int i = 0; i < branch_number; i = i + 2) {
+		double value = 0.75*alphabeta_Max(successor_board[i], alpha, m, depth + 1) + 0.25*alphabeta_Max(successor_board[i + 1], alpha, m, depth + 1);
+		if (value < m)
+			m = value;
+		if (m <= alpha)
+			return m;
+	}
+	return m;
+}
