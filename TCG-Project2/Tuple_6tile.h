@@ -2,11 +2,6 @@
 #define TUPLE_6TILE_H
 #pragma once
 #include "Tuple.h"
-/*
-Class that save the data of strategy, only deal with four tiles one time
-
-*/
-
 
 class Tuple_6tile : public Tuple
 {

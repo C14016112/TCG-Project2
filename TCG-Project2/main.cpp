@@ -170,8 +170,10 @@ void WriteLog()
 	FILE * pFile;
 #ifdef __TRAININGMODE__
 	pFile = fopen("Log.txt", "a");
+	fprintf(pFile, "Train Mode is open!\n");
 #else
 	pFile = fopen("Log_Search.txt", "a");
+	fprintf(pFile, "Cut-Off-Depth = %d \n", CUT_OFF_DEPTH);
 #endif
 	fprintf(pFile, ctime(&lt));
 	fprintf(pFile, "LogPeriod = %d, Learning Rate = %f\n", LogPeriod * 3, LEARNING_RATE);
@@ -182,7 +184,7 @@ void WriteLog()
 	fprintf(pFile, "Tcl Mode is opened.\n");
 #endif
 #ifdef __SEARCHMODE__ 
-	fprintf(pFile, "Research Mode is opened. \n");
+	fprintf(pFile, "Search Mode is opened. %d layers. \n", CUT_OFF_DEPTH);
 #endif
 #ifdef __UCTMODE__
 	fprintf(pFile, "UCT Mode is opened. \n");

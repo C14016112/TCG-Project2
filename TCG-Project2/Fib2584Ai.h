@@ -39,15 +39,14 @@ public:
 	float Evaluate(int board[4][4]);
 	void WriteToWeightTable();
 	void ReadFromWeightTable();
-	void WriteLog();
-	int GetMaxTile(int board[4][4]);
 	int SetBoard(int board[4][4], const int board2[4][4]);
 	int Simulation(int board[4][4], Array_Board & b_struct);
 	double PlayOut(int board[4][4], int deep);
 	bool AddRandomTile(int board[4][4]);
-	double ABSearch(int board[4][4], double alpha, double beta, int depth);
+	double Scout(int board[4][4], double alpha, double beta, int depth);
 	double alphabeta_Max(int board[4][4], double alpha, double beta, int depth);
 	double alphabeta_Min(int board[4][4], double alpha, double beta, int depth);
+	int getTileSum(int board[4][4]);
 private:
 #ifdef __INSIDELINEMODE__
 	Tuple_4tile Line_Inside;
@@ -93,6 +92,7 @@ private:
 #ifdef __CONSTANTVALUEMODE__
 	float Adjust_Weight;
 #endif
+	int icurRound;
 	MakeMoveTable Move;
 	std::stack<Array_Board> Array_Board_Stack;
 	bool isSameBoard(int board1[4][4], int board2[4][4]);

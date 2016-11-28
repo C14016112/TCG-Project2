@@ -46,7 +46,7 @@ void GameBoard::addRandomTile()
 	int oneTileRate = 6;
 	int emptyTileNum = countEmptyTile();
 	int randomTileLocation = random_.get_rand_num() % emptyTileNum;
-#ifdef __TRAIN1113MODE__
+#ifdef __ADDRANDOMTILE1113MODE__
 	BitBoard randomTile = (cur_round % 4 == 0) ? 0x3 : 0x1;
 #else
 	BitBoard randomTile = (random_.get_rand_num() % 8 < oneTileRate)?0x1:0x3;

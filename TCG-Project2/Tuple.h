@@ -12,11 +12,6 @@
 #include "math.h"
 #include "string.h"
 #include <algorithm>
-/*
-Class that save the data of strategy, only deal with four tiles one time
-
-*/
-
 
 class Tuple
 {
@@ -31,8 +26,6 @@ public:
 	virtual float getWeight(int board[4][4], int no) { return 0; };
 	virtual void setWeight(int board[4][4], int no, float value) {};
 	virtual void Update(int board[4][4], const float error) {};
-	void ReadFromWeightTable(const char * filename);
-	void WriteToWeightTable(const char * filename);
 	int UpsideDown(const int index);
 	int Rotate(const int index);
 	void UpdateTable(int pos, const float err, int board[4][4], int stage);
@@ -42,6 +35,8 @@ public:
 	void Constructor();
 	void Desturctor();
 	int GetStage(int board[4][4]);
+	void ReadFromWeightTable(const char * filename);
+	void WriteToWeightTable(const char * filename);
 protected:
 	float **Data;
 #ifdef __TCLMODE__
