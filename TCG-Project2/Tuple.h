@@ -39,6 +39,7 @@ public:
 	void WriteToWeightTable(const char * filename);
 protected:
 	float **Data;
+	bool **UseData;
 #ifdef __TCLMODE__
 	float **numerator;
 	float **denumorator;

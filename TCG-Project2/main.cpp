@@ -38,30 +38,30 @@ int main(int argc, char* argv[])
 	Statistic statistic;
 	statistic.setStartTime();
 	// play each round
-	std::stack<Array_Board> Array_Board_Stack1;
-	std::stack<Array_Board> Array_Board_Stack2;
-	std::stack<Array_Board> Array_Board_Stack3;
+	
 	for (int i = 1; i <= iPlayRounds; i++){
 		printf(" %d ", i);
 		if (i % 10 == 0)
 			printf("\n");
 #ifdef __PARALLELMODE__
-#pragma omp parallel sections
-	{
-
+#pragma omp parallel sections num_threads(THREADNUM)
+		{
 #pragma omp section
 		{
+			std::stack<Array_Board> Array_Board_Stack1;
 			PlayGame(ai, statistic, Array_Board_Stack1);
 		}
 #pragma omp section
 		{
+			std::stack<Array_Board> Array_Board_Stack2;
 			PlayGame(ai, statistic, Array_Board_Stack2);
 		}
 #pragma omp section
 		{
+			std::stack<Array_Board> Array_Board_Stack3;
 			PlayGame(ai, statistic, Array_Board_Stack3);
 		}
-	}
+		}
 #else 
 		for (int j = 0; j < 3; j++){
 			PlayGame(ai, statistic);
@@ -84,7 +84,6 @@ int main(int argc, char* argv[])
 		}
 	}
 		
-	
 	//statistic.setFinishTime();
 	//statistic.show();
 	//ai.WriteToWeightTable();
@@ -142,6 +141,7 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic)
 			iScore += gameBoard.move(moveDirection);
 			if (originalBoard == gameBoard) {
 				cout << "ilegalmove" << endl;
+				getchar();
 				continue;
 			}
 			statistic.increaseOneMove();

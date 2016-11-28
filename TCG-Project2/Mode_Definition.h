@@ -17,11 +17,14 @@
 // train mode:
 //#define __SEARCHMODE__ // Alpha Beta Search
 #define __PARALLELMODE__ // parallel mode
+#ifdef __PARALLELMODE__
+#define THREADNUM 3
+#endif
 #define __TRAIN1113MODE__ // train the table for the rule 1 1 1 3 ( three 1 and one 3)
 #ifdef __TRAIN1113MODE__
 #define __ADDRANDOMTILE1113MODE__
 #define __1113SEARCHMODE__
-#define __1113CONDITIONALSEARCHMODE__
+//#define __1113CONDITIONALSEARCHMODE__
 #endif
 #define __TRAININGMODE__ // training mode
 #ifdef __TRAININGMODE__
@@ -45,14 +48,14 @@
 
 //#define __MULTISTAGE_MAXTILEMODE__
 #define __MULTISTAGE_TILENUMMODE__
-#define STAGENUM 2
+#define STAGENUM 3
 
 #define NOMOVEPENALTY -1000000
 #define LEARNING_RATE 0.1
 #define iUpperbound 24
 #define iLowerBound 15
 #define iRange 7
-#define PlayRound 1000
+#define PlayRound 50
 #ifdef __SEARCHMODE__
 #define LogPeriod 50
 #elif defined __UCTMODE__
@@ -63,7 +66,7 @@
 #define LAMBDA 0.1
 #define SIMULATIONDEEP 0
 #define UCTBRANCHNUM 0
-#define CUT_OFF_DEPTH 0
+#define CUT_OFF_DEPTH 1
 const int upsidedown_table[16] = {3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12};
 const int rotate_table[16] = {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12};
 #ifdef __MULTISTAGE_MAXTILEMODE__
@@ -86,10 +89,10 @@ const int stage_upperbound[4] = { 5, 10, 15, iUpperbound };
 const int stage_threshold[1] = { 16 };
 const int stage_upperbound[1] = { iUpperbound };
 #elif STAGENUM == 2
-const int stage_threshold[2] = { 8, 16 };
+const int stage_threshold[2] = { 10, 16 };
 const int stage_upperbound[2] = { iUpperbound, iUpperbound };
 #elif STAGENUM == 3
-const int stage_threshold[3] = { 6, 11, 16 };
+const int stage_threshold[3] = { 8, 12, 16 };
 const int stage_upperbound[3] = { iUpperbound, iUpperbound, iUpperbound };
 #else 
 const int stage_threshold[4] = { 4, 8, 12, 16 };
@@ -97,4 +100,6 @@ const int stage_upperbound[4] = { iUpperbound, iUpperbound, iUpperbound, iUpperb
 #endif
 #endif
 
+#define TRUE 1
+#define FALSE 0
 #endif

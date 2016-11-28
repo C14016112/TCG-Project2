@@ -187,15 +187,15 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4])
 						if (board[j][k] != 0)
 							tile_num++;
 				if(tile_num > 12)
-					evaluation[i] = Scout(movedboard[i], -1000000000, 1000000000, 0);
+					evaluation[i] = Scout(movedboard[i], FLT_MIN, FLT_MAX, 0);
 				else
 					evaluation[i] = Evaluate(movedboard[i]);
 			}
 			else
 				evaluation[i] = Evaluate(movedboard[i]);
-				//evaluation[i] = alphabeta_Min(movedboard[i], -1000000000, 1000000000, 0);
+				//evaluation[i] = alphabeta_Min(movedboard[i], FLT_MIN, FLT_MAX, 0);
 #else
-			evaluation[i] = Scout(movedboard[i], -1000000000, 1000000000, 0);
+			evaluation[i] = Scout(movedboard[i], FLT_MIN, FLT_MAX, 0);
 #endif
 		}
 			
@@ -690,7 +690,7 @@ double Fib2584Ai::Scout(int board[4][4], double alpha, double beta, int depth)
 		
 
 	double min_num = alpha;
-	double max_num = 1000000000;
+	double max_num = FLT_MAX;
 	for (int i = 0; i < branch_number; i++) {
 		double newvalue = -1 * (Scout(successor_board[i], -1 * std::min(beta, max_num), -1 * min_num, depth + 1) + score[i]);
 		if (newvalue < max_num)

@@ -10,13 +10,25 @@ Tuple::~Tuple()
 
 void Tuple::UpdateTable(int position, const float error, int board[4][4], int stage)
 {
+	if (UseData[stage][position] == FALSE) {
 #ifdef __TCLMODE__
-	denumorator[stage][position] += abs(error);
-	numerator[stage][position] += error;
-	Data[stage][position] += LEARNING_RATE * error * abs(numerator[stage][position]) / denumorator[stage][position] / normalization_factor;
+		denumorator[stage][position] = 0.00000001 + abs(error);
+		numerator[stage][position] = 0.00000001 + error;
+		Data[stage][position] = LEARNING_RATE * error * abs(numerator[stage][position]) / denumorator[stage][position] / normalization_factor;
 #else
-	Data[stage][position] += LEARNING_RATE * error / normalization_factor;
+		Data[stage][position] = Data[stage][position] * UseData[stage][position] + LEARNING_RATE * error / normalization_factor;
 #endif
+		UseData[stage][position] = TRUE;
+	}
+	else {
+#ifdef __TCLMODE__
+		denumorator[stage][position] += abs(error);
+		numerator[stage][position] += error;
+		Data[stage][position] += LEARNING_RATE * error * abs(numerator[stage][position]) / denumorator[stage][position] / normalization_factor;
+#else
+		Data[stage][position] += LEARNING_RATE * error / normalization_factor;
+#endif
+	}
 }
 
 int Tuple::UpsideDown(const int index) {
@@ -36,18 +48,19 @@ int Tuple::Rotate(const int index)
 
 float Tuple::getWeightFromTable(int position, int board[4][4], int stage)
 {
-	return Data[stage][position];
+	return  Data[stage][position] * UseData[stage][position];
 }
 
 void Tuple::setWeightToTable(int position, float value, int board[4][4], int stage)
 {
 	Data[stage][position] = value;
+	UseData[stage][position] = TRUE;
 }
 
 void Tuple::Constructor()
 {
 	Data = new float*[STAGENUM];
-
+	UseData = new bool*[STAGENUM];
 #ifdef __TCLMODE__
 	numerator = new float*[STAGENUM];
 	denumorator = new float*[STAGENUM];
@@ -55,6 +68,7 @@ void Tuple::Constructor()
 
 	for (int i = 0; i < STAGENUM; i++) {
 		Data[i] = new float[iTableSize[i]];
+		UseData[i] = new bool[iTableSize[i]];
 #ifdef __TCLMODE__
 		numerator[i] = new float[iTableSize[i]];
 		denumorator[i] = new float[iTableSize[i]];
@@ -62,10 +76,11 @@ void Tuple::Constructor()
 
 		// initialize the table
 		for (int j = 0; j < iTableSize[i]; j++) {
-			Data[i][j] = 0;
+			/*Data[i][j] = 0;*/
+			UseData[i][j] = FALSE;
 #ifdef __TCLMODE__
-			numerator[i][j] = 0.00000001;
-			denumorator[i][j] = 0.00000001;
+			/*numerator[i][j] = 0.00000001;
+			denumorator[i][j] = 0.00000001;*/
 #endif
 		}
 	}
@@ -74,13 +89,15 @@ void Tuple::Constructor()
 void Tuple::Desturctor()
 {
 	for (int i = 0; i < STAGENUM; i++) {
-		delete [] Data[i];
+		delete[] Data[i];
+		delete[] UseData[i];
 #ifdef __TCLMODE__
-		delete [] numerator[i];
-		delete [] denumorator[i];
+		delete[] numerator[i];
+		delete[] denumorator[i];
 #endif
 	}
 	delete Data;
+	delete UseData;
 #ifdef __TCLMODE__
 	delete numerator;
 	delete denumorator;
@@ -98,6 +115,8 @@ int Tuple::GetMaxTile(int board[4][4])
 
 int Tuple::GetStage(int board[4][4])
 {
+	if (!board)
+		getchar();
 	int stage = 0;
 #ifdef __MULTISTAGE_MAXTILEMODE__
 	int maxtile = GetMaxTile(board);
@@ -125,70 +144,136 @@ int Tuple::GetStage(int board[4][4])
 void Tuple::ReadFromWeightTable(const char * filename) {
 	for (int i = 0; i < STAGENUM; i++) {
 		ifstream fin;
+		ifstream fin1;
+		ifstream fin2;
+		ifstream fin3;
 		char name[100] = { 0 };
+
+		sprintf(name, "%s%d_UseData", filename, i);
+		fin.open(name, ios::in | ios::binary);
+		if (!fin.is_open()) {
+			printf("The file '%s' was not open\n", name);
+		}
+		fin.read(reinterpret_cast<char*>(UseData[i]), (iTableSize[i])* sizeof(bool));
+		fin.close();
+
 		sprintf(name, "%s%d", filename, i);
-		fin.open(name, ios::in | ios::binary);
-		if (!fin.is_open()) {
+		fin1.open(name, ios::in | ios::binary);
+		if (!fin1.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
-		fin.read(reinterpret_cast<char*>(Data[i]), (iTableSize[i])* sizeof(float));
-		fin.close();
-#ifdef __TCLMODE__
+
 		sprintf(name, "%s%d_coherence_numerator", filename, i);
-		fin.open(name, ios::in | ios::binary);
-		if (!fin.is_open()) {
+		fin2.open(name, ios::in | ios::binary);
+		if (!fin2.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
-		fin.read(reinterpret_cast<char*>(numerator[i]), (iTableSize[i])* sizeof(float));
-		fin.close();
+
 		sprintf(name, "%s%d_coherence_denumorator", filename, i);
-		fin.open(name, ios::in | ios::binary);
-		if (!fin.is_open()) {
+		fin3.open(name, ios::in | ios::binary);
+		if (!fin3.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
-		fin.read(reinterpret_cast<char*>(denumorator[i]), (iTableSize[i])* sizeof(float));
-		fin.close();
+
+		for (int j = 0; j < iTableSize[i]; j++) {
+			if (UseData[i][j] == FALSE)
+				continue;
+			fin1.read((char *)&(Data[i][j]), sizeof(float));
+#ifdef __TCLMODE__
+			fin2.read((char *)&(numerator[i][j]), sizeof(float));
+			fin3.read((char *)&(denumorator[i][j]), sizeof(float));
 #endif
+		}
+		fin1.close();
+		fin2.close();
+		fin3.close();
 	}
 }
-
+//
+//void Tuple::ReadFromWeightTable(const char * filename) {
+//	for (int i = 0; i < STAGENUM; i++) {
+//		ifstream fin;
+//		char name[100] = { 0 };
+//		sprintf(name, "%s%d", filename, i);
+//		fin.open(name, ios::in | ios::binary);
+//		if (!fin.is_open()) {
+//			printf("The file '%s' was not open\n", name);
+//		}
+//		fin.read(reinterpret_cast<char*>(Data[i]), (iTableSize[i])* sizeof(float));
+//		fin.close();
+//#ifdef __TCLMODE__
+//		sprintf(name, "%s%d_coherence_numerator", filename, i);
+//		fin.open(name, ios::in | ios::binary);
+//		if (!fin.is_open()) {
+//			printf("The file '%s' was not open\n", name);
+//		}
+//		fin.read(reinterpret_cast<char*>(numerator[i]), (iTableSize[i])* sizeof(float));
+//		fin.close();
+//		sprintf(name, "%s%d_coherence_denumorator", filename, i);
+//		fin.open(name, ios::in | ios::binary);
+//		if (!fin.is_open()) {
+//			printf("The file '%s' was not open\n", name);
+//		}
+//		fin.read(reinterpret_cast<char*>(denumorator[i]), (iTableSize[i])* sizeof(float));
+//		fin.close();
+//#endif
+//		for (int j = 0; j < iTableSize[i]; j++) {
+//			if (Data[i][j] != 0) {
+//				UseData[i][j] = TRUE;
+//			}
+//		}
+//	}
+//}
 
 void Tuple::WriteToWeightTable(const char * filename)
 {
 	for (int i = 0; i < STAGENUM; i++) {
 
 		ofstream fout;
+		ofstream fout1;
+		ofstream fout2;
+		ofstream fout3;
+
 		char name[100] = { 0 };
-#ifdef __TCLMODE__
+
+		sprintf(name, "%s%d_UseData", filename, i);
+		fout.open(name, ios::out | ios::binary);
+		if (!fout.is_open()) {
+			printf("The file '%s' was not open\n", name);
+		}
+
+		fout.write(reinterpret_cast<char*>(UseData[i]), (iTableSize[i])* sizeof(bool));
+		fout.close();
+
+		sprintf(name, "%s%d", filename, i);
+		fout1.open(name, ios::out | ios::binary);
+		if (!fout1.is_open()) {
+			printf("The file '%s' was not open\n", name);
+		}
 
 		sprintf(name, "%s%d_coherence_numerator", filename, i);
-		fout.open(name, ios::out | ios::binary);
-		if (!fout.is_open()) {
+		fout2.open(name, ios::out | ios::binary);
+		if (!fout2.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
-#ifdef __TRAININGMODE__
-		fout.write(reinterpret_cast<char*>(numerator[i]), (iTableSize[i])* sizeof(float));
-#endif
-		fout.close();
 
 		sprintf(name, "%s%d_coherence_denumorator", filename, i);
-		fout.open(name, ios::out | ios::binary);
-		if (!fout.is_open()) {
-			printf("The file '%s' was not open\n", name);
-		}
-#ifdef __TRAININGMODE__
-		fout.write(reinterpret_cast<char*>(denumorator[i]), (iTableSize[i])* sizeof(float));
-#endif
-		fout.close();
-#endif
-		sprintf(name, "%s%d", filename, i);
-		fout.open(name, ios::out | ios::binary);
-		if (!fout.is_open()) {
+		fout3.open(name, ios::out | ios::binary);
+		if (!fout3.is_open()) {
 			printf("The file '%s' was not open\n", name);
 		}
 
-		fout.write(reinterpret_cast<char*>(Data[i]), (iTableSize[i])* sizeof(float));
-		fout.close();
-
+		for (int j = 0; j < iTableSize[i]; j++) {
+			if (UseData[i][j] == FALSE)
+				continue;
+			fout1.write((const char *)&(Data[i][j]), sizeof(float));
+#ifdef __TCLMODE__
+			fout2.write((const char *)&(numerator[i][j]), sizeof(float));
+			fout3.write((const char *)&(denumorator[i][j]), sizeof(float));
+#endif
+		}
+		fout1.close();
+		fout2.close();
+		fout3.close();
 	}
 }

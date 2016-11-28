@@ -13,7 +13,7 @@
 #include "GameBoard_Extend.h"
 #include <map>
 #include "Mode_Definition.h"
-
+#include "float.h"
 struct Array_Board{
 	int state[4][4];
 	int award;
