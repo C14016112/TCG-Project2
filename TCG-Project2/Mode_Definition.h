@@ -60,11 +60,12 @@
 #define iRange 9
 #define PlayRound 1000
 #ifdef __SEARCHMODE__
-#define LogPeriod 10
+#define LogPeriod 1
 #elif defined __UCTMODE__
 #define LogPeriod 10
 #else
 #define LogPeriod 300
+//#define LogPeriod 30
 #endif
 #define LAMBDA 0.1
 #define SIMULATIONDEEP 0

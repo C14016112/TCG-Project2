@@ -15,6 +15,7 @@
 #include <vector>
 #include <mutex>
 #include <omp.h>
+#include <float.h>
 using namespace std;
 class Tuple
 {

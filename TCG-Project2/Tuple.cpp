@@ -62,11 +62,20 @@ void Tuple::UpdateTable(int position, const float error, int board[4][4], int st
 {
 #ifdef __TCLMODE__
 	if (UseData[stage][position] == -1) {
-#ifdef __TRAININGMODE__
-#ifdef __PARALLELMODE__
-		//std::lock_guard<std::mutex> guard(lock_tex);
+//#ifdef __TRAININGMODE__
+//#ifdef __PARALLELMODE__
+//		std::lock_guard<std::mutex> guard(lock_tex);
+//#endif
+//#endif
+
+		if ( Data[stage].size() + 10 >  Data[stage].capacity() ) {
+			Data[stage].reserve(Data[stage].capacity() * 1.5);
+#ifdef __TCLMODE__
+			numerator[stage].reserve(numerator[stage].capacity() * 1.5);
+			denumorator[stage].reserve(denumorator[stage].capacity() * 1.5);
 #endif
-#endif
+		}
+
 		denumorator[stage].push_back(0.00000001 + abs(error));
 		numerator[stage].push_back(0.00000001 + error);
 		Data[stage].push_back(LEARNING_RATE * error * abs(0.00000001 + error) / (0.00000001 + abs(error)) / normalization_factor);
@@ -249,18 +258,63 @@ void Tuple::ReadFromWeightTable(const char * filename)
 			printf("The file '%s' was not open\n", name);
 		}
 
-		float a;
-		while (fin1.read((char*)&a, sizeof(float))) {
-			Data[i].push_back(a);
+		//****************************** test other method to read table **********************
+		Data[i].reserve(iTableSize[i] * 0.1);
+		float *tmp_Data = new float[iTableSize[i]];
 #ifdef __TCLMODE__
-			float b;
-			float c;
-			fin2.read((char*)&b, sizeof(float));
-			numerator[i].push_back(b);
-			fin3.read((char*)&c, sizeof(float));
-			denumorator[i].push_back(c);
+		numerator[i].reserve(iTableSize[i] * 0.1);
+		denumorator[i].reserve(iTableSize[i] * 0.1);
+		float *tmp_num = new float[iTableSize[i]];
+		float *tmp_den = new float[iTableSize[i]];
+#endif
+		for (int j = 0; j < iTableSize[i]; j++) {
+			tmp_Data[j] = -FLT_MAX;
+#ifdef __TCLMODE__
+			tmp_num[j] = -FLT_MAX;
+			tmp_den[j] = -FLT_MAX;
 #endif
 		}
+		fin1.read(reinterpret_cast<char*>(tmp_Data), (iTableSize[i])* sizeof(float));
+#ifdef __TCLMODE__
+		fin2.read(reinterpret_cast<char*>(tmp_num), (iTableSize[i])* sizeof(float));
+		fin3.read(reinterpret_cast<char*>(tmp_den), (iTableSize[i])* sizeof(float));
+#endif
+		for (int j = 0; j < iTableSize[i]; j++) {
+			if (tmp_Data[j] == -FLT_MAX)
+				break;
+			if ( Data[i].size() + 10 > Data[i].capacity() ) {
+				Data[i].reserve(Data[i].capacity() * 1.5);
+#ifdef __TCLMODE__
+				numerator[i].reserve(numerator[i].capacity() * 1.5);
+				denumorator[i].reserve(denumorator[i].capacity() * 1.5);
+#endif
+			}
+			Data[i].push_back(tmp_Data[j]);
+#ifdef __TCLMODE__
+			numerator[i].push_back(tmp_num[j]);
+			denumorator[i].push_back(tmp_den[j]);
+#endif
+		}
+		delete tmp_Data;
+#ifdef __TCLMODE__
+		delete tmp_num;
+		delete tmp_den;
+#endif
+/*
+float a;
+while (fin1.read((char*)&a, sizeof(float))) {
+Data[i].push_back(a);
+#ifdef __TCLMODE__
+float b;
+float c;
+fin2.read((char*)&b, sizeof(float));
+numerator[i].push_back(b);
+fin3.read((char*)&c, sizeof(float));
+denumorator[i].push_back(c);
+#endif
+}
+*/
+
 		fin1.close();
 		fin2.close();
 		fin3.close();
@@ -330,7 +384,7 @@ void Tuple::WriteToWeightTable(const char * filename)
 void Tuple::UpdateTable(int position, const float error, int board[4][4], int stage)
 {
 #ifdef __TCLMODE__
-	denumorator[stage][position] += abs(error);
+	denumorator[stage][position] += (error < 0) ? -error : error; 
 	numerator[stage][position] += error;
 	Data[stage][position] += LEARNING_RATE * error * abs(numerator[stage][position]) / denumorator[stage][position] / normalization_factor;
 #else

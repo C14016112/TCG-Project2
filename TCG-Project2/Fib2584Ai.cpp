@@ -165,14 +165,18 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4])
 		board[3][k] = mapFibOrder[(board[3][k])];
 	}
 	
-	if (Tile_Num.GetMaxTile(board) > iUpperbound)
-		return static_cast<MoveDirection>(rand() % 4);
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			board[i][j] = (board[i][j] > iUpperbound) ? iUpperbound : board[i][j];
+	/*if (Tile_Num.GetMaxTile(board) > iUpperbound)
+		return static_cast<MoveDirection>(rand() % 4);*/
 	Array_Board b_struct;
 	MoveDirection next_dir = static_cast<MoveDirection>(0);
 #ifdef __SEARCHMODE__
 	float evaluation[4] = {};
 	int award[4] = {};
 	int movedboard[4][4][4] = {};
+	int depth = ((Tile_Num.GetStage(board) + 1) >> 1) + 1;
 	for (int i = 0; i < 4; i++) {
 		SetBoard(movedboard[i], board);
 		award[i] = Move.Move(i, movedboard[i]);
@@ -180,18 +184,8 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4])
 		if (isSameBoard(movedboard[i], board) == true)
 			award[i] = NOMOVEPENALTY;
 		else {
-#ifdef __1113CONDITIONALSEARCHMODE__
-			// only search when the number of tiles of this board is larger than 8.
-			if (Tile_Num.GetStage(board) == 2) 
-				evaluation[i] = Scout(movedboard[i], -FLT_MAX, FLT_MAX, 0);
-			else
-				evaluation[i] = Evaluate(movedboard[i]);
-				//evaluation[i] = alphabeta_Min(movedboard[i], FLT_MIN, FLT_MAX, 0);
-#else
-			evaluation[i] = Scout(movedboard[i], -FLT_MAX, FLT_MAX, 0);
-#endif
+			evaluation[i] = Scout(movedboard[i], -FLT_MAX, FLT_MAX, depth*2);
 		}
-			
 		if (award[i] + evaluation[i] >= award[next_dir] + evaluation[next_dir])
 			next_dir = static_cast<MoveDirection>(i);
 	}
@@ -221,45 +215,6 @@ MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 	float evaluation[4] = {0};
 	int movedboard[4][4][4] = {};
 
-#ifdef __MULTITHREADMODE__
-#pragma omp parallel sections num_threads(THREADNUM)
-	{
-#pragma omp section
-	{
-		SetBoard(movedboard[0], board);
-		award[0] = Move.Move(0, movedboard[0]);
-		if (isSameBoard(movedboard[0], board) == true) 
-				award[0] = NOMOVEPENALTY;
-		else
-			evaluation[0] += Evaluate(movedboard[0]);
-		SetBoard(movedboard[1], board);
-		award[1] = Move.Move(1, movedboard[1]);
-		if (isSameBoard(movedboard[1], board) == true)
-			award[1] = NOMOVEPENALTY;
-		else
-			evaluation[1] += Evaluate(movedboard[1]);
-	}
-#pragma omp section
-	{
-		SetBoard(movedboard[2], board);
-		award[2] = Move.Move(2, movedboard[2]);
-		if (isSameBoard(movedboard[2], board) == true)
-			award[2] = NOMOVEPENALTY;
-		else
-			evaluation[2] += Evaluate(movedboard[2]);
-		SetBoard(movedboard[3], board);
-		award[3] = Move.Move(3, movedboard[3]);
-		if (isSameBoard(movedboard[3], board) == true)
-			award[3] = NOMOVEPENALTY;
-		else
-			evaluation[3] += Evaluate(movedboard[3]);
-	}
-	}
-	for (int i = 0; i < 4; i++) {
-		if (award[i] + evaluation[i] >= award[best_dir] + evaluation[best_dir])
-			best_dir = static_cast<MoveDirection>(i);
-	}
-#else
 	for (int i = 0; i < 4; i++){
 		SetBoard(movedboard[i], board);
 		award[i] = Move.Move(i, movedboard[i]);
@@ -270,7 +225,6 @@ MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 		if (award[i] + evaluation[i] >= award[best_dir] + evaluation[best_dir])
 			best_dir = static_cast<MoveDirection>(i);
 	}
-#endif
 	return best_dir;
 }
 
@@ -432,94 +386,33 @@ int Fib2584Ai::generateEvilMove(int board[4][4])
 		}
 	}
 
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			board[i][j] = (board[i][j] > iUpperbound) ? iUpperbound : board[i][j];
+
+	int depth = (( Tile_Num.GetStage(board) + 1 ) >> 1 ) + 1;
 	int cur_round = getTileSum(board) % 6;
-	double min_score = FLT_MAX;
 	float evaluation[16] = { 0 };
 	for (int i = 0; i < 16; i++)
 		evaluation[i] = FLT_MAX;
-
-#pragma omp parallel sections num_threads(2)
-	{
-#pragma omp section
-	{
-		int i = 0;
-		for (int j = 0; j < 4; j++) {
-			if (board[i][j] == 0) {
-				int tmpboard[4][4] = {};
-				SetBoard(tmpboard, board);
-				if (cur_round == 3)
-					tmpboard[i][j] = 3;
-				else
-					tmpboard[i][j] = 1;
-				int bestdir = FindBestDirection(tmpboard);
-				int award = Move.Move(bestdir, tmpboard);
-				evaluation[j] = Evaluate(tmpboard) + award;
-				continue;
-			}
-			evaluation[j] = FLT_MAX;
-		}
-		i = 1;
-		for (int j = 0; j < 4; j++) {
-			if (board[i][j] == 0) {
-				int tmpboard[4][4] = {};
-				SetBoard(tmpboard, board);
-				if (cur_round == 3)
-					tmpboard[i][j] = 3;
-				else
-					tmpboard[i][j] = 1;
-				int bestdir = FindBestDirection(tmpboard);
-				int award = Move.Move(bestdir, tmpboard);
-				evaluation[4 + j] = Evaluate(tmpboard) + award;
-				continue;
-			}
-			evaluation[4 + j] = FLT_MAX;
-		}
-	}
-
-#pragma omp section
-	{
-		int i = 2;
-		for (int j = 0; j < 4; j++) {
-			if (board[i][j] == 0) {
-				int tmpboard[4][4] = {};
-				SetBoard(tmpboard, board);
-				if (cur_round == 3)
-					tmpboard[i][j] = 3;
-				else
-					tmpboard[i][j] = 1;
-				int bestdir = FindBestDirection(tmpboard);
-				int award = Move.Move(bestdir, tmpboard);
-				evaluation[8 + j] = Evaluate(tmpboard) + award;
-				continue;
-			}
-			evaluation[8 + j] = FLT_MAX;
-		}
-		i = 3;
-		for (int j = 0; j < 4; j++) {
-			if (board[i][j] == 0) {
-				int tmpboard[4][4] = {};
-				SetBoard(tmpboard, board);
-				if (cur_round == 3)
-					tmpboard[i][j] = 3;
-				else
-					tmpboard[i][j] = 1;
-				int bestdir = FindBestDirection(tmpboard);
-				int award = Move.Move(bestdir, tmpboard);
-				evaluation[12 + j] = Evaluate(tmpboard) + award;
-				continue;
-			}
-			evaluation[12 + j] = FLT_MAX;
-		}
-	}
-
-	}
-
 	int worst_index = 0;
-	for (int i = 0; i < 16; i++) {
-		if (evaluation[i] < evaluation[worst_index])
-			worst_index = i;
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			if (board[i][j] == 0) {
+				int tmpboard[4][4] = {};
+				SetBoard(tmpboard, board);
+				if (cur_round == 3)
+					tmpboard[i][j] = 3;
+				else
+					tmpboard[i][j] = 1;
+				evaluation[4 * i + j] = alphabeta_Max(tmpboard, -FLT_MAX, FLT_MAX, depth);
+				continue;
+			}
+			if (evaluation[4 * i + j] < evaluation[worst_index])
+				worst_index = 4 * i + j;
+		}
 	}
-	cout << "worst index: " << worst_index << endl;
 	return worst_index;
 }
 #ifdef __PARALLELMODE__
@@ -1021,7 +914,7 @@ double Fib2584Ai::Scout(int board[4][4], double alpha, double beta, int depth)
 	since the root node is min node, we need to use negamin algorithm
 	*/
 	int score[30] = {};
-	if (depth == (2*CUT_OFF_DEPTH))
+	if (depth == 0)
 		return Evaluate(board);
 	
 	int branch_number = 0;
@@ -1095,12 +988,12 @@ double Fib2584Ai::Scout(int board[4][4], double alpha, double beta, int depth)
 	double min_num = alpha;
 	double max_num = FLT_MAX;
 	for (int i = 0; i < branch_number; i++) {
-		double newvalue = -1 * (Scout(successor_board[i], -1 * std::min(beta, max_num), -1 * min_num, depth + 1) + score[i]);
+		double newvalue = -1 * (Scout(successor_board[i], -1 * std::min(beta, max_num), -1 * min_num, depth - 1) + score[i]);
 		if (newvalue < max_num)
 			if (min_num == alpha || depth >= ((CUT_OFF_DEPTH*2) - 2))
 				max_num = newvalue;
 			else
-				max_num = -1 * (Scout(successor_board[i], -1 * newvalue, -1 * alpha, depth + 1) + score[i]);
+				max_num = -1 * (Scout(successor_board[i], -1 * newvalue, -1 * alpha, depth - 1) + score[i]);
 		if (max_num <= alpha)
 			return max_num;
 		min_num = std::min(beta, max_num) - 1;
@@ -1143,7 +1036,10 @@ double Fib2584Ai::alphabeta_Max(int board[4][4], double alpha, double beta, int 
 
 double Fib2584Ai::alphabeta_Min(int board[4][4], double alpha, double beta, int depth)
 {
-	if (depth == CUT_OFF_DEPTH) return Evaluate(board);
+	//if (depth == CUT_OFF_DEPTH) return Evaluate(board);
+	if (depth == 0)
+		return Evaluate(board);
+
 	int branch_number = 0;
 	int successor_board[30][4][4];
 	// determine the successor board for min node
@@ -1194,10 +1090,10 @@ double Fib2584Ai::alphabeta_Min(int board[4][4], double alpha, double beta, int 
 	double m = beta;
 	for (int i = 0; i < branch_number;) {
 #ifdef __1113SEARCHMODE__
-		double value = alphabeta_Max(successor_board[i], alpha, m, depth + 1) ;
+		double value = alphabeta_Max(successor_board[i], alpha, m, depth - 1) ;
 		i++;
 #else
-		double value = 0.75*alphabeta_Max(successor_board[i], alpha, m, depth + 1) + 0.25*alphabeta_Max(successor_board[i + 1], alpha, m, depth + 1);
+		double value = 0.75*alphabeta_Max(successor_board[i], alpha, m, depth - 1) + 0.25*alphabeta_Max(successor_board[i + 1], alpha, m, depth - 1);
 		i = i + 2;
 #endif
 		if (value < m)
