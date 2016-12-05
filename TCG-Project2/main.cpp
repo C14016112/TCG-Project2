@@ -38,35 +38,44 @@ int main(int argc, char* argv[])
 	Statistic statistic;
 	statistic.setStartTime();
 	// play each round
-	
+	std::stack<Array_Board> Array_Board_Stack1;
+	std::stack<Array_Board> Array_Board_Stack2;
+	std::stack<Array_Board> Array_Board_Stack3;
+
 	for (int i = 1; i <= iPlayRounds; i++){
 		printf(" %d ", i);
 		if (i % 10 == 0)
 			printf("\n");
+		
 #ifdef __PARALLELMODE__
+		for (int j = 0; j < LogPeriod; j++) {
 #pragma omp parallel sections num_threads(THREADNUM)
 		{
 #pragma omp section
 		{
-			std::stack<Array_Board> Array_Board_Stack1;
 			PlayGame(ai, statistic, Array_Board_Stack1);
 		}
 #pragma omp section
 		{
-			std::stack<Array_Board> Array_Board_Stack2;
 			PlayGame(ai, statistic, Array_Board_Stack2);
 		}
 #pragma omp section
 		{
-			std::stack<Array_Board> Array_Board_Stack3;
 			PlayGame(ai, statistic, Array_Board_Stack3);
 		}
 		}
+#ifdef __VECTORTABLEMODE__
+		ai.gameOver(Array_Board_Stack1);
+		ai.gameOver(Array_Board_Stack2);
+		ai.gameOver(Array_Board_Stack3);
+#endif
+		}
 #else 
-		for (int j = 0; j < 3; j++){
+		for (int j = 0; j < 3; j++) {
 			PlayGame(ai, statistic);
 		}
 #endif
+		
 #ifdef __WRITELOGMODE__
 		statistic.WriteLog(i);
 #endif
@@ -94,7 +103,7 @@ int main(int argc, char* argv[])
 #ifdef __PARALLELMODE__
 void PlayGame(Fib2584Ai &ai, Statistic &statistic, std::stack<Array_Board> & arrayboard_stack)
 {
-	for (int i = 0; i< LogPeriod; i++){
+	//for (int i = 0; i< LogPeriod; i++){
 		
 		GameBoard gameBoard;
 		gameBoard.initialize();
@@ -116,13 +125,15 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic, std::stack<Array_Board> & arr
 			
 		}
 		gameBoard.getArrayBoard(arrayBoard);
-		ai.gameOver(arrayBoard, iScore, arrayboard_stack);
+#ifdef __ARRAYTABLEMODE__
+		ai.gameOver(arrayboard_stack);
+#endif
 		statistic.increaseOneGame();
 
 		// update statistic data
 		statistic.updateScore(iScore);
 		statistic.updateMaxTile(gameBoard.getMaxTile());
-	}
+	//}
 
 }
 #else
@@ -141,7 +152,6 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic)
 			iScore += gameBoard.move(moveDirection);
 			if (originalBoard == gameBoard) {
 				cout << "ilegalmove" << endl;
-				getchar();
 				continue;
 			}
 			statistic.increaseOneMove();

@@ -120,7 +120,7 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 	mapFibOrder[1] = 1;
 	mapFibOrder[2] = 2;
 	mapFibOrder[3] = 3;
-	mapFibOrder[5] = 4;
+	mapFibOrder[5] = 4;	
 	mapFibOrder[8] = 5;
 	mapFibOrder[13] = 6;
 	mapFibOrder[21] = 7;
@@ -158,11 +158,13 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4], std::stack<Array_Board> &
 MoveDirection Fib2584Ai::generateMove(int board[4][4])
 #endif
 {
-	for (int j = 0; j<4; j++) {
-		for (int k = 0; k<4; k++) {
-			board[j][k] = mapFibOrder[(board[j][k])];
-		}
+	for (int k = 0; k < 4; k++) {
+		board[0][k] = mapFibOrder[(board[0][k])];
+		board[1][k] = mapFibOrder[(board[1][k])];
+		board[2][k] = mapFibOrder[(board[2][k])];
+		board[3][k] = mapFibOrder[(board[3][k])];
 	}
+	
 	if (Tile_Num.GetMaxTile(board) > iUpperbound)
 		return static_cast<MoveDirection>(rand() % 4);
 	Array_Board b_struct;
@@ -180,22 +182,13 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4])
 		else {
 #ifdef __1113CONDITIONALSEARCHMODE__
 			// only search when the number of tiles of this board is larger than 8.
-			if (Tile_Num.GetStage(board) == 1) {
-				int tile_num = 0;
-				for (int j = 0; j < 4; j++)
-					for (int k = 0; k < 4; k++)
-						if (board[j][k] != 0)
-							tile_num++;
-				if(tile_num > 12)
-					evaluation[i] = Scout(movedboard[i], FLT_MIN, FLT_MAX, 0);
-				else
-					evaluation[i] = Evaluate(movedboard[i]);
-			}
+			if (Tile_Num.GetStage(board) == 2) 
+				evaluation[i] = Scout(movedboard[i], -FLT_MAX, FLT_MAX, 0);
 			else
 				evaluation[i] = Evaluate(movedboard[i]);
 				//evaluation[i] = alphabeta_Min(movedboard[i], FLT_MIN, FLT_MAX, 0);
 #else
-			evaluation[i] = Scout(movedboard[i], FLT_MIN, FLT_MAX, 0);
+			evaluation[i] = Scout(movedboard[i], -FLT_MAX, FLT_MAX, 0);
 #endif
 		}
 			
@@ -224,73 +217,320 @@ MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 {
 	MoveDirection best_dir = static_cast<MoveDirection>(0);
 
-	float evaluation[4] = {};
-	int award[4] = {};
+	int award[4] = {0};
+	float evaluation[4] = {0};
 	int movedboard[4][4][4] = {};
-	for (int i = 0; i< 4; i++) {
+
+#ifdef __MULTITHREADMODE__
+#pragma omp parallel sections num_threads(THREADNUM)
+	{
+#pragma omp section
+	{
+		SetBoard(movedboard[0], board);
+		award[0] = Move.Move(0, movedboard[0]);
+		if (isSameBoard(movedboard[0], board) == true) 
+				award[0] = NOMOVEPENALTY;
+		else
+			evaluation[0] += Evaluate(movedboard[0]);
+		SetBoard(movedboard[1], board);
+		award[1] = Move.Move(1, movedboard[1]);
+		if (isSameBoard(movedboard[1], board) == true)
+			award[1] = NOMOVEPENALTY;
+		else
+			evaluation[1] += Evaluate(movedboard[1]);
+	}
+#pragma omp section
+	{
+		SetBoard(movedboard[2], board);
+		award[2] = Move.Move(2, movedboard[2]);
+		if (isSameBoard(movedboard[2], board) == true)
+			award[2] = NOMOVEPENALTY;
+		else
+			evaluation[2] += Evaluate(movedboard[2]);
+		SetBoard(movedboard[3], board);
+		award[3] = Move.Move(3, movedboard[3]);
+		if (isSameBoard(movedboard[3], board) == true)
+			award[3] = NOMOVEPENALTY;
+		else
+			evaluation[3] += Evaluate(movedboard[3]);
+	}
+	}
+	for (int i = 0; i < 4; i++) {
+		if (award[i] + evaluation[i] >= award[best_dir] + evaluation[best_dir])
+			best_dir = static_cast<MoveDirection>(i);
+	}
+#else
+	for (int i = 0; i < 4; i++){
 		SetBoard(movedboard[i], board);
 		award[i] = Move.Move(i, movedboard[i]);
 		if (isSameBoard(movedboard[i], board) == true)
 			award[i] = NOMOVEPENALTY;
-		evaluation[i] = Evaluate(movedboard[i]);
+		else
+			evaluation[i] += Evaluate(movedboard[i]);
 		if (award[i] + evaluation[i] >= award[best_dir] + evaluation[best_dir])
 			best_dir = static_cast<MoveDirection>(i);
 	}
+#endif
 	return best_dir;
 }
 
+#ifdef __MULTITHREADMODE__
 float Fib2584Ai::Evaluate(int board[4][4])
 {
+	int stage = Line_Inside.GetStage(board);
 	float value = 0;
+#pragma omp parallel sections num_threads(THREADNUM)
+	{
 #ifdef __INSIDELINEMODE__
-	value += Line_Inside.getWeight(board);
+#pragma omp section
+	{
+		value += Line_Inside.getWeight(board, stage);
+	}
 #endif
 #ifdef __OUTSIDELINEMODE__
-	value += Line_Outside.getWeight(board);
+#pragma omp section
+	{
+		value += Line_Outside.getWeight(board, stage);
+	}
 #endif
 #ifdef __OUTSIDEAXEMODE__
-	value += Axe_Outside.getWeight(board);
+#pragma omp section
+	{
+		value += Axe_Outside.getWeight(board, stage);
+	}
 #endif
 #ifdef __INSIDEAXEMODE__
-	value += Axe_Inside.getWeight(board);
+#pragma omp section
+	{
+		value += Axe_Inside.getWeight(board, stage);
+	}
 #endif
 #ifdef __OUTSIDERECMODE__
-	value += Rec_Outside.getWeight(board);
+#pragma omp section
+	{
+		value += Rec_Outside.getWeight(board, stage);
+	}
 #endif
 #ifdef __INSIDERECMODE__
-	value += Rec_Inside.getWeight(board);
+#pragma omp section
+	{
+		value += Rec_Inside.getWeight(board, stage);
+	}
 #endif
 #ifdef __TRIANGLEMODE__
-	value += Triangle.getWeight(board);
+#pragma omp section
+	{
+		value += Triangle.getWeight(board, stage);
+	}
 #endif
 #ifdef __BOXATANGLEMODE__
-	value += Box_Angle.getWeight(board);
+#pragma omp section
+	{
+		value += Box_Angle.getWeight(board, stage);
+	}
 #endif
 #ifdef __BOXATMIDDLEMODE__
-	value += Box_Middle.getWeight(board);
+#pragma omp section
+	{
+		value += Box_Middle.getWeight(board, stage);
+	}
 #endif
 #ifdef __BOXATSIDEMODE__
-	value += Box_Side.getWeight(board);
+#pragma omp section
+	{
+		value += Box_Side.getWeight(board, stage);
+	}
 #endif
 #ifdef __COUNTTILENUMBERMODE__
-	value += Tile_Num.getWeight(board);
+#pragma omp section
+	{
+		value += Tile_Num.getWeight(board, stage);
+	}
 #endif
 #ifdef __MERGETILEMODE__
-	if(Mergetile_Row1.getMaxTile(board) > iLowerBound){
-		value += MergeTile_Row1.getWeight(board) + MergeTile_Row2.getWeight(board);
+#pragma omp section
+	{
+		if (Mergetile_Row1.getMaxTile(board) > iLowerBound) {
+			value += MergeTile_Row1.getWeight(board) + MergeTile_Row2.getWeight(board, stage);
+		}
 	}
 #endif
 #ifdef __MERGECOUNTMODE__
-	value += MergeCount_Row1.getWeight(board) + MergeCount_Row2.getWeight(board);
+#pragma omp section
+	{
+		value += MergeCount_Row1.getWeight(board, stage) + MergeCount_Row2.getWeight(board, stage);
+	}
+#endif
+#ifdef __CONSTANTVALUEMODE__
+#pragma omp section
+	{
+		value += Adjust_Weight;
+	}
+#endif
+	}
+	return value;
+}
+
+#else
+float Fib2584Ai::Evaluate(int board[4][4])
+{
+	int stage = Line_Inside.GetStage(board);
+	float value = 0;
+#ifdef __INSIDELINEMODE__
+	value += Line_Inside.getWeight(board, stage);
+#endif
+#ifdef __OUTSIDELINEMODE__
+	value += Line_Outside.getWeight(board, stage);
+#endif
+#ifdef __OUTSIDEAXEMODE__
+	value += Axe_Outside.getWeight(board, stage);
+#endif
+#ifdef __INSIDEAXEMODE__
+	value += Axe_Inside.getWeight(board, stage);
+#endif
+#ifdef __OUTSIDERECMODE__
+	value += Rec_Outside.getWeight(board, stage);
+#endif
+#ifdef __INSIDERECMODE__
+	value += Rec_Inside.getWeight(board, stage);
+#endif
+#ifdef __TRIANGLEMODE__
+	value += Triangle.getWeight(board, stage);
+#endif
+#ifdef __BOXATANGLEMODE__
+	value += Box_Angle.getWeight(board, stage);
+#endif
+#ifdef __BOXATMIDDLEMODE__
+	value += Box_Middle.getWeight(board, stage);
+#endif
+#ifdef __BOXATSIDEMODE__
+	value += Box_Side.getWeight(board, stage);
+#endif
+#ifdef __COUNTTILENUMBERMODE__
+	value += Tile_Num.getWeight(board, stage);
+#endif
+#ifdef __MERGETILEMODE__
+	if(Mergetile_Row1.getMaxTile(board) > iLowerBound){
+		value += MergeTile_Row1.getWeight(board) + MergeTile_Row2.getWeight(board, stage);
+	}
+#endif
+#ifdef __MERGECOUNTMODE__
+	value += MergeCount_Row1.getWeight(board, stage) + MergeCount_Row2.getWeight(board, stage);
 #endif
 #ifdef __CONSTANTVALUEMODE__
 	value += Adjust_Weight;
 #endif
 	return value;
 }
+#endif
 
+int Fib2584Ai::generateEvilMove(int board[4][4])
+{
+	for (int j = 0; j<4; j++) {
+		for (int k = 0; k<4; k++) {
+			board[j][k] = mapFibOrder[(board[j][k])];
+		}
+	}
+
+	int cur_round = getTileSum(board) % 6;
+	double min_score = FLT_MAX;
+	float evaluation[16] = { 0 };
+	for (int i = 0; i < 16; i++)
+		evaluation[i] = FLT_MAX;
+
+#pragma omp parallel sections num_threads(2)
+	{
+#pragma omp section
+	{
+		int i = 0;
+		for (int j = 0; j < 4; j++) {
+			if (board[i][j] == 0) {
+				int tmpboard[4][4] = {};
+				SetBoard(tmpboard, board);
+				if (cur_round == 3)
+					tmpboard[i][j] = 3;
+				else
+					tmpboard[i][j] = 1;
+				int bestdir = FindBestDirection(tmpboard);
+				int award = Move.Move(bestdir, tmpboard);
+				evaluation[j] = Evaluate(tmpboard) + award;
+				continue;
+			}
+			evaluation[j] = FLT_MAX;
+		}
+		i = 1;
+		for (int j = 0; j < 4; j++) {
+			if (board[i][j] == 0) {
+				int tmpboard[4][4] = {};
+				SetBoard(tmpboard, board);
+				if (cur_round == 3)
+					tmpboard[i][j] = 3;
+				else
+					tmpboard[i][j] = 1;
+				int bestdir = FindBestDirection(tmpboard);
+				int award = Move.Move(bestdir, tmpboard);
+				evaluation[4 + j] = Evaluate(tmpboard) + award;
+				continue;
+			}
+			evaluation[4 + j] = FLT_MAX;
+		}
+	}
+
+#pragma omp section
+	{
+		int i = 2;
+		for (int j = 0; j < 4; j++) {
+			if (board[i][j] == 0) {
+				int tmpboard[4][4] = {};
+				SetBoard(tmpboard, board);
+				if (cur_round == 3)
+					tmpboard[i][j] = 3;
+				else
+					tmpboard[i][j] = 1;
+				int bestdir = FindBestDirection(tmpboard);
+				int award = Move.Move(bestdir, tmpboard);
+				evaluation[8 + j] = Evaluate(tmpboard) + award;
+				continue;
+			}
+			evaluation[8 + j] = FLT_MAX;
+		}
+		i = 3;
+		for (int j = 0; j < 4; j++) {
+			if (board[i][j] == 0) {
+				int tmpboard[4][4] = {};
+				SetBoard(tmpboard, board);
+				if (cur_round == 3)
+					tmpboard[i][j] = 3;
+				else
+					tmpboard[i][j] = 1;
+				int bestdir = FindBestDirection(tmpboard);
+				int award = Move.Move(bestdir, tmpboard);
+				evaluation[12 + j] = Evaluate(tmpboard) + award;
+				continue;
+			}
+			evaluation[12 + j] = FLT_MAX;
+		}
+	}
+
+	}
+
+	int worst_index = 0;
+	for (int i = 0; i < 16; i++) {
+		if (evaluation[i] < evaluation[worst_index])
+			worst_index = i;
+	}
+	cout << "worst index: " << worst_index << endl;
+	return worst_index;
+}
 #ifdef __PARALLELMODE__
 void Fib2584Ai::gameOver(int board[4][4], int iScore, std::stack<Array_Board> & Array_Board_Stack)
+{
+#ifdef __TRAININGMODE__
+	Learning(Array_Board_Stack);
+#endif
+	return;
+}
+void Fib2584Ai::gameOver(std::stack<Array_Board> & Array_Board_Stack)
 {
 #ifdef __TRAININGMODE__
 	Learning(Array_Board_Stack);
@@ -306,6 +546,153 @@ void Fib2584Ai::gameOver(int board[4][4], int iScore)
 }
 #endif
 
+#ifdef __MULTITHREADMODE__
+void Fib2584Ai::Learning()
+{
+	// TD(lambda)
+	// delta_(t-1) = S_(t-1) + F_(t-1)
+	// where S_(t-1) = Lambda * S_t + r_t * ( 1 - lambda^(T - t) ) + ( 1 - labmda ) * V(state_t)
+	//       F_(t-1) = F_t * lambda + lambda^(T-t) * r_t
+	// S_T = F_T = 0
+
+	float S_t = 0;
+	float F_t = 0;
+	float lambda_power = 1 / LAMBDA;
+
+	int nextaward = 0;
+	float nextvalue = 0;
+
+	float delta = 0;
+#ifdef __TCLAMBDAMODE__
+	float nextaward_weight = 0;
+	float totalvalue = 0;
+	float FinalTerm = 0;
+	bool isFinal = true;
+#endif
+	while (Array_Board_Stack.empty() == false) {
+
+#ifdef __TCLAMBDAMODE__
+		delta = ((S_t + F_t) - Evaluate(Array_Board_Stack.top().state)) / feature_number;
+#else
+		float curValue = Evaluate(Array_Board_Stack.top().state);
+		delta = (nextaward + nextvalue - curValue) / feature_number;
+#endif
+#pragma omp parallel sections num_threads(THREADNUM)
+		{
+#ifdef __INSIDELINEMODE__
+#pragma omp section
+		{
+			Line_Inside.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __OUTSIDEAXEMODE__
+#pragma omp section
+		{
+			Axe_Outside.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __INSIDEAXEMODE__
+#pragma omp section
+		{
+			Axe_Inside.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __OUTSIDERECMODE__
+#pragma omp section
+		{
+			Rec_Outside.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __OUTSIDELINEMODE__
+#pragma omp section
+		{
+			Line_Outside.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __INSIDERECMODE__
+#pragma omp section
+		{
+			Rec_Inside.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __TRIANGLEMODE__
+#pragma omp section
+		{
+			Triangle.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __BOXATANGLEMODE__
+#pragma omp section
+		{
+			Box_Angle.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __BOXATMIDDLEMODE__
+#pragma omp section
+		{
+			Box_Middle.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __BOXATSIDEMODE__
+#pragma omp section
+		{
+			Box_Side.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __MERGECOUNTMODE__
+#pragma omp section
+		{
+			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);
+			MergeCount_Row2.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __COUNTTILENUMBERMODE__
+#pragma omp section
+		{
+			Tile_Num.Update(Array_Board_Stack.top().state, delta);
+		}
+#endif
+#ifdef __MERGETILEMODE__
+#pragma omp section
+		{
+			if (MergeTile_Row1.GetMaxTile(Array_Board_Stack.top().state) > iLowerBound) {
+				MergeTile_Row1.Update(Array_Board_Stack.top().state, delta);
+				MergeTile_Row2.Update(Array_Board_Stack.top().state, delta);
+			}
+		}
+#endif
+#ifdef __CONSTANTVALUEMODE__
+#pragma omp section
+		{
+			Adjust_Weight += delta;
+		}
+#endif
+		}
+#ifdef __TCLAMBDAMODE__
+		nextvalue = Evaluate(Array_Board_Stack.top().state);
+		nextaward = Array_Board_Stack.top().award;
+
+	}
+		if (isFinal == true) {
+			lambda_power *= LAMBDA;
+			S_t = 0;
+			F_t = nextaward + nextvalue;
+			isFinal = false;
+		}
+		else {
+			lambda_power *= LAMBDA;
+			S_t = LAMBDA * S_t + nextaward * (1 - lambda_power) + (1 - LAMBDA) * nextvalue;
+			F_t = F_t * LAMBDA + lambda_power * nextaward;
+		}
+
+#else
+		nextvalue = curValue;
+		nextaward = Array_Board_Stack.top().award;
+#endif
+		Array_Board_Stack.pop();
+	}
+}
+#else
 #ifdef __PARALLELMODE__
 void Fib2584Ai::Learning(std::stack<Array_Board> & Array_Board_Stack)
 #else
@@ -332,7 +719,6 @@ void Fib2584Ai::Learning()
 	float FinalTerm = 0;
 	bool isFinal = true;
 #endif
-
 	while(Array_Board_Stack.empty() == false){
 #ifdef __TCLAMBDAMODE__
 		delta = ((S_t + F_t) - Evaluate(Array_Board_Stack.top().state)) / feature_number;
@@ -340,53 +726,66 @@ void Fib2584Ai::Learning()
 		float curValue = Evaluate(Array_Board_Stack.top().state);
 		delta = (nextaward + nextvalue - curValue ) / feature_number;
 #endif
+#pragma omp parallel sections num_threads(3)
+		{
+#pragma omp section
+		{
 #ifdef __INSIDELINEMODE__
-		Line_Inside.Update(Array_Board_Stack.top().state, delta);
+			Line_Inside.Update(Array_Board_Stack.top().state, delta);
 #endif
 #ifdef __OUTSIDEAXEMODE__
-		Axe_Outside.Update(Array_Board_Stack.top().state, delta);
+			Axe_Outside.Update(Array_Board_Stack.top().state, delta);
 #endif
+		}
+#pragma omp section
+		{
 #ifdef __INSIDEAXEMODE__
-		Axe_Inside.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __OUTSIDERECMODE__
-		Rec_Outside.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __OUTSIDELINEMODE__
-		Line_Outside.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __INSIDERECMODE__
-		Rec_Inside.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __TRIANGLEMODE__
-		Triangle.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __BOXATANGLEMODE__
-		Box_Angle.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __BOXATMIDDLEMODE__
-		Box_Middle.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __BOXATSIDEMODE__
-		Box_Side.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __MERGECOUNTMODE__
-		MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);
-		MergeCount_Row2.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __COUNTTILENUMBERMODE__
-		Tile_Num.Update(Array_Board_Stack.top().state, delta);
-#endif
-#ifdef __MERGETILEMODE__
-	if(MergeTile_Row1.GetMaxTile(Array_Board_Stack.top().state )> iLowerBound){
-		MergeTile_Row1.Update(Array_Board_Stack.top().state, delta);
-		MergeTile_Row2.Update(Array_Board_Stack.top().state, delta);
-	}
+			Axe_Inside.Update(Array_Board_Stack.top().state, delta);
 #endif
 
-#ifdef __CONSTANTVALUEMODE__
-		Adjust_Weight += delta;
+#ifdef __COUNTTILENUMBERMODE__
+			Tile_Num.Update(Array_Board_Stack.top().state, delta);
 #endif
+#ifdef __MERGETILEMODE__
+			if (MergeTile_Row1.GetMaxTile(Array_Board_Stack.top().state)> iLowerBound) {
+				MergeTile_Row1.Update(Array_Board_Stack.top().state, delta);
+				MergeTile_Row2.Update(Array_Board_Stack.top().state, delta);
+			}
+#endif
+#ifdef __CONSTANTVALUEMODE__
+			Adjust_Weight += delta;
+#endif
+		}
+#pragma omp section
+		{
+#ifdef __OUTSIDERECMODE__
+			Rec_Outside.Update(Array_Board_Stack.top().state, delta);
+#endif
+#ifdef __OUTSIDELINEMODE__
+			Line_Outside.Update(Array_Board_Stack.top().state, delta);
+#endif
+#ifdef __INSIDERECMODE__
+			Rec_Inside.Update(Array_Board_Stack.top().state, delta);
+#endif
+#ifdef __TRIANGLEMODE__
+			Triangle.Update(Array_Board_Stack.top().state, delta);
+#endif
+#ifdef __BOXATANGLEMODE__
+			Box_Angle.Update(Array_Board_Stack.top().state, delta);
+#endif
+#ifdef __BOXATMIDDLEMODE__
+			Box_Middle.Update(Array_Board_Stack.top().state, delta);
+#endif
+#ifdef __BOXATSIDEMODE__
+			Box_Side.Update(Array_Board_Stack.top().state, delta);
+#endif
+#ifdef __MERGECOUNTMODE__
+			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);
+			MergeCount_Row2.Update(Array_Board_Stack.top().state, delta);
+#endif
+		}
+		}
+
 #ifdef __TCLAMBDAMODE__
 		nextvalue = Evaluate(Array_Board_Stack.top().state);
 		nextaward = Array_Board_Stack.top().award;
@@ -410,12 +809,16 @@ void Fib2584Ai::Learning()
 		Array_Board_Stack.pop();
 	}
 }
+#endif
 
 int Fib2584Ai::SetBoard(int b1[4][4], const int b2[4][4])
 {
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			b1[i][j] = b2[i][j];
+	for (int i = 0; i < 4; i++) {
+		b1[i][0] = b2[i][0];
+		b1[i][1] = b2[i][1];
+		b1[i][2] = b2[i][2];
+		b1[i][3] = b2[i][3];
+	}
 	return 0;
 }
 

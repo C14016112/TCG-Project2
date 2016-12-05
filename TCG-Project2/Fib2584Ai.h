@@ -29,12 +29,14 @@ public:
 #ifdef __PARALLELMODE__
 	MoveDirection generateMove(int board[4][4], std::stack<Array_Board> &);
 	void gameOver(int board[4][4], int iScore, std::stack<Array_Board> &);
+	void gameOver(std::stack<Array_Board> &);
 	void Learning(std::stack<Array_Board> &);
 #else
 	MoveDirection generateMove(int board[4][4]);
 	void gameOver(int board[4][4], int iScore);
 	void Learning();
 #endif
+	int generateEvilMove(int board[4][4]);
 	MoveDirection FindBestDirection(int board[4][4]);
 	float Evaluate(int board[4][4]);
 	void WriteToWeightTable();

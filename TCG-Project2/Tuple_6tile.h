@@ -12,8 +12,8 @@ public:
 	/*
 	get the corresponding data if giving a board
 	*/
-	virtual float getWeight(int board[4][4]);
-	virtual float getWeight(int board[4][4], int no);
+	virtual float getWeight(int board[4][4], int stage);
+	virtual float getWeight(int board[4][4], int no, int stage);
 	virtual void setWeight(int board[4][4], int no, float value);
 	virtual void Update(int board[4][4], const float error);
 private:

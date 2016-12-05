@@ -29,18 +29,17 @@ Tuple_MergeCount::~Tuple_MergeCount()
 	Desturctor();
 }
 
-float Tuple_MergeCount::getWeight(int board[4][4])
+float Tuple_MergeCount::getWeight(int board[4][4], int stage)
 {
 	float value = 0;
 	for (int i = 0; i < 8; i++)
-		value += getWeight(board, i);
+		value += getWeight(board, i, stage);
 	return  value;
 }
 
-float Tuple_MergeCount::getWeight(int board[4][4], int no)
+float Tuple_MergeCount::getWeight(int board[4][4], int no, int stage)
 {
 	int position = MergeableNumber(board, no);
-	int stage = GetStage(board);
 	return getWeightFromTable(position, board, stage);
 }
 
@@ -62,9 +61,9 @@ void Tuple_MergeCount::Update(int board[4][4], float error)
 
 int Tuple_MergeCount::MergeableNumber(const int board[4][4], const int no)
 {
-	if(isMergeable(board[index[no][1] / 4][ index[no][1] % 4], board[index[no][2] / 4][index[no][2] % 4]) == false ){
-		if(isMergeable(board[index[no][0] / 4][ index[no][0] % 4], board[index[no][1] / 4][index[no][1] % 4]) == true ){
-			if(isMergeable(board[index[no][2] / 4][ index[no][2] % 4], board[index[no][3] / 4][index[no][3] % 4]) == true )
+	if(isMergeable(board[index[no][1] >> 2][ index[no][1] & ( 4 - 1)], board[index[no][2] >> 2][index[no][2] & ( 4 - 1)]) == false ){
+		if(isMergeable(board[index[no][0] >> 2][ index[no][0] & ( 4 - 1)], board[index[no][1] >> 2][index[no][1] & ( 4 - 1)]) == true ){
+			if(isMergeable(board[index[no][2] >> 2][ index[no][2] & ( 4 - 1)], board[index[no][3] >> 2][index[no][3] & ( 4 - 1)]) == true )
 				return 2;
 			else
 				return 1;

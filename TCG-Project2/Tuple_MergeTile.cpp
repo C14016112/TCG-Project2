@@ -28,20 +28,19 @@ void Tuple_MergeTile::SetParameter(int inputindex[4])
 	}
 }
 
-float Tuple_MergeTile::getWeight(int board[4][4]){
+float Tuple_MergeTile::getWeight(int board[4][4], int stage){
 
-	float value = getWeight(board, 0) + getWeight(board, 1) + getWeight(board, 2)
-		+ getWeight(board, 3);
+	float value = getWeight(board, 0, stage) + getWeight(board, 1, stage) + getWeight(board, 2, stage)
+		+ getWeight(board, 3, stage);
 	return value;
 }
 
 
-float Tuple_MergeTile::getWeight(int board[4][4], int no)
+float Tuple_MergeTile::getWeight(int board[4][4], int no, int stage)
 {
 #ifdef _DEBUG
 	assert(no >= 0 && no < 4);
 #endif
-	int stage = GetStage(board);
 	int position = GetMergeNumber(board, no);
 	return getWeightFromTable(position, board, stage);
 }
@@ -69,13 +68,13 @@ int Tuple_MergeTile::GetMergeNumber(int board[4][4], int no)
 	int position = 0;
 	int tile_count[iRange] = {};
 	for (int i = 0 ; i< 3 ; i++){
-		if( board[index[no][i] / 4][index[no][i] % 4] == board[index[no][i+1] / 4][index[no][1+1] % 4] + 1 || 
-			board[index[no][i] / 4][index[no][i] % 4] == board[index[no][i+1] / 4][index[no][i+1] % 4] - 1)
+		if( board[index[no][i] >> 2][index[no][i] & ( 4 - 1)] == board[index[no][i+1] >> 2][index[no][1+1] & ( 4 - 1)] + 1 || 
+			board[index[no][i] >> 2][index[no][i] & ( 4 - 1)] == board[index[no][i+1] >> 2][index[no][i+1] & ( 4 - 1)] - 1)
 		{
-			if( board[index[no][i] / 4][index[no][i] % 4] > iLowerBound)
-				tile_count[ board[index[no][i] / 4][index[no][i] % 4] - iLowerBound ]++;
-			if( board[index[no][i+1] / 4][index[no][i+1] % 4] > iLowerBound)
-				tile_count[ board[index[no][i+1] / 4][index[no][i+1] % 4] - iLowerBound ]++;
+			if( board[index[no][i] >> 2][index[no][i] & ( 4 - 1)] > iLowerBound)
+				tile_count[ board[index[no][i] >> 2][index[no][i] & ( 4 - 1)] - iLowerBound ]++;
+			if( board[index[no][i+1] >> 2][index[no][i+1] & ( 4 - 1)] > iLowerBound)
+				tile_count[ board[index[no][i+1] >> 2][index[no][i+1] & ( 4 - 1)] - iLowerBound ]++;
 		}
 	}
 	for(int i = 0 ;i<iRange ;i++){

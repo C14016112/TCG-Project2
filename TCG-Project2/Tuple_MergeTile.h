@@ -8,8 +8,8 @@ public:
 	Tuple_MergeTile();
 	~Tuple_MergeTile();
 	void SetParameter(int inputindex[4]);
-	virtual float getWeight(int board[4][4]);
-	virtual float getWeight(int board[4][4], int no);
+	virtual float getWeight(int board[4][4], int stage);
+	virtual float getWeight(int board[4][4], int no, int stage);
 	virtual void setWeight(int board[4][4], int no, float value);
 	virtual void Update(int board[4][4], const float error);
 	int GetMergeNumber(int board[4][4], int no);
