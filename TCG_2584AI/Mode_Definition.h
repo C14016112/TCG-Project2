@@ -20,6 +20,7 @@
 //#define __SEARCHMODE__ // Alpha Beta Search
 //#define __MULTITHREADMODE__ // multithread mode in the play game, used in the demo
 #define __PARALLELMODE__ // parallel mode
+#define __FORBIDMODE__ // forbid mode
 #define THREADNUM 4
 
 #define __TRAIN1113MODE__ // train the table for the rule 1 1 1 3 ( three 1 and one 3)
@@ -58,7 +59,7 @@
 #define iRange 9
 #define PlayRound 100000
 #ifdef __SEARCHMODE__
-#define LogPeriod 10
+#define LogPeriod 150
 #elif defined __UCTMODE__
 #define LogPeriod 10
 #else
@@ -68,7 +69,8 @@
 #define LAMBDA 0.1
 #define SIMULATIONDEEP 0
 #define UCTBRANCHNUM 0
-#define CUT_OFF_DEPTH 1
+#define CUT_OFF_DEPTH 0
+#define BANRATE 50
 const int upsidedown_table[16] = {3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12};
 const int rotate_table[16] = {3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12};
 #ifdef __MULTISTAGE_MAXTILEMODE__

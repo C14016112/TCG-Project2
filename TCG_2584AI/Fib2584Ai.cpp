@@ -161,28 +161,45 @@ MoveDirection Fib2584Ai::generateMove(int Fibboard[4][4])
 	int board[16] = {};
 	for (int i = 0; i < 16; i++)
 		board[i] = mapFibOrder[Fibboard[i >> 2][i % 4]];
-	
+
 	Array_Board b_struct;
 	MoveDirection next_dir = static_cast<MoveDirection>(0);
 #ifdef __SEARCHMODE__
-	float evaluation[4] = {0};
-	int award[4] = {0};
-	int movedboard[4][16] = {0};
-	int depth = ((Tile_Num.GetStage(board) + 1)) * CUT_OFF_DEPTH;
+	float evaluation[4] = { 0 };
+	int award[4] = { 0 };
+	int movedboard[4][16] = { 0 };
+	int canmovedirectioncount = 4;
+	int depth = (Line_Inside.GetStage(board) >> 1) + CUT_OFF_DEPTH;
+	int tmp_best = 0;
 	for (int i = 0; i < 4; i++) {
 		SetBoard(movedboard[i], board);
 		bool ismoved = false;
 		award[i] = Move.Move(i, movedboard[i], ismoved);
 		if (ismoved == false) {
 			award[i] = NOMOVEPENALTY;
+			canmovedirectioncount--;
 			continue;
 		}
 		else {
-			evaluation[i] = Scout(movedboard[i], -FLT_MAX, FLT_MAX, depth*2);
+			evaluation[i] = Scout(movedboard[i], -FLT_MAX, FLT_MAX, depth * 2);
 		}
-		if (award[i] + evaluation[i] >= award[next_dir] + evaluation[next_dir])
+		if (award[i] + evaluation[i] >= award[next_dir] + evaluation[next_dir]) {
 			next_dir = static_cast<MoveDirection>(i);
+			tmp_best = i;
+		}
 	}
+
+	// if canmove direction is more than or equal to 3, then remove the best direction
+#ifdef __FORBIDMODE__
+	if (canmovedirectioncount >= 3 && ( rand() % BANRATE == 0)  ) {
+		int best_dir = (tmp_best + 1) % 4 ;
+		for (int i = 0; i < 4; i++) {
+			if (i != tmp_best && (evaluation[i] + award[i] > evaluation[best_dir] + award[best_dir]))
+				best_dir = i;
+		}
+		next_dir = static_cast<MoveDirection>(best_dir);
+	}
+#endif
 	b_struct.award = award[next_dir];
 	SetBoard(b_struct.state, movedboard[next_dir]);
 #elif defined __UCTMODE__
@@ -207,7 +224,7 @@ int Fib2584Ai::generateEvilMove(int Fibboard[4][4])
 	for (int i = 0; i < 16; i++)
 		board[i] = mapFibOrder[Fibboard[i >> 2][i % 4]];
 	
-	int depth = ((Line_Inside.GetStage(board) + 1) >> 1) + 1;
+	int depth = ( Line_Inside.GetStage(board) >> 1) + CUT_OFF_DEPTH;
 	int cur_round = getTileSum(board) % 6;
 	float evaluation[16] = { 0 };
 	for (int i = 0; i < 16; i++)

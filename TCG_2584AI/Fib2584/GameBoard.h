@@ -26,6 +26,7 @@ public:
 	int getMaxTile();
 	void showBoard();
 	bool operator==(GameBoard gameBoard);
+	void addTile(int index);
 private:
 	BitBoard getRow(int row);
 	BitBoard getColumn(int column);

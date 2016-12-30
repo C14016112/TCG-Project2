@@ -168,8 +168,14 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic, std::stack<Array_Board> & arr
 			}
 				
 			statistic.increaseOneMove();
-			gameBoard.addRandomTile();
-			
+			if(rand() % 100 >= 0)
+				gameBoard.addRandomTile();
+			else {
+				int tmp_board[4][4] = { 0 };
+				gameBoard.getArrayBoard(tmp_board);
+				int worst_index = ai.generateEvilMove(tmp_board);
+				gameBoard.addTile(worst_index);
+			}
 		}
 		gameBoard.getArrayBoard(arrayBoard);
 #ifdef __ARRAYTABLEMODE__

@@ -159,3 +159,34 @@ bool GameBoard::operator==(GameBoard gameBoard)
 {
 	return board_ == gameBoard.board_;
 }
+
+void GameBoard::addTile(int index)
+{
+	cur_round++;
+	int oneTileRate = 6;
+#ifdef __ADDRANDOMTILE1113MODE__
+	BitBoard randomTile = (cur_round % 4 == 0) ? 0x3 : 0x1;
+#else
+	BitBoard randomTile = (random_.get_rand_num() % 8 < oneTileRate) ? 0x1 : 0x3;
+#endif
+	BitBoard tileMask = 0x1f;
+	tileMask <<= (5 * (15 - index));
+	if ((board_ & tileMask) == 0) {
+		randomTile <<= (5 * (15 - index));
+		board_ |= randomTile;
+	}
+	else {
+		int emptyTileNum = countEmptyTile();
+		int randomTileLocation = random_.get_rand_num() % emptyTileNum;
+		int count = 0;
+		for (BitBoard tileMask = 0x1f; tileMask != 0; tileMask <<= 5, randomTile <<= 5) {
+			if ((board_ & tileMask) != 0)
+				continue;
+			if (count == randomTileLocation) {
+				board_ |= randomTile;
+				break;
+			}
+			count++;
+		}
+	}
+}
