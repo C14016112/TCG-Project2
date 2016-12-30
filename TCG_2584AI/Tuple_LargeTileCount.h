@@ -7,10 +7,9 @@ class Tuple_LargeTileCount : public Tuple
 public:
 	Tuple_LargeTileCount(void);
 	~Tuple_LargeTileCount(void);
-	virtual float getWeight(int board[4][4], int stage);
-	void setWeight(int board[4][4], float value);
-	virtual void Update(int board[4][4], const float error);
-	int getPosition(int board[4][4]);
+	virtual float getWeight(int board[16], int stage);
+	virtual void Update(int board[16], const float error, int stage);
+	int getPosition(int board[16]);
 	int pow(int x, int y);
 private:
 

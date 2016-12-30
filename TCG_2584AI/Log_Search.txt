@@ -1,0 +1,564 @@
+Cut-Off-Depth = 1 
+Tue Dec 13 13:58:17 2016
+LogPeriod = 30, Learning Rate = 0.100000
+Search Mode is opened. 1 layers. 
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Cut-Off-Depth = 1 
+Tue Dec 13 15:11:55 2016
+LogPeriod = 30, Learning Rate = 0.100000
+Search Mode is opened. 1 layers. 
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Cut-Off-Depth = 1 
+Tue Dec 13 15:12:59 2016
+LogPeriod = 30, Learning Rate = 0.100000
+Search Mode is opened. 1 layers. 
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Cut-Off-Depth = 1 
+Thu Dec 15 10:53:33 2016
+LogPeriod = 30, Learning Rate = 0.100000
+Search Mode is opened. 1 layers. 
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 28657, MaxScore = 514350, Average Score = 360010.73
+610: 100.00%, 2584: 100.00%, 6765: 93.33%, 10946: 90.00%
+17711: 83.33%, 28657: 30.00%, 46368: 0.00% 
+
+Round: 2, MaxTile = 28657, MaxScore = 534930, Average Score = 378945.08
+610: 100.00%, 2584: 100.00%, 6765: 96.67%, 10946: 91.67%
+17711: 85.00%, 28657: 38.33%, 46368: 0.00% 
+
+Round: 3, MaxTile = 28657, MaxScore = 534930, Average Score = 389023.89
+610: 100.00%, 2584: 100.00%, 6765: 97.78%, 10946: 93.33%
+17711: 86.67%, 28657: 42.22%, 46368: 0.00% 
+
+Round: 4, MaxTile = 28657, MaxScore = 534930, Average Score = 392220.68
+610: 100.00%, 2584: 100.00%, 6765: 97.50%, 10946: 94.17%
+17711: 87.50%, 28657: 43.33%, 46368: 0.00% 
+
+Round: 5, MaxTile = 28657, MaxScore = 534930, Average Score = 398701.01
+610: 100.00%, 2584: 100.00%, 6765: 98.00%, 10946: 95.33%
+17711: 89.33%, 28657: 45.33%, 46368: 0.00% 
+
+Round: 6, MaxTile = 28657, MaxScore = 534930, Average Score = 396007.47
+610: 100.00%, 2584: 100.00%, 6765: 98.33%, 10946: 95.00%
+17711: 88.33%, 28657: 45.00%, 46368: 0.00% 
+
+Round: 7, MaxTile = 28657, MaxScore = 534930, Average Score = 396562.05
+610: 100.00%, 2584: 100.00%, 6765: 98.57%, 10946: 94.76%
+17711: 88.10%, 28657: 45.71%, 46368: 0.00% 
+
+Round: 8, MaxTile = 28657, MaxScore = 534930, Average Score = 395603.42
+610: 100.00%, 2584: 100.00%, 6765: 98.75%, 10946: 95.42%
+17711: 89.17%, 28657: 43.75%, 46368: 0.00% 
+
+Round: 9, MaxTile = 28657, MaxScore = 534930, Average Score = 399129.34
+610: 100.00%, 2584: 100.00%, 6765: 98.89%, 10946: 95.93%
+17711: 88.52%, 28657: 45.93%, 46368: 0.00% 
+
+Round: 10, MaxTile = 28657, MaxScore = 534930, Average Score = 398560.76
+610: 100.00%, 2584: 100.00%, 6765: 99.00%, 10946: 96.33%
+17711: 88.33%, 28657: 45.00%, 46368: 0.00% 
+
+Round: 11, MaxTile = 28657, MaxScore = 522913, Average Score = 406839.63
+610: 100.00%, 2584: 100.00%, 6765: 96.67%, 10946: 93.33%
+17711: 93.33%, 28657: 50.00%, 46368: 0.00% 
+
+Round: 12, MaxTile = 28657, MaxScore = 544306, Average Score = 408344.10
+610: 100.00%, 2584: 100.00%, 6765: 98.33%, 10946: 95.00%
+17711: 91.67%, 28657: 48.33%, 46368: 0.00% 
+
+Round: 13, MaxTile = 28657, MaxScore = 544306, Average Score = 409179.44
+610: 100.00%, 2584: 100.00%, 6765: 97.78%, 10946: 95.56%
+17711: 92.22%, 28657: 50.00%, 46368: 0.00% 
+
+Round: 14, MaxTile = 28657, MaxScore = 544306, Average Score = 408229.38
+610: 100.00%, 2584: 100.00%, 6765: 98.33%, 10946: 96.67%
+17711: 91.67%, 28657: 50.00%, 46368: 0.00% 
+
+Round: 15, MaxTile = 28657, MaxScore = 544306, Average Score = 398575.61
+610: 100.00%, 2584: 99.33%, 6765: 98.00%, 10946: 96.67%
+17711: 88.67%, 28657: 46.67%, 46368: 0.00% 
+
+Round: 16, MaxTile = 28657, MaxScore = 544306, Average Score = 406833.13
+610: 100.00%, 2584: 99.44%, 6765: 98.33%, 10946: 97.22%
+17711: 89.44%, 28657: 50.56%, 46368: 0.00% 
+
+Round: 17, MaxTile = 28657, MaxScore = 569100, Average Score = 409686.70
+610: 100.00%, 2584: 99.52%, 6765: 98.57%, 10946: 97.14%
+17711: 89.52%, 28657: 52.38%, 46368: 0.00% 
+
+Round: 18, MaxTile = 28657, MaxScore = 569100, Average Score = 406870.27
+610: 100.00%, 2584: 99.58%, 6765: 98.75%, 10946: 97.50%
+17711: 89.17%, 28657: 50.83%, 46368: 0.00% 
+
+Round: 19, MaxTile = 28657, MaxScore = 569100, Average Score = 409347.89
+610: 100.00%, 2584: 99.63%, 6765: 98.89%, 10946: 97.78%
+17711: 89.26%, 28657: 52.22%, 46368: 0.00% 
+
+Round: 20, MaxTile = 28657, MaxScore = 569100, Average Score = 407707.37
+610: 100.00%, 2584: 99.67%, 6765: 99.00%, 10946: 97.67%
+17711: 88.67%, 28657: 52.00%, 46368: 0.00% 
+
+Round: 21, MaxTile = 28657, MaxScore = 530695, Average Score = 374115.87
+610: 100.00%, 2584: 100.00%, 6765: 100.00%, 10946: 96.67%
+17711: 80.00%, 28657: 36.67%, 46368: 0.00% 
+
+Round: 22, MaxTile = 28657, MaxScore = 531250, Average Score = 399865.00
+610: 100.00%, 2584: 100.00%, 6765: 100.00%, 10946: 98.33%
+17711: 86.67%, 28657: 46.67%, 46368: 0.00% 
+
+Round: 23, MaxTile = 28657, MaxScore = 531250, Average Score = 411950.69
+610: 100.00%, 2584: 100.00%, 6765: 100.00%, 10946: 98.89%
+17711: 87.78%, 28657: 53.33%, 46368: 0.00% 
+
+Round: 24, MaxTile = 28657, MaxScore = 531250, Average Score = 404900.08
+610: 100.00%, 2584: 100.00%, 6765: 100.00%, 10946: 98.33%
+17711: 87.50%, 28657: 49.17%, 46368: 0.00% 
+
+Round: 25, MaxTile = 28657, MaxScore = 531250, Average Score = 398441.81
+610: 100.00%, 2584: 100.00%, 6765: 100.00%, 10946: 98.67%
+17711: 86.67%, 28657: 47.33%, 46368: 0.00% 
+
+Round: 26, MaxTile = 28657, MaxScore = 574044, Average Score = 399376.37
+610: 100.00%, 2584: 100.00%, 6765: 99.44%, 10946: 97.78%
+17711: 86.11%, 28657: 47.78%, 46368: 0.00% 
+
+Round: 27, MaxTile = 28657, MaxScore = 574044, Average Score = 403218.06
+610: 100.00%, 2584: 100.00%, 6765: 99.52%, 10946: 97.62%
+17711: 87.14%, 28657: 49.52%, 46368: 0.00% 
+
+Round: 28, MaxTile = 28657, MaxScore = 574044, Average Score = 404767.23
+610: 100.00%, 2584: 100.00%, 6765: 99.58%, 10946: 97.50%
+17711: 87.50%, 28657: 50.42%, 46368: 0.00% 
+
+Cut-Off-Depth = 1 
+Thu Dec 15 17:37:42 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Cut-Off-Depth = 1 
+Thu Dec 15 17:40:57 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Cut-Off-Depth = 1 
+Thu Dec 15 17:50:06 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Cut-Off-Depth = 1 
+Thu Dec 15 17:53:29 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Cut-Off-Depth = 1 
+Thu Dec 15 17:57:57 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Cut-Off-Depth = 1 
+Thu Dec 15 18:00:10 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 2584, MaxScore = 29056, Average Score = 9154.65
+610: 76.44%, 2584: 0.11%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 2, MaxTile = 2584, MaxScore = 29056, Average Score = 9112.64
+610: 75.17%, 2584: 0.06%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 3, MaxTile = 2584, MaxScore = 29056, Average Score = 9076.62
+610: 75.07%, 2584: 0.04%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 4, MaxTile = 2584, MaxScore = 30787, Average Score = 9044.78
+610: 74.69%, 2584: 0.06%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 5, MaxTile = 2584, MaxScore = 30787, Average Score = 8994.23
+610: 74.67%, 2584: 0.04%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 6, MaxTile = 2584, MaxScore = 33116, Average Score = 8981.49
+610: 74.83%, 2584: 0.06%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 7, MaxTile = 2584, MaxScore = 33116, Average Score = 9013.37
+610: 74.75%, 2584: 0.06%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 8, MaxTile = 2584, MaxScore = 33116, Average Score = 9006.65
+610: 74.51%, 2584: 0.06%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 9, MaxTile = 2584, MaxScore = 33116, Average Score = 9016.16
+610: 74.74%, 2584: 0.07%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 10, MaxTile = 2584, MaxScore = 33116, Average Score = 9030.74
+610: 74.84%, 2584: 0.07%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 11, MaxTile = 2584, MaxScore = 39689, Average Score = 9165.85
+610: 76.67%, 2584: 0.22%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 12, MaxTile = 2584, MaxScore = 39689, Average Score = 9147.65
+610: 76.28%, 2584: 0.17%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 13, MaxTile = 2584, MaxScore = 39689, Average Score = 9184.01
+610: 76.15%, 2584: 0.19%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 14, MaxTile = 2584, MaxScore = 39689, Average Score = 9091.32
+610: 75.33%, 2584: 0.14%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 15, MaxTile = 2584, MaxScore = 39689, Average Score = 9052.26
+610: 74.89%, 2584: 0.13%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Cut-Off-Depth = 1 
+Thu Dec 15 18:17:45 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 46368, MaxScore = 779146, Average Score = 335317.73
+610: 100.00%, 2584: 98.56%, 6765: 93.89%, 10946: 87.56%
+17711: 70.00%, 28657: 27.00%, 46368: 0.22% 
+
+Round: 2, MaxTile = 46368, MaxScore = 822537, Average Score = 340440.11
+610: 100.00%, 2584: 98.89%, 6765: 94.17%, 10946: 88.22%
+17711: 71.61%, 28657: 28.17%, 46368: 0.33% 
+
+Round: 3, MaxTile = 46368, MaxScore = 822537, Average Score = 339315.38
+610: 99.96%, 2584: 98.81%, 6765: 93.89%, 10946: 88.19%
+17711: 71.26%, 28657: 28.11%, 46368: 0.30% 
+
+Round: 4, MaxTile = 46368, MaxScore = 822537, Average Score = 336035.51
+610: 99.92%, 2584: 98.61%, 6765: 93.89%, 10946: 87.47%
+17711: 69.97%, 28657: 27.72%, 46368: 0.28% 
+
+Round: 5, MaxTile = 46368, MaxScore = 822537, Average Score = 336866.93
+610: 99.93%, 2584: 98.73%, 6765: 93.96%, 10946: 87.22%
+17711: 69.98%, 28657: 28.09%, 46368: 0.31% 
+
+Round: 6, MaxTile = 46368, MaxScore = 822537, Average Score = 335942.65
+610: 99.91%, 2584: 98.80%, 6765: 93.96%, 10946: 87.02%
+17711: 69.67%, 28657: 28.04%, 46368: 0.26% 
+
+Round: 7, MaxTile = 46368, MaxScore = 822537, Average Score = 335766.60
+610: 99.90%, 2584: 98.71%, 6765: 93.95%, 10946: 86.98%
+17711: 69.65%, 28657: 28.17%, 46368: 0.24% 
+
+Round: 8, MaxTile = 46368, MaxScore = 822537, Average Score = 335229.18
+610: 99.90%, 2584: 98.68%, 6765: 93.93%, 10946: 86.92%
+17711: 69.63%, 28657: 28.01%, 46368: 0.21% 
+
+Round: 9, MaxTile = 46368, MaxScore = 822537, Average Score = 335232.30
+610: 99.89%, 2584: 98.64%, 6765: 93.93%, 10946: 87.01%
+17711: 69.37%, 28657: 28.17%, 46368: 0.22% 
+
+Round: 10, MaxTile = 46368, MaxScore = 822537, Average Score = 335249.94
+610: 99.89%, 2584: 98.60%, 6765: 93.86%, 10946: 86.84%
+17711: 69.34%, 28657: 28.28%, 46368: 0.24% 
+
+Round: 11, MaxTile = 46368, MaxScore = 781518, Average Score = 334999.16
+610: 100.00%, 2584: 98.89%, 6765: 93.89%, 10946: 88.33%
+17711: 69.22%, 28657: 27.78%, 46368: 0.33% 
+
+Round: 12, MaxTile = 46368, MaxScore = 781518, Average Score = 336465.75
+610: 99.94%, 2584: 99.06%, 6765: 94.06%, 10946: 88.28%
+17711: 69.44%, 28657: 27.78%, 46368: 0.22% 
+
+Round: 13, MaxTile = 46368, MaxScore = 807235, Average Score = 334882.27
+610: 99.89%, 2584: 98.89%, 6765: 94.07%, 10946: 87.78%
+17711: 69.41%, 28657: 27.48%, 46368: 0.26% 
+
+Round: 14, MaxTile = 46368, MaxScore = 875655, Average Score = 336299.83
+610: 99.86%, 2584: 98.92%, 6765: 94.14%, 10946: 87.58%
+17711: 69.67%, 28657: 28.00%, 46368: 0.28% 
+
+Round: 15, MaxTile = 46368, MaxScore = 875655, Average Score = 336667.67
+610: 99.87%, 2584: 99.00%, 6765: 94.20%, 10946: 87.71%
+17711: 69.49%, 28657: 28.07%, 46368: 0.27% 
+
+Round: 16, MaxTile = 46368, MaxScore = 875655, Average Score = 335017.56
+610: 99.83%, 2584: 98.87%, 6765: 94.11%, 10946: 87.48%
+17711: 69.20%, 28657: 27.65%, 46368: 0.24% 
+
+Round: 17, MaxTile = 46368, MaxScore = 875655, Average Score = 335397.12
+610: 99.84%, 2584: 98.81%, 6765: 94.24%, 10946: 87.63%
+17711: 69.00%, 28657: 27.86%, 46368: 0.21% 
+
+Round: 18, MaxTile = 46368, MaxScore = 875655, Average Score = 335543.46
+610: 99.86%, 2584: 98.79%, 6765: 94.17%, 10946: 87.46%
+17711: 69.11%, 28657: 28.24%, 46368: 0.22% 
+
+Round: 19, MaxTile = 46368, MaxScore = 875655, Average Score = 335330.64
+610: 99.88%, 2584: 98.80%, 6765: 94.14%, 10946: 87.47%
+17711: 69.19%, 28657: 28.07%, 46368: 0.22% 
+
+Round: 20, MaxTile = 46368, MaxScore = 875655, Average Score = 334742.60
+610: 99.84%, 2584: 98.82%, 6765: 94.08%, 10946: 87.46%
+17711: 69.16%, 28657: 27.91%, 46368: 0.20% 
+
+Round: 21, MaxTile = 46368, MaxScore = 714613, Average Score = 336017.74
+610: 99.78%, 2584: 98.78%, 6765: 93.11%, 10946: 86.33%
+17711: 70.44%, 28657: 28.33%, 46368: 0.11% 
+
+Round: 22, MaxTile = 46368, MaxScore = 830248, Average Score = 332885.11
+610: 99.78%, 2584: 98.39%, 6765: 93.56%, 10946: 86.39%
+17711: 69.22%, 28657: 28.11%, 46368: 0.28% 
+
+Round: 23, MaxTile = 46368, MaxScore = 830248, Average Score = 331336.82
+610: 99.70%, 2584: 98.22%, 6765: 93.41%, 10946: 86.26%
+17711: 68.52%, 28657: 27.74%, 46368: 0.22% 
+
+Round: 24, MaxTile = 46368, MaxScore = 830248, Average Score = 332298.45
+610: 99.78%, 2584: 98.47%, 6765: 93.53%, 10946: 86.28%
+17711: 68.58%, 28657: 28.19%, 46368: 0.22% 
+
+Round: 25, MaxTile = 46368, MaxScore = 830248, Average Score = 331478.44
+610: 99.78%, 2584: 98.44%, 6765: 93.62%, 10946: 86.33%
+17711: 68.24%, 28657: 27.96%, 46368: 0.20% 
+
+Round: 26, MaxTile = 46368, MaxScore = 830248, Average Score = 333162.03
+610: 99.78%, 2584: 98.50%, 6765: 93.57%, 10946: 86.35%
+17711: 68.44%, 28657: 28.63%, 46368: 0.22% 
+
+Round: 27, MaxTile = 46368, MaxScore = 830248, Average Score = 334691.33
+610: 99.78%, 2584: 98.56%, 6765: 93.75%, 10946: 86.78%
+17711: 68.97%, 28657: 28.76%, 46368: 0.21% 
+
+Round: 28, MaxTile = 46368, MaxScore = 830248, Average Score = 332722.57
+610: 99.78%, 2584: 98.60%, 6765: 93.65%, 10946: 86.49%
+17711: 68.24%, 28657: 28.33%, 46368: 0.19% 
+
+Round: 29, MaxTile = 46368, MaxScore = 830248, Average Score = 332744.27
+610: 99.78%, 2584: 98.60%, 6765: 93.59%, 10946: 86.56%
+17711: 68.19%, 28657: 28.37%, 46368: 0.19% 
+
+Round: 30, MaxTile = 46368, MaxScore = 830248, Average Score = 333474.39
+610: 99.79%, 2584: 98.64%, 6765: 93.63%, 10946: 86.72%
+17711: 68.38%, 28657: 28.37%, 46368: 0.21% 
+
+Round: 31, MaxTile = 46368, MaxScore = 781237, Average Score = 341161.73
+610: 100.00%, 2584: 99.11%, 6765: 94.33%, 10946: 88.33%
+17711: 70.78%, 28657: 29.11%, 46368: 0.33% 
+
+Round: 32, MaxTile = 46368, MaxScore = 867192, Average Score = 337255.02
+610: 99.89%, 2584: 98.83%, 6765: 94.00%, 10946: 87.61%
+17711: 70.33%, 28657: 28.39%, 46368: 0.28% 
+
+Round: 33, MaxTile = 46368, MaxScore = 867192, Average Score = 336904.73
+610: 99.93%, 2584: 98.63%, 6765: 94.07%, 10946: 87.37%
+17711: 70.22%, 28657: 28.33%, 46368: 0.22% 
+
+Round: 34, MaxTile = 46368, MaxScore = 867192, Average Score = 332983.70
+610: 99.89%, 2584: 98.44%, 6765: 93.83%, 10946: 86.72%
+17711: 69.36%, 28657: 27.25%, 46368: 0.17% 
+
+Round: 35, MaxTile = 46368, MaxScore = 867192, Average Score = 333805.31
+610: 99.87%, 2584: 98.56%, 6765: 94.04%, 10946: 87.13%
+17711: 69.53%, 28657: 27.29%, 46368: 0.20% 
+
+Round: 36, MaxTile = 46368, MaxScore = 867192, Average Score = 333158.45
+610: 99.83%, 2584: 98.61%, 6765: 93.93%, 10946: 87.04%
+17711: 69.06%, 28657: 27.43%, 46368: 0.19% 
+
+Round: 37, MaxTile = 46368, MaxScore = 867192, Average Score = 334659.54
+610: 99.84%, 2584: 98.65%, 6765: 94.02%, 10946: 87.32%
+17711: 69.52%, 28657: 27.54%, 46368: 0.24% 
+
+Round: 38, MaxTile = 46368, MaxScore = 867192, Average Score = 333798.05
+610: 99.83%, 2584: 98.61%, 6765: 94.03%, 10946: 87.19%
+17711: 69.22%, 28657: 27.40%, 46368: 0.24% 
+
+Round: 39, MaxTile = 46368, MaxScore = 867192, Average Score = 334213.32
+610: 99.83%, 2584: 98.60%, 6765: 93.95%, 10946: 87.17%
+17711: 69.38%, 28657: 27.49%, 46368: 0.27% 
+
+Round: 40, MaxTile = 46368, MaxScore = 867192, Average Score = 333442.82
+610: 99.84%, 2584: 98.64%, 6765: 93.99%, 10946: 87.13%
+17711: 69.31%, 28657: 27.43%, 46368: 0.26% 
+
+Round: 41, MaxTile = 46368, MaxScore = 782232, Average Score = 337591.21
+610: 100.00%, 2584: 98.56%, 6765: 94.33%, 10946: 86.56%
+17711: 68.89%, 28657: 29.89%, 46368: 0.22% 
+
+Round: 42, MaxTile = 46368, MaxScore = 782232, Average Score = 338270.03
+610: 100.00%, 2584: 98.83%, 6765: 94.11%, 10946: 87.22%
+17711: 69.22%, 28657: 29.56%, 46368: 0.44% 
+
+Round: 43, MaxTile = 46368, MaxScore = 833718, Average Score = 336898.58
+610: 99.96%, 2584: 98.78%, 6765: 93.85%, 10946: 86.96%
+17711: 69.11%, 28657: 28.96%, 46368: 0.48% 
+
+Round: 44, MaxTile = 46368, MaxScore = 833718, Average Score = 336568.18
+610: 99.94%, 2584: 98.72%, 6765: 93.92%, 10946: 86.75%
+17711: 69.33%, 28657: 28.72%, 46368: 0.44% 
+
+Round: 45, MaxTile = 46368, MaxScore = 833718, Average Score = 337911.92
+610: 99.91%, 2584: 98.71%, 6765: 94.09%, 10946: 87.07%
+17711: 69.67%, 28657: 28.82%, 46368: 0.47% 
+
+Round: 46, MaxTile = 46368, MaxScore = 833718, Average Score = 337929.88
+610: 99.93%, 2584: 98.69%, 6765: 94.07%, 10946: 87.02%
+17711: 69.81%, 28657: 28.89%, 46368: 0.41% 
+
+Round: 47, MaxTile = 46368, MaxScore = 844588, Average Score = 337291.87
+610: 99.90%, 2584: 98.62%, 6765: 94.00%, 10946: 86.89%
+17711: 69.48%, 28657: 28.87%, 46368: 0.40% 
+
+Round: 48, MaxTile = 46368, MaxScore = 844588, Average Score = 336563.85
+610: 99.89%, 2584: 98.71%, 6765: 93.97%, 10946: 86.76%
+17711: 69.36%, 28657: 28.61%, 46368: 0.39% 
+
+Round: 49, MaxTile = 46368, MaxScore = 844588, Average Score = 335959.75
+610: 99.86%, 2584: 98.74%, 6765: 94.11%, 10946: 86.80%
+17711: 69.36%, 28657: 28.38%, 46368: 0.38% 
+
+Round: 50, MaxTile = 46368, MaxScore = 865906, Average Score = 335963.61
+610: 99.86%, 2584: 98.73%, 6765: 94.02%, 10946: 86.90%
+17711: 69.52%, 28657: 28.33%, 46368: 0.38% 
+
+Round: 51, MaxTile = 46368, MaxScore = 829949, Average Score = 341571.88
+610: 99.78%, 2584: 98.67%, 6765: 94.33%, 10946: 87.11%
+17711: 70.67%, 28657: 29.67%, 46368: 0.33% 
+
+Round: 52, MaxTile = 46368, MaxScore = 832908, Average Score = 341947.96
+610: 99.83%, 2584: 98.78%, 6765: 94.83%, 10946: 87.72%
+17711: 70.72%, 28657: 29.00%, 46368: 0.28% 
+
+Round: 53, MaxTile = 46368, MaxScore = 832908, Average Score = 338817.78
+610: 99.85%, 2584: 98.74%, 6765: 94.37%, 10946: 87.15%
+17711: 70.22%, 28657: 28.37%, 46368: 0.26% 
+
+Round: 54, MaxTile = 46368, MaxScore = 832908, Average Score = 337429.23
+610: 99.89%, 2584: 98.67%, 6765: 94.33%, 10946: 87.17%
+17711: 69.78%, 28657: 28.22%, 46368: 0.19% 
+
+Round: 55, MaxTile = 46368, MaxScore = 832908, Average Score = 337853.36
+610: 99.84%, 2584: 98.67%, 6765: 94.47%, 10946: 87.16%
+17711: 70.04%, 28657: 28.44%, 46368: 0.18% 
+
+Round: 56, MaxTile = 46368, MaxScore = 836939, Average Score = 336159.48
+610: 99.87%, 2584: 98.70%, 6765: 94.31%, 10946: 86.98%
+17711: 69.50%, 28657: 28.20%, 46368: 0.19% 
+
+Round: 57, MaxTile = 46368, MaxScore = 836939, Average Score = 335054.35
+610: 99.87%, 2584: 98.75%, 6765: 94.25%, 10946: 86.73%
+17711: 69.03%, 28657: 28.16%, 46368: 0.24% 
+
+Round: 58, MaxTile = 46368, MaxScore = 836939, Average Score = 335052.99
+610: 99.89%, 2584: 98.76%, 6765: 94.35%, 10946: 86.78%
+17711: 69.04%, 28657: 28.04%, 46368: 0.25% 
+
+Cut-Off-Depth = 1 
+Thu Dec 15 19:59:47 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+

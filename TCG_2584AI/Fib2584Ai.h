@@ -10,12 +10,11 @@
 #include "Tuple_MergeTile.h"
 #include "Tuple_MergeCount.h"
 #include <stack>
-#include "GameBoard_Extend.h"
 #include <map>
 #include "Mode_Definition.h"
 #include "float.h"
 struct Array_Board{
-	int state[4][4];
+	int state[16];
 	int award;
 };
 
@@ -37,18 +36,15 @@ public:
 	void Learning();
 #endif
 	int generateEvilMove(int board[4][4]);
-	MoveDirection FindBestDirection(int board[4][4]);
-	float Evaluate(int board[4][4]);
+	MoveDirection FindBestDirection(int board[16]);
+	float Evaluate(int board[16]);
 	void WriteToWeightTable();
 	void ReadFromWeightTable();
-	int SetBoard(int board[4][4], const int board2[4][4]);
-	int Simulation(int board[4][4], Array_Board & b_struct);
-	double PlayOut(int board[4][4], int deep);
-	bool AddRandomTile(int board[4][4]);
-	double Scout(int board[4][4], double alpha, double beta, int depth);
-	double alphabeta_Max(int board[4][4], double alpha, double beta, int depth);
-	double alphabeta_Min(int board[4][4], double alpha, double beta, int depth);
-	int getTileSum(int board[4][4]);
+	int SetBoard(int board[16], const int board2[16]);
+	double Scout(int board[16], double alpha, double beta, int depth);
+	double alphabeta_Max(int board[16], double alpha, double beta, int depth);
+	double alphabeta_Min(int board[16], double alpha, double beta, int depth);
+	int getTileSum(int board[16]);
 private:
 #ifdef __INSIDELINEMODE__
 	Tuple_4tile Line_Inside;
@@ -97,7 +93,7 @@ private:
 	int icurRound;
 	MakeMoveTable Move;
 	std::stack<Array_Board> Array_Board_Stack;
-	bool isSameBoard(int board1[4][4], int board2[4][4]);
+	bool isSameBoard(int board1[16], int board2[16]);
 	std::map<int, int> mapFibOrder;  
 	int feature_number ;
 };

@@ -15,27 +15,18 @@ Tuple_LargeTileCount::~Tuple_LargeTileCount(void)
 	Desturctor();
 }
 
-float Tuple_LargeTileCount::getWeight(int board[4][4], int stage)
+float Tuple_LargeTileCount::getWeight(int board[16], int stage)
 {
 	int position = getPosition(board);
 	return getWeightFromTable(position, board, stage);
 }
 
-void Tuple_LargeTileCount::setWeight(int board[4][4], const float weight)
-{
-	int stage = GetStage(board);
-	int position = getPosition(board);
-	setWeightToTable(position, weight, board, stage);
-}
-
-int Tuple_LargeTileCount::getPosition(int board[4][4])
+int Tuple_LargeTileCount::getPosition(int board[16])
 {
 	int tile_count[iRange] = {};
-	for (int i = 0 ; i < 4; i++){
-		for (int j = 0 ; j< 4 ;j ++){
-			if(board[i][j] >= iLowerBound){
-				tile_count[board[i][j] - iLowerBound]++;
-			}
+	for (int i = 0 ; i < 16; i++){
+		if(board[i] >= iLowerBound){
+			tile_count[board[i] - iLowerBound]++;
 		}
 	}
 	int position = 0;
@@ -45,9 +36,8 @@ int Tuple_LargeTileCount::getPosition(int board[4][4])
 	return position;
 }
 
-void Tuple_LargeTileCount::Update(int board[4][4], const float error)
+void Tuple_LargeTileCount::Update(int board[16], const float error, int stage)
 {
-	int stage = GetStage(board);
 	int position = getPosition(board);
 	UpdateTable(position, error, board, stage);
 }

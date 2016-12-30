@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	// create and initialize AI
 	Fib2584Ai ai;
 	ai.initialize(argc, argv);
-	
+
 	// initialize statistic data
 	Statistic statistic;
 	statistic.setStartTime();
@@ -41,45 +41,74 @@ int main(int argc, char* argv[])
 	std::stack<Array_Board> Array_Board_Stack1;
 	std::stack<Array_Board> Array_Board_Stack2;
 	std::stack<Array_Board> Array_Board_Stack3;
+	std::stack<Array_Board> Array_Board_Stack4;
+	std::stack<Array_Board> Array_Board_Stack5;
+	std::stack<Array_Board> Array_Board_Stack6;
 
-	for (int i = 1; i <= iPlayRounds; i++){
+	for (int i = 1; i <= iPlayRounds; i++) {
 		printf(" %d ", i);
 		if (i % 10 == 0)
 			printf("\n");
-		
+
 #ifdef __PARALLELMODE__
 		for (int j = 0; j < LogPeriod; j++) {
+			if (j % 2 == 0) {
 #pragma omp parallel sections num_threads(THREADNUM)
-		{
+			{
 #pragma omp section
-		{
-			PlayGame(ai, statistic, Array_Board_Stack1);
-		}
+			{
+				PlayGame(ai, statistic, Array_Board_Stack1);
+			}
 #pragma omp section
-		{
-			PlayGame(ai, statistic, Array_Board_Stack2);
-		}
+			{
+				PlayGame(ai, statistic, Array_Board_Stack2);
+			}
 #pragma omp section
-		{
-			PlayGame(ai, statistic, Array_Board_Stack3);
-		}
-		}
-#ifdef __VECTORTABLEMODE__
-		ai.gameOver(Array_Board_Stack1);
-		ai.gameOver(Array_Board_Stack2);
-		ai.gameOver(Array_Board_Stack3);
-#endif
+			{
+				PlayGame(ai, statistic, Array_Board_Stack3);
+			}
+#pragma omp section
+			{
+				ai.gameOver(Array_Board_Stack4);
+				ai.gameOver(Array_Board_Stack5);
+				ai.gameOver(Array_Board_Stack6);
+			}
+			}
+			}
+			else {
+#pragma omp parallel sections num_threads(THREADNUM)
+			{
+#pragma omp section
+			{
+				PlayGame(ai, statistic, Array_Board_Stack4);
+			}
+#pragma omp section
+			{
+				PlayGame(ai, statistic, Array_Board_Stack5);
+			}
+#pragma omp section
+			{
+				PlayGame(ai, statistic, Array_Board_Stack6);
+			}
+#pragma omp section
+			{
+				ai.gameOver(Array_Board_Stack1);
+				ai.gameOver(Array_Board_Stack2);
+				ai.gameOver(Array_Board_Stack3);
+			}
+			}
+			}
 		}
 #else 
 		for (int j = 0; j < 3; j++) {
 			PlayGame(ai, statistic);
 		}
 #endif
-		
+
 #ifdef __WRITELOGMODE__
 		statistic.WriteLog(i);
 #endif
-		
+
 		if (i % 10 == 0) {
 			printf("----------[ Show  statistic ]----------\n");
 			statistic.setFinishTime();
@@ -91,13 +120,15 @@ int main(int argc, char* argv[])
 		if (i % 50 == 0) {
 			ai.WriteToWeightTable();
 		}
-	}
 		
+
 	//statistic.setFinishTime();
 	//statistic.show();
 	//ai.WriteToWeightTable();
-	
+
+	}
 	return 0;
+
 }
 
 #ifdef __PARALLELMODE__
@@ -112,12 +143,28 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic, std::stack<Array_Board> & arr
 		while (!gameBoard.terminated()) {
 			gameBoard.getArrayBoard(arrayBoard);
 			MoveDirection moveDirection = ai.generateMove(arrayBoard, arrayboard_stack);
-
 			GameBoard originalBoard = gameBoard;
 			iScore += gameBoard.move(moveDirection);
 			if (originalBoard == gameBoard) {
 				cout << "ilegalmove" << endl;
-				continue;
+				FILE *pfile;
+				pfile = fopen("Illegal move board record.txt", "a");
+				int arrayboard[4][4] = {};
+				gameBoard.getArrayBoard(arrayboard);
+				for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 4; j++) {
+						fprintf(pfile, " %5d ", arrayboard[i][j]);
+					}
+					fprintf(pfile, "\n");
+				}
+				fprintf(pfile, "\n");
+				fclose(pfile);
+				while (arrayboard_stack.empty() == false) {
+					arrayboard_stack.pop();
+				}
+				//getchar();
+				return;
+				//continue;
 			}
 				
 			statistic.increaseOneMove();
@@ -152,6 +199,7 @@ void PlayGame(Fib2584Ai &ai, Statistic &statistic)
 			iScore += gameBoard.move(moveDirection);
 			if (originalBoard == gameBoard) {
 				cout << "ilegalmove" << endl;
+				getchar();
 				continue;
 			}
 			statistic.increaseOneMove();

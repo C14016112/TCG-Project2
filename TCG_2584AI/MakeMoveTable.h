@@ -13,17 +13,18 @@ class MakeMoveTable{
 public:
 	MakeMoveTable();
 	~MakeMoveTable();
-	int Move(int, int CurrentBoard[4][4]);
-	void GetDataFromMoveTable(const int i, const int j, const int k, const int l, int index[5]);
+	int Move(int, int CurrentBoard[16], bool &isMoved);
+	void GetDataFromMoveTable(const int i, const int j, const int k, const int l, int index[5], bool & isMoved);
 	
 private:
-	int MoveLeft(int CurrentBoard[4][4]);
-	int MoveUp(int CurrentBoard[4][4]);
-	int MoveDown(int CurrentBoard[4][4]);
-	int MoveRight(int CurrentBoard[4][4]);
+	int MoveLeft(int CurrentBoard[16], bool &isMoved);
+	int MoveUp(int CurrentBoard[16], bool &isMoved);
+	int MoveDown(int CurrentBoard[16], bool &isMoved);
+	int MoveRight(int CurrentBoard[16], bool &isMoved);
 	int *Move_Table;
+	bool *isMove_Table;
 	int iTableSize;
-	
+	const int iupperbound = 32;
 };
 
 

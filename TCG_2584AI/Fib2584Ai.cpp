@@ -153,36 +153,30 @@ void Fib2584Ai::initialize(int argc, char* argv[])
 }
 
 #ifdef __PARALLELMODE__
-MoveDirection Fib2584Ai::generateMove(int board[4][4], std::stack<Array_Board> & Array_Board_Stack)
+MoveDirection Fib2584Ai::generateMove(int Fibboard[4][4], std::stack<Array_Board> & Array_Board_Stack)
 #else
-MoveDirection Fib2584Ai::generateMove(int board[4][4])
+MoveDirection Fib2584Ai::generateMove(int Fibboard[4][4])
 #endif
 {
-	for (int k = 0; k < 4; k++) {
-		board[0][k] = mapFibOrder[(board[0][k])];
-		board[1][k] = mapFibOrder[(board[1][k])];
-		board[2][k] = mapFibOrder[(board[2][k])];
-		board[3][k] = mapFibOrder[(board[3][k])];
-	}
+	int board[16] = {};
+	for (int i = 0; i < 16; i++)
+		board[i] = mapFibOrder[Fibboard[i >> 2][i % 4]];
 	
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			board[i][j] = (board[i][j] > iUpperbound) ? iUpperbound : board[i][j];
-	/*if (Tile_Num.GetMaxTile(board) > iUpperbound)
-		return static_cast<MoveDirection>(rand() % 4);*/
 	Array_Board b_struct;
 	MoveDirection next_dir = static_cast<MoveDirection>(0);
 #ifdef __SEARCHMODE__
-	float evaluation[4] = {};
-	int award[4] = {};
-	int movedboard[4][4][4] = {};
-	int depth = ((Tile_Num.GetStage(board) + 1) >> 1) + 1;
+	float evaluation[4] = {0};
+	int award[4] = {0};
+	int movedboard[4][16] = {0};
+	int depth = ((Tile_Num.GetStage(board) + 1)) * CUT_OFF_DEPTH;
 	for (int i = 0; i < 4; i++) {
 		SetBoard(movedboard[i], board);
-		award[i] = Move.Move(i, movedboard[i]);
-
-		if (isSameBoard(movedboard[i], board) == true)
+		bool ismoved = false;
+		award[i] = Move.Move(i, movedboard[i], ismoved);
+		if (ismoved == false) {
 			award[i] = NOMOVEPENALTY;
+			continue;
+		}
 		else {
 			evaluation[i] = Scout(movedboard[i], -FLT_MAX, FLT_MAX, depth*2);
 		}
@@ -194,10 +188,11 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4])
 #elif defined __UCTMODE__
 	next_dir = static_cast<MoveDirection>(Simulation(board, b_struct));
 #else
-	int tmpboard[4][4] = {};
+	int tmpboard[16] = {};
 	SetBoard(tmpboard, board);
 	next_dir = FindBestDirection(tmpboard);
-	b_struct.award = Move.Move(next_dir, tmpboard);
+	bool ismoved = false;
+	b_struct.award = Move.Move(next_dir, tmpboard, ismoved);
 	SetBoard(b_struct.state, tmpboard);
 #endif
 #ifdef __TRAININGMODE__
@@ -206,22 +201,49 @@ MoveDirection Fib2584Ai::generateMove(int board[4][4])
 	return next_dir;
 }
 
+int Fib2584Ai::generateEvilMove(int Fibboard[4][4])
+{
+	int board[16] = {};
+	for (int i = 0; i < 16; i++)
+		board[i] = mapFibOrder[Fibboard[i >> 2][i % 4]];
+	
+	int depth = ((Line_Inside.GetStage(board) + 1) >> 1) + 1;
+	int cur_round = getTileSum(board) % 6;
+	float evaluation[16] = { 0 };
+	for (int i = 0; i < 16; i++)
+		evaluation[i] = FLT_MAX;
+	int worst_index = 0;
 
-MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
+	for (int i = 0; i < 16; i++) {
+		if (board[i] == 0) {
+			int tmpboard[16] = {};
+			SetBoard(tmpboard, board);
+			if (cur_round == 3)
+				tmpboard[i] = 3;
+			else
+				tmpboard[i] = 1;
+			evaluation[i] = alphabeta_Max(tmpboard, -FLT_MAX, FLT_MAX, depth);
+		}
+		if (evaluation[i] < evaluation[worst_index])
+			worst_index = i;
+	}
+	return worst_index;
+}
+
+MoveDirection Fib2584Ai::FindBestDirection(int board[16])
 {
 	MoveDirection best_dir = static_cast<MoveDirection>(0);
 
-	int award[4] = {0};
-	float evaluation[4] = {0};
-	int movedboard[4][4][4] = {};
-
-	for (int i = 0; i < 4; i++){
+	float evaluation[4] = {};
+	int award[4] = {};
+	int movedboard[4][16] = {};
+	for (int i = 0; i< 4; i++) {
 		SetBoard(movedboard[i], board);
-		award[i] = Move.Move(i, movedboard[i]);
-		if (isSameBoard(movedboard[i], board) == true)
+		bool ismoved = false;
+		award[i] = Move.Move(i, movedboard[i], ismoved);
+		if (ismoved == false)
 			award[i] = NOMOVEPENALTY;
-		else
-			evaluation[i] += Evaluate(movedboard[i]);
+		evaluation[i] = Evaluate(movedboard[i]);
 		if (award[i] + evaluation[i] >= award[best_dir] + evaluation[best_dir])
 			best_dir = static_cast<MoveDirection>(i);
 	}
@@ -229,7 +251,7 @@ MoveDirection Fib2584Ai::FindBestDirection(int board[4][4])
 }
 
 #ifdef __MULTITHREADMODE__
-float Fib2584Ai::Evaluate(int board[4][4])
+float Fib2584Ai::Evaluate(int board[16])
 {
 	int stage = Line_Inside.GetStage(board);
 	float value = 0;
@@ -326,8 +348,12 @@ float Fib2584Ai::Evaluate(int board[4][4])
 }
 
 #else
-float Fib2584Ai::Evaluate(int board[4][4])
+float Fib2584Ai::Evaluate(int board[16])
 {
+	// if there are some tiles larger than max tile, let them be max tile
+	for (int i = 0; i < 16; i++)
+		board[i] = (board[i] > iUpperbound) ? iUpperbound : board[i];
+
 	int stage = Line_Inside.GetStage(board);
 	float value = 0;
 #ifdef __INSIDELINEMODE__
@@ -378,43 +404,7 @@ float Fib2584Ai::Evaluate(int board[4][4])
 }
 #endif
 
-int Fib2584Ai::generateEvilMove(int board[4][4])
-{
-	for (int j = 0; j<4; j++) {
-		for (int k = 0; k<4; k++) {
-			board[j][k] = mapFibOrder[(board[j][k])];
-		}
-	}
 
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			board[i][j] = (board[i][j] > iUpperbound) ? iUpperbound : board[i][j];
-
-	int depth = (( Tile_Num.GetStage(board) + 1 ) >> 1 ) + 1;
-	int cur_round = getTileSum(board) % 6;
-	float evaluation[16] = { 0 };
-	for (int i = 0; i < 16; i++)
-		evaluation[i] = FLT_MAX;
-	int worst_index = 0;
-
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			if (board[i][j] == 0) {
-				int tmpboard[4][4] = {};
-				SetBoard(tmpboard, board);
-				if (cur_round == 3)
-					tmpboard[i][j] = 3;
-				else
-					tmpboard[i][j] = 1;
-				evaluation[4 * i + j] = alphabeta_Max(tmpboard, -FLT_MAX, FLT_MAX, depth);
-				continue;
-			}
-			if (evaluation[4 * i + j] < evaluation[worst_index])
-				worst_index = 4 * i + j;
-		}
-	}
-	return worst_index;
-}
 #ifdef __PARALLELMODE__
 void Fib2584Ai::gameOver(int board[4][4], int iScore, std::stack<Array_Board> & Array_Board_Stack)
 {
@@ -470,87 +460,88 @@ void Fib2584Ai::Learning()
 		float curValue = Evaluate(Array_Board_Stack.top().state);
 		delta = (nextaward + nextvalue - curValue) / feature_number;
 #endif
+		int stage = Line_Inside.GetStage(Array_Board_Stack.top().state);
 #pragma omp parallel sections num_threads(THREADNUM)
 		{
 #ifdef __INSIDELINEMODE__
 #pragma omp section
 		{
-			Line_Inside.Update(Array_Board_Stack.top().state, delta);
+			Line_Inside.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __OUTSIDEAXEMODE__
 #pragma omp section
 		{
-			Axe_Outside.Update(Array_Board_Stack.top().state, delta);
+			Axe_Outside.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __INSIDEAXEMODE__
 #pragma omp section
 		{
-			Axe_Inside.Update(Array_Board_Stack.top().state, delta);
+			Axe_Inside.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __OUTSIDERECMODE__
 #pragma omp section
 		{
-			Rec_Outside.Update(Array_Board_Stack.top().state, delta);
+			Rec_Outside.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __OUTSIDELINEMODE__
 #pragma omp section
 		{
-			Line_Outside.Update(Array_Board_Stack.top().state, delta);
+			Line_Outside.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __INSIDERECMODE__
 #pragma omp section
 		{
-			Rec_Inside.Update(Array_Board_Stack.top().state, delta);
+			Rec_Inside.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __TRIANGLEMODE__
 #pragma omp section
 		{
-			Triangle.Update(Array_Board_Stack.top().state, delta);
+			Triangle.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __BOXATANGLEMODE__
 #pragma omp section
 		{
-			Box_Angle.Update(Array_Board_Stack.top().state, delta);
+			Box_Angle.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __BOXATMIDDLEMODE__
 #pragma omp section
 		{
-			Box_Middle.Update(Array_Board_Stack.top().state, delta);
+			Box_Middle.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __BOXATSIDEMODE__
 #pragma omp section
 		{
-			Box_Side.Update(Array_Board_Stack.top().state, delta);
+			Box_Side.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __MERGECOUNTMODE__
 #pragma omp section
 		{
-			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);
-			MergeCount_Row2.Update(Array_Board_Stack.top().state, delta);
+			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta, stage);
+			MergeCount_Row2.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __COUNTTILENUMBERMODE__
 #pragma omp section
 		{
-			Tile_Num.Update(Array_Board_Stack.top().state, delta);
+			Tile_Num.Update(Array_Board_Stack.top().state, delta, stage);
 		}
 #endif
 #ifdef __MERGETILEMODE__
 #pragma omp section
 		{
 			if (MergeTile_Row1.GetMaxTile(Array_Board_Stack.top().state) > iLowerBound) {
-				MergeTile_Row1.Update(Array_Board_Stack.top().state, delta);
-				MergeTile_Row2.Update(Array_Board_Stack.top().state, delta);
+				MergeTile_Row1.Update(Array_Board_Stack.top().state, delta, stage);
+				MergeTile_Row2.Update(Array_Board_Stack.top().state, delta, stage);
 			}
 		}
 #endif
@@ -619,66 +610,54 @@ void Fib2584Ai::Learning()
 		float curValue = Evaluate(Array_Board_Stack.top().state);
 		delta = (nextaward + nextvalue - curValue ) / feature_number;
 #endif
-#pragma omp parallel sections num_threads(3)
-		{
-#pragma omp section
-		{
+		int stage = Line_Inside.GetStage(Array_Board_Stack.top().state);
 #ifdef __INSIDELINEMODE__
-			Line_Inside.Update(Array_Board_Stack.top().state, delta);
+			Line_Inside.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 #ifdef __OUTSIDEAXEMODE__
-			Axe_Outside.Update(Array_Board_Stack.top().state, delta);
+			Axe_Outside.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
-		}
-#pragma omp section
-		{
 #ifdef __INSIDEAXEMODE__
-			Axe_Inside.Update(Array_Board_Stack.top().state, delta);
+			Axe_Inside.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 
 #ifdef __COUNTTILENUMBERMODE__
-			Tile_Num.Update(Array_Board_Stack.top().state, delta);
+			Tile_Num.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 #ifdef __MERGETILEMODE__
 			if (MergeTile_Row1.GetMaxTile(Array_Board_Stack.top().state)> iLowerBound) {
-				MergeTile_Row1.Update(Array_Board_Stack.top().state, delta);
-				MergeTile_Row2.Update(Array_Board_Stack.top().state, delta);
+				MergeTile_Row1.Update(Array_Board_Stack.top().state, delta, stage);
+				MergeTile_Row2.Update(Array_Board_Stack.top().state, delta, stage);
 			}
 #endif
 #ifdef __CONSTANTVALUEMODE__
 			Adjust_Weight += delta;
 #endif
-		}
-#pragma omp section
-		{
 #ifdef __OUTSIDERECMODE__
-			Rec_Outside.Update(Array_Board_Stack.top().state, delta);
+			Rec_Outside.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 #ifdef __OUTSIDELINEMODE__
-			Line_Outside.Update(Array_Board_Stack.top().state, delta);
+			Line_Outside.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 #ifdef __INSIDERECMODE__
-			Rec_Inside.Update(Array_Board_Stack.top().state, delta);
+			Rec_Inside.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 #ifdef __TRIANGLEMODE__
-			Triangle.Update(Array_Board_Stack.top().state, delta);
+			Triangle.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 #ifdef __BOXATANGLEMODE__
-			Box_Angle.Update(Array_Board_Stack.top().state, delta);
+			Box_Angle.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 #ifdef __BOXATMIDDLEMODE__
-			Box_Middle.Update(Array_Board_Stack.top().state, delta);
+			Box_Middle.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 #ifdef __BOXATSIDEMODE__
-			Box_Side.Update(Array_Board_Stack.top().state, delta);
+			Box_Side.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
 #ifdef __MERGECOUNTMODE__
-			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta);
-			MergeCount_Row2.Update(Array_Board_Stack.top().state, delta);
+			MergeCount_Row1.Update(Array_Board_Stack.top().state, delta, stage);
+			MergeCount_Row2.Update(Array_Board_Stack.top().state, delta, stage);
 #endif
-		}
-		}
-
 #ifdef __TCLAMBDAMODE__
 		nextvalue = Evaluate(Array_Board_Stack.top().state);
 		nextaward = Array_Board_Stack.top().award;
@@ -704,13 +683,10 @@ void Fib2584Ai::Learning()
 }
 #endif
 
-int Fib2584Ai::SetBoard(int b1[4][4], const int b2[4][4])
+int Fib2584Ai::SetBoard(int b1[16], const int b2[16])
 {
-	for (int i = 0; i < 4; i++) {
-		b1[i][0] = b2[i][0];
-		b1[i][1] = b2[i][1];
-		b1[i][2] = b2[i][2];
-		b1[i][3] = b2[i][3];
+	for (int i = 0; i < 16; i++) {
+		b1[i] = b2[i];
 	}
 	return 0;
 }
@@ -809,103 +785,19 @@ void Fib2584Ai::ReadFromWeightTable()
 	MergeCount_Row2.ReadFromWeightTable("Merge_Count_WeightTable2");
 #endif
 #endif
+	Axe_Inside.test();
 }
 
-bool Fib2584Ai::isSameBoard( int board1[4][4], int board2[4][4])
+bool Fib2584Ai::isSameBoard( int board1[16], int board2[16])
 {
-	for (int i = 0 ; i<4 ; i++){
-		for (int j = 0 ; j<4 ; j++){
-			if(board1[i][j] != board2[i][j])
-				return false;
-		}
+	for (int i = 0 ; i<16 ; i++){
+		if(board1[i] != board2[i])
+			return false;
 	}
 	return true;
 }
 
-int Fib2584Ai::Simulation(int board[4][4], Array_Board & b_struct)
-{
-	int nodecount[4] = {};
-	double evaluation[4] = {};
-	int movedboard[4][4][4] = {};
-	int score[4] = {};
-	for (int i = 0; i < 4; i++) {
-		int tmpboard[4][4] = {};
-		SetBoard(movedboard[i], board);
-		score[i] = Move.Move(i, movedboard[i]);
-		if (isSameBoard(movedboard[i], board) == true)
-			evaluation[i] = NOMOVEPENALTY;
-		else {
-			SetBoard(tmpboard, movedboard[i]);
-			evaluation[i] = PlayOut(tmpboard, SIMULATIONDEEP);
-		}
-			
-		nodecount[i] ++;
-	}
-	for (int i = 0; i < UCTBRANCHNUM; i++) {
-		int bestdir = 0;
-		int maxevaluation = evaluation[0];
-		for (int j = 1; j < 4; j++) {
-			if (evaluation[j] > maxevaluation) {
-				maxevaluation = evaluation[j];
-				bestdir = j;
-			}
-		}
-		int tmpboard[4][4] = {};
-		SetBoard(tmpboard, movedboard[bestdir]);
-		evaluation[bestdir] = (PlayOut(tmpboard, SIMULATIONDEEP) + nodecount[bestdir] * evaluation[bestdir]) / (nodecount[bestdir] + 1);
-		nodecount[bestdir]++;
-	}
-	
-	int bestdir = 0;
-	int maxevaluation = evaluation[0];
-	for (int j = 1; j < 4; j++) {
-		if (evaluation[j] > maxevaluation) {
-			maxevaluation = evaluation[j];
-			bestdir = j;
-		}
-	}
-	SetBoard(b_struct.state, movedboard[bestdir]);
-	b_struct.award = score[bestdir];
-	return bestdir;
-}
-
-double Fib2584Ai::PlayOut(int board[4][4], int deep)
-{
-	deep--;
-	if (deep <= 0)
-		return Evaluate(board);
-	bool isaddtile = AddRandomTile(board);
-	if (isaddtile == false)
-		return Evaluate(board);
-	int award = Move.Move(FindBestDirection(board), board);
-	return PlayOut(board, deep) + award;
-}
-
-bool Fib2584Ai::AddRandomTile(int board[4][4])
-{
-	int emptypos[16] = { 0 };
-	int empty_count = 0;
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			if (board[i][j] == 0) {
-				emptypos[empty_count] = 4 * i + j;
-				empty_count++;
-			}
-		}
-	}
-	if (empty_count == 0)
-		return false;
-	else {
-		int pos = rand() % empty_count;
-		if (rand() % 4 == 3) 
-			board[emptypos[pos] / 4][emptypos[pos] % 4] = 3;
-		else
-			board[emptypos[pos] / 4][emptypos[pos] % 4] = 1;
-	}
-	return true;
-}
-
-double Fib2584Ai::Scout(int board[4][4], double alpha, double beta, int depth)
+double Fib2584Ai::Scout(int board[16], double alpha, double beta, int depth)
 {
 	
 	/*
@@ -913,21 +805,22 @@ double Fib2584Ai::Scout(int board[4][4], double alpha, double beta, int depth)
 	alpha beta search
 	since the root node is min node, we need to use negamin algorithm
 	*/
-	int score[30] = {};
+	int score[30] = {0};
 	if (depth == 0)
 		return Evaluate(board);
 	
 	int branch_number = 0;
-	int successor_board[30][4][4];
+	int successor_board[30][16] = { 0 };
 	// determine the successor board
 	if (depth % 2 == 1) {
 		// max node
 		// move a direction
 		for (int i = 0; i < 4; i++) {
-			int tmpboard[4][4] = {};
+			int tmpboard[16] = {0};
 			SetBoard(tmpboard, board);
-			int award = Move.Move(i, tmpboard);
-			if (isSameBoard(tmpboard, board) == false) {
+			bool ismoved = false;
+			int award = Move.Move(i, tmpboard, ismoved);
+			if (ismoved == true) {
 				SetBoard(successor_board[branch_number], tmpboard);
 				score[branch_number] = award;
 				branch_number++;
@@ -940,48 +833,39 @@ double Fib2584Ai::Scout(int board[4][4], double alpha, double beta, int depth)
 		int curMove = getTileSum(board) % 6;
 #ifdef __1113SEARCHMODE__
 		if (curMove == 3) {
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
-					if (board[i][j] == 0) {
-						SetBoard(successor_board[branch_number], board);
-						successor_board[branch_number][i][j] = 3;
-						branch_number++;
-					}
+			for (int i = 0; i < 16; i++) {
+				if (board[i] == 0) {
+					SetBoard(successor_board[branch_number], board);
+					successor_board[branch_number][i] = 3;
+					branch_number++;
 				}
 			}
 		}
 		else {
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
-					if (board[i][j] == 0) {
-						SetBoard(successor_board[branch_number], board);
-						successor_board[branch_number][i][j] = 1;
-						branch_number++;
-					}
+			for (int i = 0; i < 16; i++) {
+				if (board[i] == 0) {
+					SetBoard(successor_board[branch_number], board);
+					successor_board[branch_number][i] = 1;
+					branch_number++;
 				}
 			}
 		}
 #else
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (board[i][j] == 0) {
-					SetBoard(successor_board[branch_number], board);
-					successor_board[branch_number][i][j] = 1;
-					branch_number++;
-					SetBoard(successor_board[branch_number], board);
-					successor_board[branch_number][i][j] = 3;
-					branch_number++;
+		for (int i = 0; i < 16; i++) {
+			if (board[i] == 0) {
+				SetBoard(successor_board[branch_number], board);
+				successor_board[branch_number][i] = 1;
+				branch_number++;
+				SetBoard(successor_board[branch_number], board);
+				successor_board[branch_number][i] = 3;
+				branch_number++;
 
-				}
 			}
 		}
 #endif
 	}
 	if (branch_number == 0) {
-		if (depth % 2 == 0)
-			return Evaluate(board);
-		else
-			return 0.9 * Evaluate(board);
+		return Evaluate(board);
 	}
 		
 
@@ -1003,18 +887,19 @@ double Fib2584Ai::Scout(int board[4][4], double alpha, double beta, int depth)
 }
 
 
-double Fib2584Ai::alphabeta_Max(int board[4][4], double alpha, double beta, int depth)
+double Fib2584Ai::alphabeta_Max(int board[16], double alpha, double beta, int depth)
 {
 	int score[4] = {};
 	int branch_number = 0;
-	int successor_board[4][4][4];
+	int successor_board[4][16];
 	// determine the successor board for max node
 	// try four direction
 	for (int i = 0; i < 4; i++) {
-		int tmpboard[4][4] = {};
+		int tmpboard[16] = {};
 		SetBoard(tmpboard, board);
-		int award = Move.Move(i, tmpboard);
-		if (isSameBoard(tmpboard, board) == false) {
+		bool ismoved = false;
+		int award = Move.Move(i, tmpboard, ismoved);
+		if (ismoved == true) {
 			SetBoard(successor_board[branch_number], tmpboard);
 			score[branch_number] = award;
 			branch_number++;
@@ -1034,52 +919,46 @@ double Fib2584Ai::alphabeta_Max(int board[4][4], double alpha, double beta, int 
 	return m;
 }
 
-double Fib2584Ai::alphabeta_Min(int board[4][4], double alpha, double beta, int depth)
+double Fib2584Ai::alphabeta_Min(int board[16], double alpha, double beta, int depth)
 {
 	//if (depth == CUT_OFF_DEPTH) return Evaluate(board);
 	if (depth == 0)
 		return Evaluate(board);
 
 	int branch_number = 0;
-	int successor_board[30][4][4];
+	int successor_board[30][16];
 	// determine the successor board for min node
 	// try all random tile 
 	int curMove = getTileSum(board) % 6;
 #ifdef __1113SEARCHMODE__
 	if (curMove == 3){
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (board[i][j] == 0) {
-					SetBoard(successor_board[branch_number], board);
-					successor_board[branch_number][i][j] = 3;
-					branch_number++;
-				}
+		for (int i = 0; i < 16; i++) {
+			if (board[i] == 0) {
+				SetBoard(successor_board[branch_number], board);
+				successor_board[branch_number][i] = 3;
+				branch_number++;
 			}
 		}
 	}
 	else {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (board[i][j] == 0) {
-					SetBoard(successor_board[branch_number], board);
-					successor_board[branch_number][i][j] = 1;
-					branch_number++;
-				}
+		for (int i = 0; i < 16; i++) {
+			if (board[i] == 0) {
+				SetBoard(successor_board[branch_number], board);
+				successor_board[branch_number][i] = 1;
+				branch_number++;
 			}
 		}
 	}
 #else
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			if (board[i][j] == 0) {
-				SetBoard(successor_board[branch_number], board);
-				successor_board[branch_number][i][j] = 1;
-				branch_number++;
-				SetBoard(successor_board[branch_number], board);
-				successor_board[branch_number][i][j] = 3;
-				branch_number++;
+	for (int i = 0; i < 16; i++) {
+		if (board[i] == 0) {
+			SetBoard(successor_board[branch_number], board);
+			successor_board[branch_number][i] = 1;
+			branch_number++;
+			SetBoard(successor_board[branch_number], board);
+			successor_board[branch_number][i] = 3;
+			branch_number++;
 
-			}
 		}
 	}
 #endif
@@ -1105,11 +984,10 @@ double Fib2584Ai::alphabeta_Min(int board[4][4], double alpha, double beta, int 
 	
 }
 
-int Fib2584Ai::getTileSum(int board[4][4])
+int Fib2584Ai::getTileSum(int board[16])
 {
 	int sum = 0;
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			sum += fibonacci_seq[ board[i][j] ];
+	for (int i = 0; i < 16; i++)
+			sum += fibonacci_seq[ board[i] ];
 	return sum;
 }

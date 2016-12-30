@@ -3,7 +3,6 @@
 
 //Table Mode
 #define __VECTORTABLEMODE__ // vector table mode
-//#define __ARRAYTABLEMODE__ // array table mode
 // Use Feature
 #define __OUTSIDEAXEMODE__ // out side axe mode
 #define __INSIDEAXEMODE__  // in side axe mode
@@ -21,7 +20,7 @@
 //#define __SEARCHMODE__ // Alpha Beta Search
 //#define __MULTITHREADMODE__ // multithread mode in the play game, used in the demo
 #define __PARALLELMODE__ // parallel mode
-#define THREADNUM 3
+#define THREADNUM 4
 
 #define __TRAIN1113MODE__ // train the table for the rule 1 1 1 3 ( three 1 and one 3)
 #ifdef __TRAIN1113MODE__
@@ -33,7 +32,6 @@
 #ifdef __TRAININGMODE__
 #define __TCLMODE__ // tcl mode
 #endif
-
 // unuse mode:
 //#define __BOXATANGLEMODE__ // box at angle mode
 //#define __BOXATSIDEMODE__ // box at side mode
@@ -53,14 +51,14 @@
 #define __MULTISTAGE_TILENUMMODE__
 #define STAGENUM 3
 
-#define NOMOVEPENALTY -1000000
+#define NOMOVEPENALTY -10000000
 #define LEARNING_RATE 0.1
 #define iUpperbound 24
 #define iLowerBound 15
 #define iRange 9
-#define PlayRound 1000
+#define PlayRound 100000
 #ifdef __SEARCHMODE__
-#define LogPeriod 1
+#define LogPeriod 10
 #elif defined __UCTMODE__
 #define LogPeriod 10
 #else

@@ -1,0 +1,410 @@
+Train Mode is open!
+Sat Dec 10 16:08:55 2016
+LogPeriod = 90, Learning Rate = 0.100000
+Tcl Mode is opened.
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 987, MaxScore = 13652, Average Score = 4918.13
+610: 37.78%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 2, MaxTile = 987, MaxScore = 13652, Average Score = 5493.88
+610: 44.44%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 3, MaxTile = 1597, MaxScore = 19441, Average Score = 5933.34
+610: 47.78%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 4, MaxTile = 1597, MaxScore = 20229, Average Score = 6411.55
+610: 51.67%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 5, MaxTile = 1597, MaxScore = 20652, Average Score = 6935.12
+610: 55.33%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 6, MaxTile = 1597, MaxScore = 23971, Average Score = 7360.55
+610: 58.89%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 7, MaxTile = 2584, MaxScore = 36383, Average Score = 7787.25
+610: 61.59%, 2584: 0.16%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 8, MaxTile = 2584, MaxScore = 36383, Average Score = 8056.60
+610: 63.33%, 2584: 0.14%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 9, MaxTile = 2584, MaxScore = 36383, Average Score = 8314.01
+610: 65.31%, 2584: 0.12%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 10, MaxTile = 2584, MaxScore = 36383, Average Score = 8663.82
+610: 67.56%, 2584: 0.22%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 11, MaxTile = 1597, MaxScore = 24707, Average Score = 10605.79
+610: 78.89%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 12, MaxTile = 1597, MaxScore = 24707, Average Score = 11431.00
+610: 82.22%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Train Mode is open!
+Sat Dec 10 16:11:15 2016
+LogPeriod = 90, Learning Rate = 0.100000
+Tcl Mode is opened.
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 987, MaxScore = 13978, Average Score = 5107.61
+610: 38.89%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 2, MaxTile = 1597, MaxScore = 20278, Average Score = 5712.80
+610: 41.67%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 3, MaxTile = 1597, MaxScore = 20278, Average Score = 6130.87
+610: 47.41%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 4, MaxTile = 1597, MaxScore = 20278, Average Score = 6576.95
+610: 50.83%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 5, MaxTile = 1597, MaxScore = 23558, Average Score = 7061.76
+610: 54.22%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 6, MaxTile = 1597, MaxScore = 23558, Average Score = 7589.97
+610: 59.26%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 7, MaxTile = 1597, MaxScore = 24202, Average Score = 7911.82
+610: 61.27%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 8, MaxTile = 2584, MaxScore = 32858, Average Score = 8335.10
+610: 63.89%, 2584: 0.14%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 9, MaxTile = 2584, MaxScore = 32858, Average Score = 8670.14
+610: 65.56%, 2584: 0.12%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 10, MaxTile = 2584, MaxScore = 32858, Average Score = 8953.14
+610: 67.22%, 2584: 0.22%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 11, MaxTile = 2584, MaxScore = 35388, Average Score = 12654.38
+610: 84.44%, 2584: 2.22%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Train Mode is open!
+Sat Dec 10 16:12:59 2016
+LogPeriod = 30, Learning Rate = 0.100000
+Tcl Mode is opened.
+Search Mode is opened. 1 layers. 
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 6765, MaxScore = 98028, Average Score = 32095.00
+610: 93.33%, 2584: 53.33%, 6765: 3.33%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Train Mode is open!
+Sat Dec 10 16:13:32 2016
+LogPeriod = 30, Learning Rate = 0.100000
+Tcl Mode is opened.
+Search Mode is opened. 1 layers. 
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Train Mode is open!
+Sat Dec 10 16:14:01 2016
+LogPeriod = 90, Learning Rate = 0.100000
+Tcl Mode is opened.
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 987, MaxScore = 13642, Average Score = 4436.50
+610: 24.44%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 2, MaxTile = 987, MaxScore = 13827, Average Score = 5301.81
+610: 36.11%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 3, MaxTile = 1597, MaxScore = 23695, Average Score = 5913.29
+610: 42.96%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 4, MaxTile = 1597, MaxScore = 23695, Average Score = 6314.67
+610: 47.78%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 5, MaxTile = 1597, MaxScore = 23695, Average Score = 6486.89
+610: 49.33%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 6, MaxTile = 2584, MaxScore = 35990, Average Score = 7148.27
+610: 53.52%, 2584: 0.19%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 7, MaxTile = 2584, MaxScore = 35990, Average Score = 7657.15
+610: 57.14%, 2584: 0.16%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 8, MaxTile = 2584, MaxScore = 35990, Average Score = 8107.88
+610: 60.14%, 2584: 0.28%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 9, MaxTile = 2584, MaxScore = 35990, Average Score = 8427.20
+610: 62.59%, 2584: 0.25%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 10, MaxTile = 2584, MaxScore = 35990, Average Score = 8786.19
+610: 64.78%, 2584: 0.22%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 11, MaxTile = 2584, MaxScore = 39211, Average Score = 11576.99
+610: 86.67%, 2584: 1.11%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 12, MaxTile = 2584, MaxScore = 39211, Average Score = 11674.21
+610: 85.00%, 2584: 0.56%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Train Mode is open!
+Sat Dec 10 16:14:28 2016
+LogPeriod = 90, Learning Rate = 0.100000
+Tcl Mode is opened.
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 987, MaxScore = 13180, Average Score = 4901.09
+610: 34.44%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 2, MaxTile = 987, MaxScore = 14485, Average Score = 5771.82
+610: 48.89%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 3, MaxTile = 1597, MaxScore = 20804, Average Score = 5946.48
+610: 46.67%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 4, MaxTile = 1597, MaxScore = 22820, Average Score = 6371.98
+610: 51.39%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 5, MaxTile = 1597, MaxScore = 22820, Average Score = 6823.10
+610: 55.33%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 6, MaxTile = 1597, MaxScore = 24219, Average Score = 7461.90
+610: 59.26%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Train Mode is open!
+Sat Dec 10 16:15:42 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Tcl Mode is opened.
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Train Mode is open!
+Sat Dec 10 16:16:09 2016
+LogPeriod = 90, Learning Rate = 0.100000
+Tcl Mode is opened.
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 1597, MaxScore = 20072, Average Score = 4765.03
+610: 27.78%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 2, MaxTile = 1597, MaxScore = 20072, Average Score = 5646.09
+610: 43.33%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 3, MaxTile = 1597, MaxScore = 20072, Average Score = 5820.33
+610: 45.19%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Train Mode is open!
+Sat Dec 10 16:17:21 2016
+LogPeriod = 90, Learning Rate = 0.100000
+Tcl Mode is opened.
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+
+Round: 1, MaxTile = 1597, MaxScore = 19128, Average Score = 4903.87
+610: 32.22%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 2, MaxTile = 1597, MaxScore = 19128, Average Score = 5566.34
+610: 41.11%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 3, MaxTile = 1597, MaxScore = 19128, Average Score = 5785.08
+610: 43.33%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 4, MaxTile = 1597, MaxScore = 20889, Average Score = 6181.07
+610: 46.94%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 5, MaxTile = 1597, MaxScore = 20889, Average Score = 6591.71
+610: 49.78%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 6, MaxTile = 1597, MaxScore = 20951, Average Score = 6927.36
+610: 53.15%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 7, MaxTile = 1597, MaxScore = 25599, Average Score = 7321.03
+610: 56.19%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 8, MaxTile = 1597, MaxScore = 25599, Average Score = 7563.65
+610: 58.33%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 9, MaxTile = 1597, MaxScore = 25599, Average Score = 7741.71
+610: 59.88%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 10, MaxTile = 1597, MaxScore = 25599, Average Score = 8007.93
+610: 62.33%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 11, MaxTile = 1597, MaxScore = 24250, Average Score = 9848.64
+610: 66.67%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 12, MaxTile = 1597, MaxScore = 24250, Average Score = 9797.87
+610: 72.22%, 2584: 0.00%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 13, MaxTile = 2584, MaxScore = 30743, Average Score = 10136.71
+610: 74.81%, 2584: 0.37%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 14, MaxTile = 2584, MaxScore = 30743, Average Score = 10136.24
+610: 75.83%, 2584: 0.28%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 15, MaxTile = 2584, MaxScore = 30743, Average Score = 10318.78
+610: 77.33%, 2584: 0.22%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 16, MaxTile = 2584, MaxScore = 30743, Average Score = 10374.19
+610: 77.96%, 2584: 0.19%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 17, MaxTile = 2584, MaxScore = 30743, Average Score = 10577.80
+610: 79.21%, 2584: 0.16%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 18, MaxTile = 2584, MaxScore = 30743, Average Score = 10772.48
+610: 80.28%, 2584: 0.28%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 19, MaxTile = 2584, MaxScore = 34802, Average Score = 10823.93
+610: 80.37%, 2584: 0.49%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 20, MaxTile = 2584, MaxScore = 34802, Average Score = 11064.95
+610: 81.00%, 2584: 0.44%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 21, MaxTile = 2584, MaxScore = 36304, Average Score = 13455.16
+610: 83.33%, 2584: 3.33%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Round: 22, MaxTile = 2584, MaxScore = 36304, Average Score = 14135.87
+610: 87.78%, 2584: 2.22%, 6765: 0.00%, 10946: 0.00%
+17711: 0.00%, 28657: 0.00%, 46368: 0.00% 
+
+Train Mode is open!
+Tue Dec 13 16:27:05 2016
+LogPeriod = 900, Learning Rate = 0.100000
+Tcl Mode is opened.
+Multi_Stage TileNumber Mode is opened. 
+Parallel: Parallel Mode is opened
+Feature: Line Inside is used
+Feature: Axe Outside is used
+Feature: Axe Inside is used
+Feature: Rec Outside is used
+Feature: Tile Number is used
+Feature: MergeCount is used
+
+

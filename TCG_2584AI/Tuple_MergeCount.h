@@ -8,11 +8,10 @@ public:
 	Tuple_MergeCount();
 	~Tuple_MergeCount();
 	void SetParameter(const int input_index[4]);
-	virtual float getWeight(int board[4][4], int stage);
-	virtual float getWeight(int board[4][4], int no, int stage);
-	virtual void setWeight(int board[4][4], int no, float value);
-	virtual void Update(int board[4][4], const float error);
-	int MergeableNumber(const int board[4][4], const int no);
+	virtual float getWeight(int board[16], int stage);
+	virtual float getWeight(int board[16], int no, int stage);
+	virtual void Update(int board[16], const float error, int stage);
+	int MergeableNumber(const int board[16], const int no);
 	bool isMergeable(const int x, const int y);
 private:
 	int index[8][4];
